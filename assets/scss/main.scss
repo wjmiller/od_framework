@@ -1,0 +1,488 @@
+@import './variables.scss';
+@import './icon_font.scss';
+
+
+//------------------------------------------------------
+// Page Transitions
+//------------------------------------------------------
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .2s;
+}
+
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+
+
+//------------------------------------------------------
+// Body
+//------------------------------------------------------
+
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  font-weight: 400;
+  font-style: normal;
+  font-size: $font-size-base * 1.02;
+  font-family: pt-sans-pro, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  line-height: 1.5rem;
+
+  @media(min-width: 768px) {
+    font-size: $font-size-base;
+  }
+
+  // Dark/Light Theme Styles -----------------------------
+
+  &.dark {
+    background: $dark-body-bg;
+    color: #fff;
+  }
+
+  &.light {
+    background-color: #fff;
+    color: $light-text-color;
+  }
+}
+
+
+//------------------------------------------------------
+// Headings
+//------------------------------------------------------
+
+h1,h2,h3,h4,h5,h6 {
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 1.8rem;
+}
+
+h2 {
+  font-size: 1.6rem;
+}
+
+h3 {
+  font-size: 1.45rem;
+}
+
+h4 {
+  font-size: 1.25rem;
+}
+
+h5 {
+  font-size: 1.1rem;
+}
+
+h6 {
+  font-size: 1rem;
+}
+
+// Dark/Light Theme Styles -----------------------------
+
+.dark {
+  h1,h2 {
+    color: $dark-header-color;
+  }
+
+  h3,h4,h5,h6 {
+    color: $purple;
+  }
+}
+
+.light {
+  h1,h2,h3,h4,h5,h6 {
+    color: $light-header-color;
+  }
+}
+
+
+//------------------------------------------------------
+// Route Section Container
+//------------------------------------------------------
+
+section.view {
+  margin-top: 40px;
+}
+
+
+//------------------------------------------------------
+// Navbar
+//------------------------------------------------------
+
+.navbar {
+  margin-bottom: 10px;
+
+  &.navbar-light {
+    .navbar-nav {
+      .nav-link {
+        color: $dark-text-color;
+      }
+    }
+  }
+}
+
+// Dark/Light Theme Styles -----------------------------
+
+.dark {
+  .navbar {
+    &.navbar-light {
+      background: $dark-blue;
+      .navbar-nav {
+        .nav-link {
+          color: $dark-text-color;
+        }
+      }
+    }
+  }
+}
+
+.light {
+  .navbar {
+    background: #fff;
+    &.navbar-light {
+      .navbar-nav {
+        .nav-link {
+          color: $light-text-color;
+        }
+      }
+    }
+  }
+}
+
+
+//------------------------------------------------------
+// Buttons
+//------------------------------------------------------
+
+.btn.disabled {
+  &:active,
+  &:focus,
+  &:hover,
+  &:visited {
+    cursor: not-allowed;
+  }
+}
+
+.btn-secondary, .btn-success {
+  border-radius: $border-radius-btn;
+  padding: 0.4rem 1.4rem;
+  font-weight: 600;
+
+  &.btn-sm {
+    padding: 0.3rem 0.85rem;
+    border-radius: $border-radius-btn;
+    font-size: 1rem;
+    line-height: 1.5;
+
+    &:focus {
+      outline: 0;
+      box-shadow: none;
+    }
+  }
+
+  &:focus {
+    outline: 0;
+    box-shadow: none;
+  }
+}
+
+.btn-secondary:not(:disabled):not(.disabled):active:focus,
+.btn-secondary:not(:disabled):not(.disabled).active:focus,
+.show > .btn-secondary.dropdown-toggle:focus {
+  box-shadow: none;
+}
+
+.btn-secondary:not(:disabled):not(.disabled):active,
+.btn-secondary:not(:disabled):not(.disabled).active,
+.show > .btn-secondary.dropdown-toggle {
+  background-color: $purple-med;
+  border-color: $purple-med;
+  opacity: 0.6;
+}
+
+// Dark/Light Theme Styles -----------------------------
+
+.dark {
+  .btn-secondary:active,
+  .btn-secondary:focus,
+  .btn-secondary:hover,
+  .btn-secondary:visited {
+    background-color: lighten($purple-med, 3%);
+    border-color: lighten($purple-med, 3%);
+    color: #fff;
+  }
+
+  .btn-secondary.disabled {
+    &:active,
+    &:focus,
+    &:hover,
+    &:visited {
+      background-color: $purple-med;
+      border-color: $purple-med;
+    }
+  }
+
+  .btn-secondary {
+    color: #fff;
+    background-color: $purple-med;
+    border-color: $purple-med;
+  }
+}
+
+.light {
+  .btn-secondary:active,
+  .btn-secondary:focus,
+  .btn-secondary:hover,
+  .btn-secondary:visited {
+    background-color: lighten($purple-med, 5%);
+    border-color: lighten($purple-med, 5%);
+    color: white;
+  }
+
+  .btn-secondary.disabled {
+    &:active,
+    &:focus,
+    &:hover,
+    &:visited {
+      background-color: rga(140, 140, 140);
+      border-color: rga(140, 140, 140);
+    }
+  }
+
+  .btn-secondary {
+    color: white;
+    background-color: $purple-med;
+    border-color: $purple-med;
+  }
+}
+
+.btn-success:active,
+.btn-success:focus,
+.btn-success:hover,
+.btn-success:visited {
+  background-color: lighten($green-med, 3%);
+  border-color: lighten($green-med, 3%);
+  color: #fff;
+}
+
+.btn-success.disabled {
+  &:active,
+  &:focus,
+  &:hover,
+  &:visited {
+    background-color: $green-med;
+    border-color: $green-med;
+  }
+}
+
+.btn-success {
+  color: #fff;
+  background-color: $green-med;
+  border-color: $green-med;
+}
+
+//------------------------------------------------------
+// Button Variations
+//------------------------------------------------------
+
+.close {
+    font-size: 4.2em;
+    font-weight: 400;
+    text-shadow: none;
+    line-height: 36px;
+}
+
+// Dark/Light Theme Styles -----------------------------
+
+.dark {
+  .close {
+    color: #fff;
+
+    &:active,
+    &:hover,
+    &focus {
+        color: #fff;
+    }
+  }
+}
+
+.light {
+  .close {
+    color: $light-text-color;
+
+    &:active,
+    &:hover,
+    &focus {
+        color: $light-text-color;
+    }
+  }
+}
+
+
+
+//------------------------------------------------------
+// Videos
+//------------------------------------------------------
+
+.video-intro {
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 10px;
+
+  @media(min-width: 768px) {
+    margin-top: 2.5rem;
+  }
+}
+
+
+
+//------------------------------------------------------
+// Progress Bars
+//------------------------------------------------------
+
+.dark {
+    .progress {
+        background-color: $dark-gray-med;
+
+        .progress-bar {
+          background-color: $green;
+        }
+    }
+}
+
+.light {
+    .progress {
+        background-color: $light-gray-med;
+
+        .progress-bar {
+          background-color: $green;
+        }
+    }
+}
+
+
+//------------------------------------------------------
+// Badges
+//------------------------------------------------------
+
+.badge {
+  padding: 0.4rem 0.4rem;
+}
+
+.badge-pill {
+  padding-left: 0.7rem;
+  padding-right: 0.7rem;
+  border-radius: 1rem;
+}
+
+.dark {
+  .badge-secondary {
+    background-color: $dark-gray-med;
+  }
+}
+
+.light {
+  .badge-secondary {
+    background-color: $light-gray;
+  }
+}
+
+
+
+//------------------------------------------------------
+// List Groups
+//------------------------------------------------------
+
+.list-group-item {
+  position: relative;
+  display: block;
+  padding: 1.5rem 0 1.8rem;
+  border: 0;
+  margin-bottom: 0;
+  border-bottom: 1px solid $dark-gray;
+
+  h5 {
+    display: inline-block;
+  }
+
+  p {
+    font-size: 1.02rem;
+    line-height: 1.26rem;
+    font-style: italic;
+    margin: 0 0 12px;
+  }
+
+  &:last-child {
+    border-radius: 0;
+    border: 0;
+  }
+}
+
+.dark {
+  .list-group-item {
+    background-color: $dark-body-bg;
+    color: #fff;
+    border-color: $dark-gray;
+
+    .icon-play {
+      color: $dark-gray-light;
+    }
+
+    h5 {
+      color: $dark-header-color;
+    }
+  }
+}
+
+.light {
+  .list-group-item {
+    background-color: #fff;
+    color: $light-text-color;
+    border-color: $dark-gray-light;
+
+    .icon-play {
+      color: $light-gray;
+    }
+
+    h5 {
+      color: $light-header-color;
+    }
+  }
+}
+
+
+
+//------------------------------------------------------
+// Form Elements
+//------------------------------------------------------
+
+
+.form-control {
+  height: calc(1.5em + 1rem + 2px);
+  padding: 0.4rem 0.75rem;
+  font-size: 1.1rem;
+  background-clip: unset;
+  border-radius: 0;
+}
+
+.dark {
+  .form-control {
+    color: $light-text-color;
+    background-color: #fff;
+    border-color: none;
+  }
+}
+
+.light {
+  .form-control {
+    color: $light-text-color;
+    background-color: #fff;
+    border-color: $light-pane-border;
+  }
+}

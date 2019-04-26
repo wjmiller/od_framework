@@ -1,0 +1,94 @@
+//-----------------------------------------------
+// Global Variables
+//-----------------------------------------------
+
+// Colors
+$purple:                                  #8991fa;
+$purple-med:                              #676EC9;
+$green:                                   #5AC848;
+$green-med:                               #4BB43A;
+$red:                                     #E73225;
+$gray:                                    #66676B;
+$orange:                                  #FC5423;
+$yellow:                                  #FFE34A;
+$magenta:                                 #E874F8;
+
+// Font Size Base
+$font-size-base:                             18px;
+
+// Border Radius
+$border-radius:                                 0;
+$border-radius-btn:                          30px;
+
+
+//-----------------------------------------------
+// Dark Theme Variables
+//-----------------------------------------------
+
+// Colors
+$dark-blue:                               #191C2C;
+$dark-blue-notes:                         #22263C;
+$dark-gray-light:                         #C1C2C6;
+$dark-gray:                               #494C5B;
+$dark-gray-dark:                          #353845;
+$dark-white-med:                          #F5F6F8;
+$dark-gray-med:                           #5A5B68;
+
+// Background
+$dark-body-bg:                         $dark-blue;
+
+// Headers and Text
+$dark-header-color:                       #FFFFFF;
+$dark-text-color:        lighten($dark-blue, 75%);
+
+// Activity
+$dark-group-bg:                        $dark-blue;
+$dark-pane-bg:            lighten($dark-blue, 5%);
+$dark-pane-border:       lighten($dark-blue, 10%);
+
+// Price Chart
+$dark-chart-text:                         #FFFFFF;
+$dark-chart-lines:                        #888888;
+$dark-chart-curve:                        #555555;
+$dark-chart-points:                       $purple;
+
+// Candle Builder Controls
+$dark-slide-bg:                        $dark-blue;
+$dark-slide-handle:      lighten($dark-blue, 60%);
+
+
+
+//-----------------------------------------------
+// Light Theme Variables
+//-----------------------------------------------
+
+// Colors
+$light-blue-dark:                         #112163;
+$light-gray-dark:                         #333333;
+$light-gray:                              #8B8C96;
+$light-gray-med-dark:                     #66676F;
+$light-gray-med:                          #CFD1D6;
+$light-gray-notes:                        #F2F2F2;
+$light-gray-light:                        #EAEAEA;
+
+// Headers and Text
+$light-header-color:             $light-blue-dark;
+$light-text-color:               $light-gray-dark;
+
+// Activity
+$light-group-bg:                          #FFFFFF;
+$light-group-border:                      #BBBBBB;
+$light-pane-bg:                           #FCFCFC;
+$light-pane-border:                       #BBBBBB;
+
+// Price Chart
+$light-chart-text:                        #333333;
+$light-chart-lines:                       #999999;
+$light-chart-curve:                       #BBBBBB;
+$light-chart-points:              $light-gray-med;
+
+// Candle Builder Controls
+$light-slide-bg:                          #CCCCCC;
+$light-slide-handle:                      #777777;
+
+$gray-light:                              #7E8195;
