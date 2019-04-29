@@ -48,9 +48,9 @@
       </b-col>
       <b-col v-if="tab_type == 'edit'">
         <b-form>
-          <div class="note-saving">Saved In: {{note.lesson_title}}</div>
+          <div class="note-saving">Saved In: {{note_edit.lesson_title}}</div>
           <b-form-textarea class="note-text"
-                           v-model="note.note"
+                           v-model="note_edit.note"
                            placeholder="Enter note text"
                            rows="4"></b-form-textarea>
           <div class="note-btns">
@@ -95,15 +95,25 @@ export default {
           note.lesson_title.toLowerCase().includes( this.search.toLowerCase() ) ||
           note.course_title.toLowerCase().includes( this.search.toLowerCase() )
       } )
+    },
+    note() {
+      return {
+        user_id: this.$store.state.user.localId,
+        course_id: this.course && this.course.id ? this.course.id : null,
+        course_title: this.course && this.course.title ? this.course.title : null,
+        lesson_id: this.lesson && this.lesson.id ? this.lesson.id : null,
+        lesson_title: this.lesson && this.lesson.title ? this.lesson.title : null,
+        note: ''
+      }
     }
   },
   data() {
     return {
       tab_type: 'browse',
       search: '',
-      note: {
+      note_edit: {
         user_id: this.$store.state.user.localId,
-        note: ""
+        note: ''
       }
     }
   },
@@ -115,28 +125,22 @@ export default {
       this.tab_type = type
     },
     cancel_note() {
-      this.note.note = this.note[ '_id' ] = this.note.recorded = ""
+      this.note = this.note_edit = {
+        note: ''
+      }
       this.active_tab( 'browse' )
     },
     add_note() {
-      const new_note = {
-        ...this.note,
-        course_id: this.course && this.course.id ? this.course.id : null,
-        course_title: this.course && this.course.title ? this.course.title : null,
-        lesson_id: this.lesson && this.lesson.id ? this.lesson.id : null,
-        lesson_title: this.lesson && this.lesson.title ? this.lesson.title : null,
-      }
-      this.$store.dispatch( 'add_note', new_note )
+      this.$store.dispatch( 'add_note', this.note )
         .then( () => {
           this.note_text = ""
           this.active_tab( 'browse' )
         } )
     },
     edit_note( id ) {
-
       axios.get( 'https://ota-course-framework.firebaseio.com/user_notes/' + id + '.json' )
         .then( res => {
-          this.note = {
+          this.note_edit = {
             ...res.data,
             _id: id
           }
@@ -144,10 +148,9 @@ export default {
         } )
     },
     edit_save() {
-      this.$store.dispatch( 'update_note', this.note )
+      this.$store.dispatch( 'update_note', this.note_edit )
         .then( () => {
-          this.note_text = this.note[ '_id' ] = this.note.recorded = ""
-          this.active_tab( 'browse' )
+          this.cancel_note()
         } )
     }
   }

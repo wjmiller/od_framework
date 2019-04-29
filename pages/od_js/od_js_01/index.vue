@@ -40,7 +40,9 @@ export default {
       progress: 40
     }
   },
-  asyncData( context ) {
+  fetch( {
+    store
+  } ) {
     const course = {
         id: 'od_js',
         title: 'Jumpstart'
@@ -50,8 +52,8 @@ export default {
         title: 'Unfilled Orders and Price Change'
       }
 
-    context.store.commit( 'set_course', course )
-    context.store.commit( 'set_lesson', lesson )
+    store.commit( 'set_course', course )
+    store.commit( 'set_lesson', lesson )
   }
 }
 </script>
