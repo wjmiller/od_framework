@@ -5,6 +5,9 @@ export const state = () => ( {
   user_courses: [],
   user_lessons: [],
   user_activities: [],
+  user_notes: [],
+  course: {},
+  lesson: {},
   token: null
 } );
 
@@ -29,6 +32,22 @@ export const mutations = {
   },
   set_user_activities( state, data ) {
     state.user_activities = data
+  },
+  set_user_notes( state, data ) {
+    state.user_notes = data
+  },
+  set_course( state, data ) {
+    state.course = data
+  },
+  set_lesson( state, data ) {
+    state.lesson = data
+  },
+  add_note( state, data ) {
+    state.user_notes.push( data )
+  },
+  update_note( state, data ) {
+    const noteIx = state.user_notes.findIndex( note => note[ '_id' ] === data[ '_id' ] )
+    state.user_notes[ noteIx ] = data
   }
 }
 
@@ -97,7 +116,7 @@ export const actions = {
     // Update token state value
     commit( 'set_token', token )
 
-    if ( token !== null && state.user_prefs.theme_dark !== null ) {
+    if ( token !== null && state.user_prefs.theme_dark == null ) {
 
       commit( 'set_user', JSON.parse( user ) )
       await dispatch( 'fetch_user_state' )
@@ -106,13 +125,15 @@ export const actions = {
   async fetch_user_state( { state, commit } ) {
     const coursesArray = [],
       lessonsArray = [],
-      activitiesArray = []
+      activitiesArray = [],
+      notesArray = []
 
-    const [ prefs, courses, lessons, activities ] = await Promise.all( [
+    const [ prefs, courses, lessons, activities, notes ] = await Promise.all( [
       await this.$axios.get( '/user_preferences/' + state.user.localId + '.json' ),
-      await this.$axios.get( '/user_courses/' + state.user.localId + '.json' ),
-      await this.$axios.get( '/user_lessons/' + state.user.localId + '.json' ),
-      await this.$axios.get( '/user_activities/' + state.user.localId + '.json' )
+      await this.$axios.get( '/user_courses.json' ),
+      await this.$axios.get( '/user_lessons.json' ),
+      await this.$axios.get( '/user_activities.json' ),
+      await this.$axios.get( '/user_notes.json' )
     ] );
 
     // Convert firebase objects into array data
@@ -128,15 +149,43 @@ export const actions = {
       activitiesArray.push( activities.data[ akey ] )
     }
 
+    for ( const nkey in notes.data ) {
+      notes.data[ nkey ][ '_id' ] = nkey
+      notesArray.push( notes.data[ nkey ] )
+    }
+
     commit( 'set_user_prefs', prefs.data )
-    commit( 'set_user_courses', coursesArray )
-    commit( 'set_user_lessons', lessonsArray )
-    commit( 'set_user_activities', activitiesArray )
+    commit( 'set_user_courses', coursesArray.filter( course => course.user_id == state.user.localId ) )
+    commit( 'set_user_lessons', lessonsArray.filter( lesson => lesson.user_id == state.user.localId ) )
+    commit( 'set_user_activities', activitiesArray.filter( activities => activities.user_id == state.user.localId ) )
+    commit( 'set_user_notes', notesArray.filter( note => note.user_id == state.user.localId ) )
   },
   change_theme( { commit, state }, theme ) {
     return this.$axios.put( '/user_preferences/' + state.user.localId + '.json', { ...state.user_prefs, theme_dark: theme } )
       .then( res => {
         commit( 'set_user_prefs', { ...state.user_prefs, theme_dark: theme } )
+      } )
+      .catch( e => console.log( e ) )
+  },
+  add_note( { commit, state }, note ) {
+    const created_note = {
+      ...note,
+      recorded: new Date()
+    }
+    return this.$axios.post( '/user_notes.json', created_note )
+      .then( res => {
+        commit( 'add_note', { ...created_note, _id: res.data.name } )
+      } )
+      .catch( e => console.log( e ) )
+  },
+  update_note( { commit, state }, note ) {
+    const updated_note = {
+      ...note,
+      recorded: new Date()
+    }
+    return this.$axios.put( '/user_notes/' + note[ '_id' ] + '.json', updated_note )
+      .then( res => {
+        commit( 'update_note', updated_note )
       } )
       .catch( e => console.log( e ) )
   },
@@ -160,7 +209,19 @@ export const getters = {
   is_authenticated( state ) {
     return state.token !== null
   },
+  get_user_lessons( state ) {
+    return state.user_lessons
+  },
   get_user_prefs( state ) {
     return state.user_prefs
+  },
+  get_user_notes( state ) {
+    return state.user_notes
+  },
+  get_course( state ) {
+    return state.course
+  },
+  get_lesson( state ) {
+    return state.lesson
   }
 }

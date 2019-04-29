@@ -7,38 +7,58 @@
         <h2>Notes</h2>
         <b-button variation="default"
                   v-bind:class="{'active': tab_type == 'new'}"
-                  v-on:click="active_tab('new')"><i class="icon-add"></i> Add Note</b-button>
-      </b-col>
-    </b-row>
-    <b-row class="notes-pane-tabs"
-           v-if="tab_type !== 'new'">
-      <b-col>
-        <b-btn variant="link"
-               v-bind:class="{'active': tab_type == 'search'}"
-               v-on:click="active_tab('search')">Search</b-btn>
-        <b-btn variant="link"
-               v-bind:class="{'active': tab_type == 'browse'}"
-               v-on:click="active_tab('browse')">Browse</b-btn>
+                  v-on:click="active_tab('new')"
+                  v-bind:disabled="tab_type == 'new'"><i class="icon-add"></i> Add Note</b-button>
       </b-col>
     </b-row>
     <b-row class="notes-tab-pane">
-      <b-col v-if="tab_type == 'search'">
+      <b-col v-if="tab_type == 'browse'">
         <b-form-input class="notes-search"
                       v-model="search"></b-form-input>
-      </b-col>
-      <b-col v-if="tab_type == 'browse'">
-        <div class="browse-none">Click <i class="icon-add"></i><b>Add Note</b> to create your first note for this course.</div>
+
+        <div class="browse-none"
+             v-if="notes.length == 0">Click <i class="icon-add"></i><b>Add Note</b> to create your first note for this course.</div>
+        <b-list-group v-if="notes.length > 0">
+          <b-list-group-item class="flex-column align-items-start"
+                             v-for="(note, ix) in filtered_notes"
+                             v-bind:key="'note-' + ix">
+            <small class="note-date">
+              <timeago :datetime="note.recorded"
+                       :auto-update="60"></timeago>
+            </small>
+            <p class="note-text">{{note.note}}</p>
+            <small class="note-location">{{note.course_title}} - {{note.lesson_title}}</small>
+            <b-btn v-on:click="edit_note(note['_id'])">Edit</b-btn>
+          </b-list-group-item>
+        </b-list-group>
       </b-col>
       <b-col v-if="tab_type == 'new'">
-        <div class="note-saving">Saving In: </div>
-        <b-form-textarea class="note-text"
-                         v-model="note_text"
-                         placeholder="Enter note text"
-                         rows="4"></b-form-textarea>
-        <div class="note-btns">
-          <b-btn v-on:click="active_tab('search')">Cancel</b-btn>
-          <b-btn variant="success">Create Note</b-btn>
-        </div>
+        <b-form>
+          <div class="note-saving">Saving In: {{lesson.title}}</div>
+          <b-form-textarea class="note-text"
+                           v-model="note.note"
+                           placeholder="Enter note text"
+                           rows="4"></b-form-textarea>
+          <div class="note-btns">
+            <b-btn v-on:click="cancel_note">Cancel</b-btn>
+            <b-btn variant="success"
+                   v-on:click="add_note">Create Note</b-btn>
+          </div>
+        </b-form>
+      </b-col>
+      <b-col v-if="tab_type == 'edit'">
+        <b-form>
+          <div class="note-saving">Saved In: {{note.lesson_title}}</div>
+          <b-form-textarea class="note-text"
+                           v-model="note.note"
+                           placeholder="Enter note text"
+                           rows="4"></b-form-textarea>
+          <div class="note-btns">
+            <b-btn v-on:click="cancel_note">Cancel</b-btn>
+            <b-btn variant="success"
+                   v-on:click="edit_save">Save Changes</b-btn>
+          </div>
+        </b-form>
       </b-col>
     </b-row>
   </b-container>
@@ -46,14 +66,45 @@
 </template>
 
 <script>
+import axios from 'axios'
+import {
+  mapGetters
+} from 'vuex'
+
 export default {
   name: "notes",
   props: [ 'open' ],
+  computed: {
+    ...mapGetters( [ 'get_course', 'get_lesson', 'get_user_notes', 'get_user_lessons' ] ),
+    course() {
+      return this.get_course
+    },
+    lesson() {
+      return this.get_lesson
+    },
+    notes() {
+      if ( this.course && this.course.id ) {
+        return this.get_user_notes.filter( note => note.course_id == this.course.id )
+      } else {
+        return this.get_user_notes
+      }
+    },
+    filtered_notes() {
+      return this.notes.filter( note => {
+        return note.note.toLowerCase().includes( this.search.toLowerCase() ) ||
+          note.lesson_title.toLowerCase().includes( this.search.toLowerCase() ) ||
+          note.course_title.toLowerCase().includes( this.search.toLowerCase() )
+      } )
+    }
+  },
   data() {
     return {
-      tab_type: 'search',
-      search: null,
-      note_text: ''
+      tab_type: 'browse',
+      search: '',
+      note: {
+        user_id: this.$store.state.user.localId,
+        note: ""
+      }
     }
   },
   methods: {
@@ -62,6 +113,42 @@ export default {
     },
     active_tab( type ) {
       this.tab_type = type
+    },
+    cancel_note() {
+      this.note.note = this.note[ '_id' ] = this.note.recorded = ""
+      this.active_tab( 'browse' )
+    },
+    add_note() {
+      const new_note = {
+        ...this.note,
+        course_id: this.course && this.course.id ? this.course.id : null,
+        course_title: this.course && this.course.title ? this.course.title : null,
+        lesson_id: this.lesson && this.lesson.id ? this.lesson.id : null,
+        lesson_title: this.lesson && this.lesson.title ? this.lesson.title : null,
+      }
+      this.$store.dispatch( 'add_note', new_note )
+        .then( () => {
+          this.note_text = ""
+          this.active_tab( 'browse' )
+        } )
+    },
+    edit_note( id ) {
+
+      axios.get( 'https://ota-course-framework.firebaseio.com/user_notes/' + id + '.json' )
+        .then( res => {
+          this.note = {
+            ...res.data,
+            _id: id
+          }
+          this.active_tab( 'edit' )
+        } )
+    },
+    edit_save() {
+      this.$store.dispatch( 'update_note', this.note )
+        .then( () => {
+          this.note_text = this.note[ '_id' ] = this.note.recorded = ""
+          this.active_tab( 'browse' )
+        } )
     }
   }
 }
@@ -106,20 +193,8 @@ export default {
             max-width: 600px;
         }
 
-        .notes-pane-tabs {
-            margin-top: 15px;
-            margin-bottom: 15px;
-
-            .btn-link {
-                text-decoration: none;
-                font-weight: 600;
-                font-size: 1.2rem;
-                padding: 0;
-                margin-right: 1.5rem;
-                border-radius: 0;
-                border: 0;
-                border-bottom: 3px solid transparent;
-            }
+        .notes-tab-pane {
+            margin-top: 1.5rem;
         }
 
         .browse-none {
@@ -143,6 +218,7 @@ export default {
                 margin-right: 10px;
             }
         }
+
     }
 
     &.close {

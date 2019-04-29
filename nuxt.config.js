@@ -54,9 +54,13 @@ module.exports = {
    ** Plugins to load before mounting the App
    */
   plugins: [ {
-    src: '~plugins/vue-js-toggle-button',
-    ssr: false
-  } ],
+      src: '~plugins/vue-js-toggle-button',
+      ssr: false
+    },
+    {
+      src: '~plugins/vue-timeago'
+    }
+  ],
 
   /*
    ** Nuxt.js modules

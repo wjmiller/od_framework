@@ -39,6 +39,19 @@ export default {
     return {
       progress: 40
     }
+  },
+  asyncData( context ) {
+    const course = {
+        id: 'od_js',
+        title: 'Jumpstart'
+      },
+      lesson = {
+        id: 'od_js_01',
+        title: 'Unfilled Orders and Price Change'
+      }
+
+    context.store.commit( 'set_course', course )
+    context.store.commit( 'set_lesson', lesson )
   }
 }
 </script>
