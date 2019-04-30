@@ -292,7 +292,7 @@ export default {
 
             .list-group-item {
                 position: relative;
-                padding: 10px 15px 15px;
+                padding: 10px 15px 18px;
                 border-radius: 0;
                 width: 100%;
                 margin-bottom: 14px;
@@ -303,21 +303,21 @@ export default {
                 }
 
                 .note-text {
-                    margin-bottom: 12px;
+                    margin-bottom: 15px;
                     max-width: 980px;
-                    margin-top: 5px;
+                    margin-top: 15px;
                     font-style: normal;
                 }
 
                 .note-date {
                     font-style: italic;
-                    font-size: 0.8rem;
+                    font-size: 0.9rem;
                 }
 
                 .note-location {
                     padding: 0.3rem 0.9rem;
                     border-radius: 1rem;
-                    font-size: 0.8rem;
+                    font-size: 0.8r0m;
                     font-weight: 600;
                 }
 
@@ -325,9 +325,10 @@ export default {
                 .note-edit {
                     position: absolute;
                     border-radius: 0;
-                    padding: 3px;
-                    width: 30px;
-                    height: 30px;
+                    font-size: 20px;
+                    padding: 5px;
+                    width: 40px;
+                    height: 40px;
                     top: -1px;
                 }
 
@@ -345,8 +346,8 @@ export default {
                 }
 
                 .note-edit {
-                    right: 29px;
-                    font-size: 0.83rem;
+                    right: 39px;
+                    font-size: 16px;
                     background: $light-gray;
                     border-color: $light-gray;
 
