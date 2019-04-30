@@ -4,7 +4,8 @@
     <b-col>
       <nuxt-link to="/od_js"
                  class="btn btn-secondary">
-        <fa :icon="['fas', 'chevron-left']" /> Exit Lesson</nuxt-link>
+        <fa :icon="['fas', 'chevron-left']"
+            aria-label="left arrow" /> Exit Lesson</nuxt-link>
     </b-col>
   </b-row>
   <b-row>
@@ -85,16 +86,16 @@ export default {
     }
 
     .lesson-description {
-        font-size: 0.9em;
+        font-size: 1rem;
         font-style: italic;
         margin: 0.7rem 0 1rem;
     }
 
     .progress {
         display: inline-block;
-        width: 95px;
-        height: 12px;
-        border-radius: 6px;
+        width: 5.6rem;
+        height: 0.7rem;
+        border-radius: 0.35rem;
     }
 
     .badge {

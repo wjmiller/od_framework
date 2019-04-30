@@ -5,7 +5,7 @@
         <i v-on:click="toggle_notes" class="notes-btn icon-edit-3"/></i>
       </b-nav-item>
       <b-nav-item-dropdown right>
-        <template slot="button-content"><img class="user" src="~/assets/images/ui/headshot.png" /></template>
+        <template slot="button-content"><img class="user" src="~/assets/images/ui/headshot.png" alt="headshot image" /></template>
         <no-ssr><toggle-button class="theme-btn"
                        v-bind:value="theme"
                        v-bind:labels="{checked: 'Dark ', unchecked: ' Light'}"
@@ -74,15 +74,15 @@ export default {
 }
 
 .user {
-    width: 40px;
-    height: 40px;
+    width: 2.6rem;
+    height: 2.6rem;
     border-radius: 50%;
-    margin-right: 5px;
+    margin-right: 0.29rem;
 }
 
 .dark {
     .user {
-        border: 2px solid $dark-gray-light;
+        border: 0.12rem solid $dark-gray-light;
     }
 
     .notes-btn {
@@ -105,23 +105,23 @@ export default {
 
 .light {
     .user {
-        border: 2px solid $light-gray-med-dark;
+        border: 0.12rem solid $light-gray-med-dark;
     }
 
     .notes-btn {
         color: $light-gray-med-dark;
 
         &.open {
-            color: $orange;
+            color: $light-gray-med-dark;
 
             &:hover {
-                color: lighten($orange, 8%);
+                color: lighten($light-gray-med-dark, 20%);
             }
         }
 
         &:focus,
         &:hover {
-            color: $orange;
+            color: lighten($light-gray-med-dark, 20%);
         }
     }
 }

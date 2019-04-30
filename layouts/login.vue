@@ -12,15 +12,10 @@ export default {
   components: {
     foot
   },
-  data() {
-    return {
-      theme: 'dark'
-    }
-  },
   head() {
     return {
       bodyAttrs: {
-        class: this.theme == 'dark' ? 'dark' : 'light'
+        class: 'dark'
       }
     }
   },

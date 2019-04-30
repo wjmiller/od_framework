@@ -9,11 +9,13 @@
           <b-button class="notes-add"
                     variation="default"
                     v-on:click="active_tab('new')"
-                    v-bind:disabled="tab_type == 'new'"><i class="icon-add"></i> Add</b-button>
+                    v-bind:disabled="tab_type == 'new'"><i class="icon-add"
+               aria-label="plus sign"></i> Add</b-button>
         </div>
         <b-button variant="link"
                   class="notes-close"
-                  v-on:click="close_notes"><i class="icon-close"></i></b-button>
+                  v-on:click="close_notes"><i class="icon-close"
+             aria-label="close"></i></b-button>
       </b-col>
     </b-row>
     <b-row class="notes-tab-pane">
@@ -21,11 +23,13 @@
         <div class="notes-tab-head">
           <b-form-input class="notes-search"
                         v-model="search"
-                        placeholder="Search..."></b-form-input>
+                        placeholder="Search..."
+                        aria-label="Search notes"></b-form-input>
         </div>
 
         <div class="browse-none"
-             v-if="notes.length == 0">Click <i class="icon-add"></i><b>Add Note</b> to create your first note for this course.</div>
+             v-if="notes.length == 0">Click <i class="icon-add"
+             aria-label="plus sign"></i><b>Add Note</b> to create your first note for this course.</div>
         <b-list-group v-if="notes.length > 0">
           <b-list-group-item class="flex-column align-items-start"
                              v-for="(note, ix) in filtered_notes"
@@ -38,20 +42,23 @@
             <small class="note-location">{{note.course_title}} - {{note.lesson_title}}</small>
             <b-btn class="note-edit"
                    v-on:click="edit_note(note['_id'])">
-              <fa :icon="['fas', 'pen']" />
+              <fa :icon="['fas', 'pen']"
+                  aria-label="edit" />
             </b-btn>
             <b-btn class="note-delete"
-                   v-on:click="delete_note(note['_id'])"><i class="icon-trash"></i></b-btn>
+                   v-on:click="delete_note(note['_id'])"><i class="icon-trash"
+                 aria-label="delete"></i></b-btn>
           </b-list-group-item>
         </b-list-group>
       </b-col>
       <b-col v-if="tab_type == 'new'">
         <b-form>
           <div class="note-saving">Saving In: {{lesson.title}}</div>
-          <b-form-textarea class="note-text"
+          <b-form-textarea class="note-textarea"
                            v-model="note.note"
                            placeholder="Enter note text"
-                           rows="4"></b-form-textarea>
+                           aria-label="Enter note text"
+                           rows="7"></b-form-textarea>
           <div class="note-btns">
             <b-btn v-on:click="cancel_note">Cancel</b-btn>
             <b-btn variant="success"
@@ -62,10 +69,11 @@
       <b-col v-if="tab_type == 'edit'">
         <b-form>
           <div class="note-saving">Saved In: {{note_edit.lesson_title}}</div>
-          <b-form-textarea class="note-text"
+          <b-form-textarea class="note-textarea"
                            v-model="note_edit.note"
                            placeholder="Enter note text"
-                           rows="4"></b-form-textarea>
+                           aria-label="Edit note text"
+                           rows="7"></b-form-textarea>
           <div class="note-btns">
             <b-btn v-on:click="cancel_note">Cancel</b-btn>
             <b-btn variant="success"
@@ -204,6 +212,7 @@ export default {
     transition: height 0.5s;
     z-index: 1020;
     overflow-x: hidden;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
 
     @media(min-width: 768px) {
         height: 60vh;
@@ -242,6 +251,12 @@ export default {
             border-color: $light-border;
         }
 
+        .note-textarea {
+            padding: 0.8rem 1rem;
+            margin-top: 10px;
+            max-width: 800px;
+        }
+
         .notes-tab-pane {
             margin-top: 1.5rem;
         }
@@ -256,25 +271,20 @@ export default {
             font-size: 1.1rem;
         }
 
-        .note-text {
-            margin-top: 10px;
-            max-width: 600px;
-        }
-
         .note-btns {
             margin-top: 18px;
             button {
                 margin-right: 6px;
             }
             button:first-child {
-                background: $light-gray;
-                border-color: $light-gray;
+                background: lighten($dark-gray-med, 7%);
+                border-color: lighten($dark-gray-med, 7%);
 
                 &:active,
                 &:focus,
                 &:hover {
-                    background: lighten($light-gray, 6%);
-                    border-color: lighten($light-gray, 6%);
+                    background: lighten($dark-gray-med, 12%);
+                    border-color: lighten($dark-gray-med, 12%);
                 }
             }
         }
@@ -334,28 +344,28 @@ export default {
 
                 .note-delete {
                     right: -1px;
-                    background: $red;
-                    border-color: $red;
+                    background: darken($red, 3%);
+                    border-color: darken($red, 3%);
 
                     &:active,
                     &:focus,
                     &:hover {
-                        background: lighten($red, 5%);
-                        border-color: lighten($red, 5%);
+                        background: lighten($red, 4%);
+                        border-color: lighten($red, 4%);
                     }
                 }
 
                 .note-edit {
                     right: 39px;
                     font-size: 16px;
-                    background: $light-gray;
-                    border-color: $light-gray;
+                    background: lighten($dark-gray-med, 7%);
+                    border-color: lighten($dark-gray-med, 7%);
 
                     &:active,
                     &:focus,
                     &:hover {
-                        background: lighten($light-gray, 5%);
-                        border-color: lighten($light-gray, 5%);
+                        background: lighten($dark-gray-med, 12%);
+                        border-color: lighten($dark-gray-med, 12%);
                     }
                 }
 
@@ -387,6 +397,8 @@ export default {
                     text-decoration: none;
                 }
 
+                &:active,
+                &:focus,
                 &:hover {
                     color: rgba(255, 255, 255, 0.6);
                 }
@@ -402,8 +414,8 @@ export default {
             }
         }
 
-        .note-text {
-            border-color: none;
+        .note-textarea {
+            border: 0;
         }
 
         .list-group {
@@ -437,23 +449,16 @@ export default {
                     text-decoration: none;
                 }
 
+                &:active,
+                &:focus,
                 &:hover {
                     color: lighten($light-gray, 15%);
                 }
             }
         }
 
-        .notes-pane-tabs {
-            .btn-link {
-                color: $light-blue-dark;
-                &.active {
-                    border-color: $purple;
-                }
-            }
-        }
-
-        .note-text {
-            border-color: $light-pane-border;
+        .note-textarea {
+            border: 1px solid $light-pane-border;
         }
 
         .list-group {
@@ -463,7 +468,7 @@ export default {
                 border: 1px solid $light-border;
 
                 .note-location {
-                    background: $light-gray;
+                    background: lighten($light-gray-med-dark, 6%);
                     color: #fff;
                 }
             }

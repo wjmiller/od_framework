@@ -13,12 +13,18 @@
 import navbar from '../components/ui/navbar'
 import foot from '../components/ui/foot'
 import notes from '../components/ui/notes'
+import {
+  mapGetters
+} from 'vuex'
 
 export default {
   components: {
     navbar,
     foot,
     notes
+  },
+  computed: {
+    ...mapGetters( [ 'get_user_prefs' ] )
   },
   data() {
     return {
@@ -29,7 +35,14 @@ export default {
     toggle_notes() {
       this.notes_open = !this.notes_open
     }
-  }
+  },
+  head() {
+    return {
+      bodyAttrs: {
+        class: this.get_user_prefs.theme_dark ? 'dark' : 'light'
+      }
+    }
+  },
 }
 </script>
 

@@ -4,7 +4,8 @@
     <b-col>
       <nuxt-link class="btn btn-secondary"
                  to="/">
-        <fa :icon="['fas', 'chevron-left']" /> Exit Course</nuxt-link>
+        <fa :icon="['fas', 'chevron-left']"
+            aria-label="left arrow" /> Exit Course</nuxt-link>
     </b-col>
   </b-row>
   <b-row>
@@ -87,12 +88,13 @@ export default {
         font-size: 3.2rem;
     }
     .progress {
-        width: 95px;
-        height: 12px;
-        border-radius: 6px;
+        width: 5.6rem;
+        height: 0.7rem;
+        border-radius: 0.35rem;
     }
     .course-description {
-        margin: 15px 0;
+        font-size: 1rem;
+        margin: 0.9rem 0;
     }
 }
 
@@ -101,23 +103,23 @@ export default {
     .icon-play {
         display: none;
         font-size: 3.5rem;
-        margin: 0 12px 0 0;
+        margin: 0 0.7rem 0 0;
 
     }
 
     h5 {
-        font-size: 1.15em;
-        margin: 0 15px 10px 0;
+        font-size: 1.15rem;
+        margin: 0 0.9rem 0.6rem 0;
     }
 
     .badge {
-        margin-bottom: 10px;
+        margin-bottom: 0.6rem;
     }
 
     .progress {
-        width: 95px;
-        height: 10px;
-        border-radius: 5px;
+        width: 5.6rem;
+        height: 0.7rem;
+        border-radius: 0.35rem;
     }
 
     @media(min-width: 768px) {
@@ -127,11 +129,11 @@ export default {
         }
 
         h5 {
-            margin: 0 15px 5px 0;
+            margin: 0 0.9rem 0.3rem 0;
         }
 
         .badge {
-            margin-bottom: 5px;
+            margin-bottom: 0.3rem;
         }
     }
 }
@@ -140,7 +142,7 @@ export default {
     margin: 50px 0 0;
 
     @media(min-width:768px) {
-        margin: 50px 0 0 20px;
+        margin: 2.95rem 0 0 1.2rem;
     }
 
     h2 {

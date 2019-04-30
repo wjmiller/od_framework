@@ -1,13 +1,13 @@
 const cookieparser = process.server ? require( 'cookieparser' ) : undefined
 
 export const state = () => ( {
-  user_prefs: {},
+  user_prefs: null,
   user_courses: [],
   user_lessons: [],
   user_activities: [],
   user_notes: [],
-  course: {},
-  lesson: {},
+  course: null,
+  lesson: null,
   token: null
 } );
 
@@ -96,11 +96,12 @@ export const actions = {
       }
 
       token = cookieparser.parse( req.headers.cookie ).jwt
-      user = cookieparser.parse( req.headers.cookie ).user
 
       if ( !token ) {
         return
       }
+
+      user = cookieparser.parse( req.headers.cookie ).user
       expiration_date = cookieparser.parse( req.headers.cookie ).expiration_date
 
     }
@@ -120,8 +121,7 @@ export const actions = {
     // Update token state value
     commit( 'set_token', token )
 
-    if ( token !== null && state.user_prefs.theme_dark == null ) {
-
+    if ( token !== null ) {
       commit( 'set_user', JSON.parse( user ) )
       await dispatch( 'fetch_user_state' )
     }
@@ -207,11 +207,13 @@ export const actions = {
     commit( 'clear_token' )
 
     // Remove token cookies
+    this.$cookies.remove( 'user' )
     this.$cookies.remove( 'jwt' )
     this.$cookies.remove( 'expiration_date' )
 
     // If client-side, remove token localStorages
     if ( process.client ) {
+      localStorage.removeItem( 'user' )
       localStorage.removeItem( 'token' )
       localStorage.removeItem( 'token_expiration' )
     }
