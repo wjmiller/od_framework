@@ -46,8 +46,8 @@ export const mutations = {
     state.user_notes.push( data )
   },
   update_note( state, data ) {
-    const noteIx = state.user_notes.findIndex( note => note[ '_id' ] === data[ '_id' ] )
-    state.user_notes[ noteIx ] = data
+    const existing_note = state.user_notes.find( note => note[ '_id' ] === data[ '_id' ] )
+    Object.assign( existing_note, data );
   }
 }
 
@@ -168,10 +168,11 @@ export const actions = {
       .catch( e => console.log( e ) )
   },
   add_note( { commit, state }, note ) {
-    const created_note = {
-      ...note,
-      recorded: new Date()
-    }
+    const date = new Date(),
+      created_note = {
+        ...note,
+        recorded: date.getTime()
+      }
     return this.$axios.post( '/user_notes.json', created_note )
       .then( res => {
         commit( 'add_note', { ...created_note, _id: res.data.name } )
@@ -179,10 +180,11 @@ export const actions = {
       .catch( e => console.log( e ) )
   },
   update_note( { commit, state }, note ) {
-    const updated_note = {
-      ...note,
-      recorded: new Date()
-    }
+    const date = new Date(),
+      updated_note = {
+        ...note,
+        recorded: date.getTime()
+      }
     return this.$axios.put( '/user_notes/' + note[ '_id' ] + '.json', updated_note )
       .then( res => {
         commit( 'update_note', updated_note )

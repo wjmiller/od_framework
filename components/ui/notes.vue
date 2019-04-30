@@ -94,7 +94,7 @@ export default {
         return note.note.toLowerCase().includes( this.search.toLowerCase() ) ||
           note.lesson_title.toLowerCase().includes( this.search.toLowerCase() ) ||
           note.course_title.toLowerCase().includes( this.search.toLowerCase() )
-      } )
+      } ).sort( ( a, b ) => ( a.recorded < b.recorded ) ? 1 : ( ( b.recorded < a.recorded ) ? -1 : 0 ) );
     },
     note() {
       return {
