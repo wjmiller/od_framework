@@ -486,3 +486,108 @@ section.view {
     border-color: $light-pane-border;
   }
 }
+
+
+//------------------------------------------------------
+// Confirm Dialog
+//------------------------------------------------------
+
+.delete-confirm {
+  .dg-backdrop {
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  .dg-main-content {
+    border-radius: 0;
+    padding: 25px;
+
+    .dg-content-body {
+      .dg-content {
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+    }
+
+    .dg-btn--cancel, .dg-btn--ok {
+      border-radius: $border-radius-btn;
+      padding: 0.4rem 1.4rem;
+      font-weight: 600;
+    }
+  }
+}
+
+.dark {
+
+  .delete-confirm {
+
+    .dg-main-content {
+      background: $dark-blue;
+
+      .dg-content-body {
+        border-bottom: 1px solid $dark-gray-dark;
+      }
+
+      .dg-btn--cancel {
+        color: #fff;
+        background: $light-gray;
+        border-color: $light-gray;
+
+        &:hover, &:focus, &:active {
+          background: lighten($light-gray, 6%);
+          border-color: lighten($light-gray, 6%);
+        }
+      }
+
+      .dg-btn--ok {
+        color: #fff;
+        background: $red;
+        border-color: $red;
+
+        &:hover {
+          background: lighten($red, 6%);
+          border-color: lighten($red, 6%);
+        }
+      }
+
+    }
+  }
+
+}
+
+.light {
+
+  .delete-confirm {
+
+    .dg-main-content {
+      background: #fff;
+
+      .dg-content-body {
+        border-bottom: 1px solid $light-border;
+      }
+
+      .dg-btn--cancel {
+        color: #fff;
+        background: $light-gray;
+        border-color: $light-gray;
+
+        &:hover, &:focus, &:active {
+          background: lighten($light-gray, 6%);
+          border-color: lighten($light-gray, 6%);
+        }
+      }
+
+      .dg-btn--ok {
+        color: #fff;
+        background: $red;
+        border-color: $red;
+
+        &:hover {
+          background: lighten($red, 6%);
+          border-color: lighten($red, 6%);
+        }
+      }
+
+    }
+  }
+
+}

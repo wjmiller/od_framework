@@ -4,7 +4,8 @@
           v-bind:open="notes_open"></navbar>
   <nuxt class="page-content" />
   <foot></foot>
-  <notes v-bind:open="notes_open"></notes>
+  <notes v-on:close_notes="toggle_notes"
+         v-bind:open="notes_open"></notes>
 </section>
 </template>
 

@@ -59,6 +59,10 @@ module.exports = {
     },
     {
       src: '~plugins/vue-timeago'
+    },
+    {
+      src: '~plugins/vue-dialog',
+      ssr: false
     }
   ],
 

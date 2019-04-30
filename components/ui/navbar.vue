@@ -2,7 +2,7 @@
   <b-navbar v-bind:sticky="true">
     <b-navbar-nav class="ml-auto">
       <b-nav-item>
-        <i v-on:click="toggle_notes" class="notes-btn icon-edit-3" v-bind:class="{'open': open}"/></i>
+        <i v-on:click="toggle_notes" class="notes-btn icon-edit-3"/></i>
       </b-nav-item>
       <b-nav-item-dropdown right>
         <template slot="button-content"><img class="user" src="~/assets/images/ui/headshot.png" /></template>
@@ -89,16 +89,16 @@ export default {
         color: #fff;
 
         &.open {
-            color: $yellow;
+            color: #fff;
 
             &:hover {
-                color: lighten($yellow, 8%);
+                color: rgba(255,255,255,0.6);
             }
         }
 
         &:focus,
         &:hover {
-            color: $yellow;
+            color: rgba(255,255,255,0.6);
         }
     }
 }

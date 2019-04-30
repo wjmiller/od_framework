@@ -1,20 +1,28 @@
 <template>
 <div class="notes-pane"
-     v-bind:class="{'close': !open}">
+     v-bind:class="{'closed': !open}">
   <b-container class="notes-pane-body">
     <b-row class="notes-pane-head">
       <b-col>
-        <h2>Notes</h2>
-        <b-button variation="default"
-                  v-bind:class="{'active': tab_type == 'new'}"
-                  v-on:click="active_tab('new')"
-                  v-bind:disabled="tab_type == 'new'"><i class="icon-add"></i> Add Note</b-button>
+        <div>
+          <h2>Notes</h2>
+          <b-button class="notes-add"
+                    variation="default"
+                    v-on:click="active_tab('new')"
+                    v-bind:disabled="tab_type == 'new'"><i class="icon-add"></i> Add</b-button>
+        </div>
+        <b-button variant="link"
+                  class="notes-close"
+                  v-on:click="close_notes"><i class="icon-close"></i></b-button>
       </b-col>
     </b-row>
     <b-row class="notes-tab-pane">
       <b-col v-if="tab_type == 'browse'">
-        <b-form-input class="notes-search"
-                      v-model="search"></b-form-input>
+        <div class="notes-tab-head">
+          <b-form-input class="notes-search"
+                        v-model="search"
+                        placeholder="Search..."></b-form-input>
+        </div>
 
         <div class="browse-none"
              v-if="notes.length == 0">Click <i class="icon-add"></i><b>Add Note</b> to create your first note for this course.</div>
@@ -28,7 +36,12 @@
             </small>
             <p class="note-text">{{note.note}}</p>
             <small class="note-location">{{note.course_title}} - {{note.lesson_title}}</small>
-            <b-btn v-on:click="edit_note(note['_id'])">Edit</b-btn>
+            <b-btn class="note-edit"
+                   v-on:click="edit_note(note['_id'])">
+              <fa :icon="['fas', 'pen']" />
+            </b-btn>
+            <b-btn class="note-delete"
+                   v-on:click="delete_note(note['_id'])"><i class="icon-trash"></i></b-btn>
           </b-list-group-item>
         </b-list-group>
       </b-col>
@@ -96,14 +109,26 @@ export default {
           note.course_title.toLowerCase().includes( this.search.toLowerCase() )
       } ).sort( ( a, b ) => ( a.recorded < b.recorded ) ? 1 : ( ( b.recorded < a.recorded ) ? -1 : 0 ) );
     },
-    note() {
-      return {
-        user_id: this.$store.state.user.localId,
-        course_id: this.course && this.course.id ? this.course.id : null,
-        course_title: this.course && this.course.title ? this.course.title : null,
-        lesson_id: this.lesson && this.lesson.id ? this.lesson.id : null,
-        lesson_title: this.lesson && this.lesson.title ? this.lesson.title : null,
-        note: ''
+    note: {
+      get: function () {
+        return {
+          user_id: this.$store.state.user.localId,
+          course_id: this.course && this.course.id ? this.course.id : null,
+          course_title: this.course && this.course.title ? this.course.title : null,
+          lesson_id: this.lesson && this.lesson.id ? this.lesson.id : null,
+          lesson_title: this.lesson && this.lesson.title ? this.lesson.title : null,
+          note: ''
+        }
+      },
+      set: function ( noteValue ) {
+        return {
+          user_id: this.$store.state.user.localId,
+          course_id: this.course && this.course.id ? this.course.id : null,
+          course_title: this.course && this.course.title ? this.course.title : null,
+          lesson_id: this.lesson && this.lesson.id ? this.lesson.id : null,
+          lesson_title: this.lesson && this.lesson.title ? this.lesson.title : null,
+          note: noteValue
+        }
       }
     }
   },
@@ -119,22 +144,19 @@ export default {
   },
   methods: {
     close_notes() {
-      this.$emit( 'notes_closed' )
+      this.$emit( "close_notes" )
     },
     active_tab( type ) {
       this.tab_type = type
     },
     cancel_note() {
-      this.note = this.note_edit = {
-        note: ''
-      }
+      this.note.note = this.edit_note.note = ''
       this.active_tab( 'browse' )
     },
     add_note() {
       this.$store.dispatch( 'add_note', this.note )
         .then( () => {
-          this.note_text = ""
-          this.active_tab( 'browse' )
+          this.cancel_note()
         } )
     },
     edit_note( id ) {
@@ -152,6 +174,17 @@ export default {
         .then( () => {
           this.cancel_note()
         } )
+    },
+    delete_note( id ) {
+      this.$dialog
+        .confirm( 'Are you sure you want to delete this note?', {
+          okText: 'Delete',
+          cancelText: 'Cancel',
+          customClass: 'delete-confirm'
+        } )
+        .then( dialog => this.$store.dispatch( 'delete_note', id ) )
+        .catch( e => console.log( e ) )
+
     }
   }
 }
@@ -167,13 +200,13 @@ export default {
     right: 0;
     overflow: hidden;
     width: 100%;
-    height: calc(100vh - 72px);
-    transition: 0.5s ease;
-    z-index: 2;
-    overflow: scroll;
+    height: 100vh;
+    transition: height 0.5s;
+    z-index: 1020;
+    overflow-x: hidden;
 
     @media(min-width: 768px) {
-        height: calc(50vh);
+        height: 60vh;
     }
 
     .notes-pane-body {
@@ -181,19 +214,32 @@ export default {
         .notes-pane-head .col {
             display: flex;
             justify-content: space-between;
-            margin-top: 50px;
+            margin-top: 48px;
 
             h2 {
+                display: inline-block;
                 align-self: flex-start;
+                vertical-align: top;
                 font-size: 2.2rem;
+                margin: 0 1.3rem 0 0;
             }
-            button {
+            .notes-add {
                 align-self: flex-start;
+                margin-top: 0.25rem;
+                padding: 0.3rem 1.2rem 0.3rem 0.9rem;
+            }
+
+            .notes-close {
+                position: relative;
+                font-size: 2.5rem;
+                line-height: 1rem;
+                padding: 0;
             }
         }
 
         .notes-search {
             max-width: 600px;
+            border-color: $light-border;
         }
 
         .notes-tab-pane {
@@ -205,7 +251,7 @@ export default {
         }
 
         .note-saving {
-            margin-top: 17px;
+            margin-top: 0;
             font-style: italic;
             font-size: 1.1rem;
         }
@@ -218,21 +264,133 @@ export default {
         .note-btns {
             margin-top: 18px;
             button {
-                margin-right: 10px;
+                margin-right: 6px;
+            }
+            button:first-child {
+                background: $light-gray;
+                border-color: $light-gray;
+
+                &:active,
+                &:focus,
+                &:hover {
+                    background: lighten($light-gray, 6%);
+                    border-color: lighten($light-gray, 6%);
+                }
+            }
+        }
+
+        .list-group {
+            margin-top: 20px;
+            padding-top: 10px;
+            height: calc(100vh - 188px);
+            border-radius: 0;
+            overflow-y: auto;
+
+            @media(min-width: 768px) {
+                height: calc(60vh - 190px);
+            }
+
+            .list-group-item {
+                position: relative;
+                padding: 10px 15px 15px;
+                border-radius: 0;
+                width: 100%;
+                margin-bottom: 14px;
+                border: 0;
+
+                @media(min-width: 768px) {
+                    width: calc(100% - 20px);
+                }
+
+                .note-text {
+                    margin-bottom: 12px;
+                    max-width: 980px;
+                    margin-top: 5px;
+                    font-style: normal;
+                }
+
+                .note-date {
+                    font-style: italic;
+                    font-size: 0.8rem;
+                }
+
+                .note-location {
+                    padding: 0.3rem 0.9rem;
+                    border-radius: 1rem;
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                }
+
+                .note-delete,
+                .note-edit {
+                    position: absolute;
+                    border-radius: 0;
+                    padding: 3px;
+                    width: 30px;
+                    height: 30px;
+                    top: -1px;
+                }
+
+                .note-delete {
+                    right: -1px;
+                    background: $red;
+                    border-color: $red;
+
+                    &:active,
+                    &:focus,
+                    &:hover {
+                        background: lighten($red, 5%);
+                        border-color: lighten($red, 5%);
+                    }
+                }
+
+                .note-edit {
+                    right: 29px;
+                    font-size: 0.83rem;
+                    background: $light-gray;
+                    border-color: $light-gray;
+
+                    &:active,
+                    &:focus,
+                    &:hover {
+                        background: lighten($light-gray, 5%);
+                        border-color: lighten($light-gray, 5%);
+                    }
+                }
+
             }
         }
 
     }
 
-    &.close {
+    &.closed {
         height: 0;
+        opacity: 1;
     }
 }
 
 .dark {
+
     .notes-pane {
         background-color: lighten($dark-blue, 3%);
+        border-top: 1px solid lighten($dark-blue, 10%);
         color: #fff;
+
+        .notes-pane-head .col {
+            .notes-close {
+                color: #fff;
+
+                &:active,
+                &:focus,
+                &:hover {
+                    text-decoration: none;
+                }
+
+                &:hover {
+                    color: rgba(255, 255, 255, 0.6);
+                }
+            }
+        }
 
         .notes-pane-tabs {
             .btn-link {
@@ -246,14 +404,43 @@ export default {
         .note-text {
             border-color: none;
         }
+
+        .list-group {
+
+            .list-group-item {
+                background: rgba(255, 255, 255, 0.1);
+
+                .note-location {
+                    background: $dark-gray-med;
+                }
+            }
+
+        }
     }
 }
 
 .light {
+
     .notes-pane {
         background-color: $light-gray-notes;
         color: $light-text-color;
         border-top: 1px solid $light-gray-med;
+
+        .notes-pane-head .col {
+            .notes-close {
+                color: $light-gray;
+
+                &:active,
+                &:focus,
+                &:hover {
+                    text-decoration: none;
+                }
+
+                &:hover {
+                    color: lighten($light-gray, 15%);
+                }
+            }
+        }
 
         .notes-pane-tabs {
             .btn-link {
@@ -266,6 +453,20 @@ export default {
 
         .note-text {
             border-color: $light-pane-border;
+        }
+
+        .list-group {
+
+            .list-group-item {
+                background: #fff;
+                border: 1px solid $light-border;
+
+                .note-location {
+                    background: $light-gray;
+                    color: #fff;
+                }
+            }
+
         }
     }
 }

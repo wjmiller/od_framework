@@ -12,42 +12,46 @@ export const state = () => ( {
 } );
 
 export const mutations = {
-  set_token( state, data ) {
-    state.token = data
+  set_token( state, token ) {
+    state.token = token
   },
-  clear_token( state, data ) {
+  clear_token( state ) {
     state.token = null
   },
-  set_user( state, data ) {
-    state.user = data
+  set_user( state, user ) {
+    state.user = user
   },
-  set_user_prefs( state, data ) {
-    state.user_prefs = data
+  set_user_prefs( state, prefs ) {
+    state.user_prefs = prefs
   },
-  set_user_courses( state, data ) {
-    state.user_courses = data
+  set_user_courses( state, courses ) {
+    state.user_courses = courses
   },
-  set_user_lessons( state, data ) {
-    state.user_lessons = data
+  set_user_lessons( state, lessons ) {
+    state.user_lessons = lessons
   },
-  set_user_activities( state, data ) {
-    state.user_activities = data
+  set_user_activities( state, activities ) {
+    state.user_activities = activities
   },
-  set_user_notes( state, data ) {
-    state.user_notes = data
+  set_user_notes( state, notes ) {
+    state.user_notes = notes
   },
-  set_course( state, data ) {
-    state.course = data
+  set_course( state, course ) {
+    state.course = course
   },
-  set_lesson( state, data ) {
-    state.lesson = data
+  set_lesson( state, lesson ) {
+    state.lesson = lesson
   },
-  add_note( state, data ) {
-    state.user_notes.push( data )
+  add_note( state, note ) {
+    state.user_notes.push( note )
   },
-  update_note( state, data ) {
-    const existing_note = state.user_notes.find( note => note[ '_id' ] === data[ '_id' ] )
-    Object.assign( existing_note, data );
+  update_note( state, editted_note ) {
+    const existing_note = state.user_notes.find( note => note[ '_id' ] === editted_note[ '_id' ] )
+    Object.assign( existing_note, editted_note );
+  },
+  delete_note( state, id ) {
+    const noteIx = state.user_notes.findIndex( note => note[ '_id' ] === id )
+    state.user_notes.splice( noteIx, 1 )
   }
 }
 
@@ -188,6 +192,13 @@ export const actions = {
     return this.$axios.put( '/user_notes/' + note[ '_id' ] + '.json', updated_note )
       .then( res => {
         commit( 'update_note', updated_note )
+      } )
+      .catch( e => console.log( e ) )
+  },
+  delete_note( { commit, state }, id ) {
+    return this.$axios.delete( '/user_notes/' + id + '.json' )
+      .then( res => {
+        commit( 'delete_note', id )
       } )
       .catch( e => console.log( e ) )
   },
