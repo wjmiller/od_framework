@@ -32,7 +32,7 @@ a {
         &:active,
         &:focus,
         &:hover {
-            color: $purple;
+            color: $purple-med;
         }
     }
 }

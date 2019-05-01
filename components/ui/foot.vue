@@ -23,18 +23,33 @@ footer {
     margin-top: 10rem;
     height: 74px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+
+    @media(min-width: 497px) {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
 
     .logo {
-        margin: 0 15px;
+        margin: 0 auto;
         width: 180px;
         height: 74px;
+
+        @media(min-width: 527px) {
+            margin: 0 15px;
+        }
     }
 
     .copyright {
+        margin: 0 auto 20px;
         font-size: 0.7em;
         padding: 0 20px;
+
+        @media(min-width: 527px) {
+            margin: 0;
+        }
     }
 }
 

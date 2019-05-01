@@ -38,8 +38,11 @@ export default {
   },
   head() {
     return {
-      bodyAttrs: {
+      htmlAttrs: {
         class: this.get_user_prefs.theme_dark ? 'dark' : 'light'
+      },
+      bodyAttrs: {
+        class: this.notes_open ? 'noscroll' : ''
       }
     }
   },

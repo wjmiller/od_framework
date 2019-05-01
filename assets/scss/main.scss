@@ -19,13 +19,32 @@
 // Body
 //------------------------------------------------------
 
-html, body {
-  height: 100%;
-  font-size: $font-size-base * 1.02;
+html {
+  //font-size: $font-size-base * 1.02;
 
   @media(min-width: 768px) {
-    font-size: $font-size-base;
+    //font-size: $font-size-base;
   }
+
+  // Dark/Light Theme Styles -----------------------------
+
+  &.dark {
+    body {
+      background: $dark-body-bg;
+      color: #fff;
+    }
+  }
+
+  &.light {
+    body {
+      background-color: #fff;
+      color: $light-text-color;
+    }
+  }
+}
+
+html, body {
+  height: 100%;
 }
 
 body {
@@ -38,16 +57,8 @@ body {
   -webkit-font-smoothing: antialiased;
   line-height: 1.5rem;
 
-  // Dark/Light Theme Styles -----------------------------
-
-  &.dark {
-    background: $dark-body-bg;
-    color: #fff;
-  }
-
-  &.light {
-    background-color: #fff;
-    color: $light-text-color;
+  &.noscroll {
+    overflow: hidden
   }
 }
 
@@ -154,6 +165,10 @@ section.view {
       }
     }
   }
+}
+
+.dropdown-menu {
+    min-width: 11rem;
 }
 
 
@@ -413,7 +428,7 @@ section.view {
 
   p {
     font-size: 1.02rem;
-    line-height: 1.26rem;
+    line-height: 1.5;
     font-style: italic;
     margin: 0 0 0.7rem;
   }
@@ -494,7 +509,7 @@ section.view {
 
 .delete-confirm {
   .dg-backdrop {
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.5);
   }
 
   .dg-main-content {
@@ -522,6 +537,7 @@ section.view {
 
     .dg-main-content {
       background: $dark-blue;
+      border: 1px solid lighten($dark-blue, 5%);
 
       .dg-content-body {
         border-bottom: 1px solid $dark-gray-dark;

@@ -86,7 +86,7 @@ export default {
     }
 
     .lesson-description {
-        font-size: 1rem;
+        font-size: 1.02rem;
         font-style: italic;
         margin: 0.7rem 0 1rem;
     }

@@ -1,10 +1,11 @@
+
 @font-face {
   font-family: 'custom-icons';
-  src:  url('~assets/fonts/custom.eot?reqosc');
-  src:  url('~assets/fonts/custom.eot?reqosc#iefix') format('embedded-opentype'),
-    url('~assets/fonts/custom.ttf?reqosc') format('truetype'),
-    url('~assets/fonts/custom.woff?reqosc') format('woff'),
-    url('~assets/fonts/custom.svg?reqosc#icomoon') format('svg');
+  src:  url('~assets/fonts/custom.eot?tqyqnx');
+  src:  url('~assets/fonts/custom.eot?tqyqnx#iefix') format('embedded-opentype'),
+    url('~assets/fonts/custom.ttf?tqyqnx') format('truetype'),
+    url('~assets/fonts/custom.woff?tqyqnx') format('woff'),
+    url('~assets/fonts/custom.svg?tqyqnx#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -36,7 +37,7 @@
 .icon-cross:before {
   content: "\ea0f";
 }
-.icon-edit-3:before {
+.icon-edit:before {
   content: "\e903";
 }
 .icon-arrow-bold-down:before {
@@ -96,6 +97,9 @@
 .icon-refresh:before {
   content: "\f021";
 }
+.icon-font:before {
+  content: "\f031";
+}
 .icon-chevron-right:before {
   content: "\f054";
 }
@@ -104,9 +108,6 @@
 }
 .icon-minus-circle:before {
   content: "\f056";
-}
-.icon-cogs:before {
-  content: "\f085";
 }
 .icon-gears:before {
   content: "\f085";

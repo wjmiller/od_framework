@@ -93,7 +93,7 @@ export default {
         border-radius: 0.35rem;
     }
     .course-description {
-        font-size: 1rem;
+        font-size: 1.05rem;
         margin: 0.9rem 0;
     }
 }

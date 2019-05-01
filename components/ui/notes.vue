@@ -1,7 +1,7 @@
 <template>
 <div class="notes-pane"
      v-bind:class="{'closed': !open}">
-  <b-container class="notes-pane-body">
+  <b-container>
     <b-row class="notes-pane-head">
       <b-col>
         <div>
@@ -18,28 +18,22 @@
              aria-label="close"></i></b-button>
       </b-col>
     </b-row>
-    <b-row class="notes-tab-pane">
+    <b-row class="notes-views">
       <b-col v-if="tab_type == 'browse'">
-        <div class="notes-tab-head">
-          <b-form-input class="notes-search"
-                        v-model="search"
-                        placeholder="Search..."
-                        aria-label="Search notes"></b-form-input>
-        </div>
-
-        <div class="browse-none"
-             v-if="notes.length == 0">Click <i class="icon-add"
-             aria-label="plus sign"></i><b>Add Note</b> to create your first note for this course.</div>
+        <b-form-input class="notes-search"
+                      v-model="search"
+                      placeholder="Search..."
+                      aria-label="Search notes"></b-form-input>
+        <div v-if="notes.length == 0">Click <i class="icon-add"
+             aria-label="plus sign"></i><b>Add</b> to create your first note for this course.</div>
         <b-list-group v-if="notes.length > 0">
-          <b-list-group-item class="flex-column align-items-start"
-                             v-for="(note, ix) in filtered_notes"
+          <b-list-group-item v-for="(note, ix) in filtered_notes"
                              v-bind:key="'note-' + ix">
-            <small class="note-date">
-              <timeago :datetime="note.recorded"
-                       :auto-update="60"></timeago>
-            </small>
+            <timeago class="note-date"
+                     v-bind:datetime="note.recorded"
+                     v-bind:auto-update="60"></timeago>
             <p class="note-text">{{note.note}}</p>
-            <small class="note-location">{{note.course_title}} - {{note.lesson_title}}</small>
+            <span class="note-location">{{note.course_title}} - {{note.lesson_title}}</span>
             <b-btn class="note-edit"
                    v-on:click="edit_note(note['_id'])">
               <fa :icon="['fas', 'pen']"
@@ -54,26 +48,23 @@
       <b-col v-if="tab_type == 'new'">
         <b-form>
           <div class="note-saving">Saving In: {{lesson.title}}</div>
-          <b-form-textarea class="note-textarea"
-                           v-model="note.note"
+          <b-form-textarea v-model="note.note"
                            placeholder="Enter note text"
                            aria-label="Enter note text"
-                           rows="7"></b-form-textarea>
+                           rows="5"></b-form-textarea>
           <div class="note-btns">
             <b-btn v-on:click="cancel_note">Cancel</b-btn>
-            <b-btn variant="success"
-                   v-on:click="add_note">Create Note</b-btn>
+            <b-btn v-on:click="add_note">Create Note</b-btn>
           </div>
         </b-form>
       </b-col>
       <b-col v-if="tab_type == 'edit'">
         <b-form>
           <div class="note-saving">Saved In: {{note_edit.lesson_title}}</div>
-          <b-form-textarea class="note-textarea"
-                           v-model="note_edit.note"
+          <b-form-textarea v-model="note_edit.note"
                            placeholder="Enter note text"
                            aria-label="Edit note text"
-                           rows="7"></b-form-textarea>
+                           rows="5"></b-form-textarea>
           <div class="note-btns">
             <b-btn v-on:click="cancel_note">Cancel</b-btn>
             <b-btn variant="success"
@@ -192,7 +183,6 @@ export default {
         } )
         .then( dialog => this.$store.dispatch( 'delete_note', id ) )
         .catch( e => console.log( e ) )
-
     }
   }
 }
@@ -208,61 +198,64 @@ export default {
     right: 0;
     overflow: hidden;
     width: 100%;
-    height: 100vh;
+    height: 100%;
     transition: height 0.5s;
     z-index: 1020;
     overflow-x: hidden;
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
 
     @media(min-width: 768px) {
-        height: 60vh;
+        height: 60%;
     }
 
-    .notes-pane-body {
+    .container {
 
-        .notes-pane-head .col {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 48px;
+        .notes-pane-head {
 
-            h2 {
-                display: inline-block;
-                align-self: flex-start;
-                vertical-align: top;
-                font-size: 2.2rem;
-                margin: 0 1.3rem 0 0;
-            }
-            .notes-add {
-                align-self: flex-start;
-                margin-top: 0.25rem;
-                padding: 0.3rem 1.2rem 0.3rem 0.9rem;
+            .col {
+                display: flex;
+                justify-content: space-between;
+                margin-top: 48px;
+
+                h2 {
+                    display: inline-block;
+                    align-self: flex-start;
+                    vertical-align: top;
+                    font-size: 2.2rem;
+                    margin: 0 1.3rem 0 0;
+                }
+                .notes-add {
+                    align-self: flex-start;
+                    margin-top: 0.25rem;
+                    padding: 0.3rem 1.2rem 0.3rem 0.9rem;
+                }
+
+                .notes-close {
+                    position: relative;
+                    font-size: 2.5rem;
+                    line-height: 1rem;
+                    padding: 0;
+                }
             }
 
-            .notes-close {
-                position: relative;
-                font-size: 2.5rem;
-                line-height: 1rem;
-                padding: 0;
-            }
         }
 
         .notes-search {
             max-width: 600px;
             border-color: $light-border;
+            margin-bottom: 20px;
         }
 
-        .note-textarea {
+        textarea {
             padding: 0.8rem 1rem;
             margin-top: 10px;
-            max-width: 800px;
+            max-width: 900px;
+            box-shadow: 0;
+            font-size: 1rem;
         }
 
-        .notes-tab-pane {
+        .notes-views {
             margin-top: 1.5rem;
-        }
-
-        .browse-none {
-            margin-top: 15px;
         }
 
         .note-saving {
@@ -287,14 +280,25 @@ export default {
                     border-color: lighten($dark-gray-med, 12%);
                 }
             }
+
+            button:last-child {
+                background: $green-med;
+                border-color: $green-med;
+
+                &:active,
+                &:focus,
+                &:hover {
+                    background: lighten($green-med, 5%);
+                    border-color: lighten($green-med, 5%);
+                }
+            }
         }
 
         .list-group {
-            margin-top: 20px;
-            padding-top: 10px;
-            height: calc(100vh - 188px);
             border-radius: 0;
             overflow-y: auto;
+            padding-top: 10px;
+            height: calc(100vh - 190px);
 
             @media(min-width: 768px) {
                 height: calc(60vh - 190px);
@@ -302,10 +306,12 @@ export default {
 
             .list-group-item {
                 position: relative;
+                display: flex-column;
                 padding: 10px 15px 18px;
+                align-items: flex-start;
+                margin-bottom: 14px;
                 border-radius: 0;
                 width: 100%;
-                margin-bottom: 14px;
                 border: 0;
 
                 @media(min-width: 768px) {
@@ -325,9 +331,10 @@ export default {
                 }
 
                 .note-location {
+                    display: inline;
                     padding: 0.3rem 0.9rem;
                     border-radius: 1rem;
-                    font-size: 0.8r0m;
+                    font-size: 0.8rem;
                     font-weight: 600;
                 }
 
@@ -405,23 +412,20 @@ export default {
             }
         }
 
-        .notes-pane-tabs {
-            .btn-link {
-                color: #fff;
-                &.active {
-                    border-color: $purple;
-                }
-            }
-        }
-
-        .note-textarea {
+        textarea {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
             border: 0;
+
+            &:focus {
+                box-shadow: 0 0 0 0.15rem rgba(255, 255, 255, 0.3);
+            }
         }
 
         .list-group {
 
             .list-group-item {
-                background: rgba(255, 255, 255, 0.1);
+                background: rgba(255, 255, 255, 0.08);
 
                 .note-location {
                     background: $dark-gray-med;
@@ -457,8 +461,12 @@ export default {
             }
         }
 
-        .note-textarea {
+        textarea {
             border: 1px solid $light-pane-border;
+
+            &:focus {
+                box-shadow: 0 0 0 0.1rem rgba(0, 0, 0, 0.2);
+            }
         }
 
         .list-group {
