@@ -239,12 +239,14 @@ section.view {
 
 .light {
   .btn-secondary.disabled, .btn-secondary:disabled  {
+    background-color: rgb(140, 140, 140);
+    border-color: rgb(140, 140, 140);
+    
       &:active,
       &:focus,
-      &:hover,
-      &:visited {
-        background-color: rga(140, 140, 140);
-        border-color: rga(140, 140, 140);
+      &:hover {
+        background-color: rgb(140, 140, 140);
+        border-color: rgb(140, 140, 140);
       }
     }
 }
@@ -572,4 +574,12 @@ section.view {
     }
   }
 
+}
+
+//------------------------------------------------------
+// Intro Container
+//------------------------------------------------------
+
+.intro-container {
+  margin-bottom: 3.5rem;
 }

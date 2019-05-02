@@ -91,7 +91,7 @@ export default {
         transition: background-color border-color opacity 0.5s;
 
         @media(min-width: 769px) {
-            height: 212px;
+            min-height: 211px;
         }
 
         .feedback-message {
@@ -149,7 +149,7 @@ export default {
         border-width: 1px;
         border-style: solid;
         border-color: darken($dark-pane-border, 2%);
-        color: $dark-text-color;
+        color: #fff;
 
         &.correct {
             background-color: rgba(99, 200, 72, 0.13);

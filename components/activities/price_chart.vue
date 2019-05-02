@@ -127,7 +127,7 @@ export default {
     margin-bottom: 15px;
 
     h3 {
-        font-size: 1em;
+        font-size: 1.05rem;
         font-weight: 400;
         text-align: center;
         margin-bottom: 5px;
@@ -135,11 +135,11 @@ export default {
     }
 
     .chart-num {
-        font: 14px pt-sans-pro;
+        font: 0.875rem pt-sans-pro;
     }
 
     .chart-time {
-        font: 13px pt-sans-pro;
+        font: 813rem pt-sans-pro;
     }
 
     .chart-pline {
@@ -165,7 +165,7 @@ export default {
 .dark {
     .price-chart {
         h3 {
-            color: $dark-text-color;
+            color: #fff;
         }
 
         .chart-bg {

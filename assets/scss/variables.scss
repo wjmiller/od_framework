@@ -5,7 +5,7 @@
 // Colors
 $purple:                                  #8991fa;
 $purple-med:                              #5158c1; //#5c63c5  //#676EC9;
-$green:                                   #5AC848;//#23DA36;// 
+$green:                                   #5AC848;//#23DA36;//
 $green-med:                               #43a134; //#4BB43A;
 $red:                                     #F10C0A;//#e42719; //#E73225;
 $gray:                                    #6b6c7b;
@@ -54,7 +54,7 @@ $dark-chart-points:                       $purple;
 
 // Candle Builder Controls
 $dark-slide-bg:                        $dark-blue;
-$dark-slide-handle:      lighten($dark-blue, 60%);
+$dark-slide-handle:                          lighten($dark-gray-light, 8%);
 
 
 
@@ -88,7 +88,7 @@ $light-pane-border:                       #BBBBBB;
 $light-chart-text:                        #333333;
 $light-chart-lines:                       #999999;
 $light-chart-curve:                       #BBBBBB;
-$light-chart-points:              $light-gray-med;
+$light-chart-points:         $light-gray-med-dark;
 
 // Candle Builder Controls
 $light-slide-bg:                          #CCCCCC;

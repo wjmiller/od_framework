@@ -69,7 +69,8 @@ export default {
       return act.$refs.questionrow.every( qr => qr.completed )
     } )
     //this.addCorrectTest(function (act) {return act.$refs.questionrow.every(qr => qr.completed)})
-    this.candlesCorrect = Array.from( this.activity.candles ).fill( false )
+    this.candlesCorrect = Array.from( this.activity.candles )
+      .fill( false )
   }
 }
 </script>
@@ -101,14 +102,14 @@ export default {
 .dark {
     .activity-group {
         background: $dark-group-bg;
-        color: $dark-text-color;
+        color: #fff;
 
         h2 {
             color: $dark-header-color;
         }
 
         p {
-            color: $dark-text-color;
+            color: #fff;
         }
     }
 }

@@ -1,7 +1,5 @@
 <template lang="html">
 <div class="feedback">
-  <b-btn v-bind:disabled="activeFeedback"
-            v-on:click="revealFeedback()">{{buttonTitle}}</b-btn>
   <div class="feedback-display">
     <div class="feedback-message"
          v-if="revealed">
@@ -12,6 +10,8 @@
       {{inactiveMessage}}
     </div>
   </div>
+  <b-btn v-bind:disabled="activeFeedback"
+            v-on:click="revealFeedback()">{{buttonTitle}}</b-btn>
 </div>
 </template>
 
@@ -66,19 +66,28 @@ export default {
 
 .feedback {
     margin-top: 25px;
+    display: flex;
+    flex-direction: column;
 
     button {
-        font-size: 0.95em;
-        display: block;
         width: 100%;
+        display: block;
+        font-size: 0.95em;
+        align-self: center;
+
+        @media(min-width:576px) {
+            width: auto;
+            display: inline-block;
+            align-self: flex-end;
+        }
     }
 
     .feedback-display {
         position: relative;
-        margin: 20px 0;
+        margin: 0 0 10px;
         padding: 10px;
         border-radius: $border-radius;
-        min-height: 120px;
+        min-height: 150px;
     }
 
     .feedback-message,

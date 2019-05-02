@@ -104,13 +104,15 @@
                v-on:input="changeCandle('WickBottom')">
       </div>
       <!-- Color Slider -->
-      <p class="candle-color">Color</p>
-      <label class="switch">
-        <input type="checkbox"
-               v-model="candleRed"
-               v-on:change="changeCandle('BodyColor')">
-        <span class="slider round"></span>
-      </label>
+      <div class="candlecolor">
+        <label class="switch">
+          <input type="checkbox"
+                 v-model="candleRed"
+                 v-on:change="changeCandle('BodyColor')">
+          <span class="slider round"></span>
+        </label>
+        <p>Color</p>
+      </div>
     </div>
   </div>
 </div>
@@ -233,7 +235,7 @@ export default {
     margin-bottom: 15px;
 
     h3 {
-        font-size: 1em;
+        font-size: 1.05rem;
         font-weight: 400;
         text-align: center;
         margin-bottom: 5px;
@@ -241,7 +243,7 @@ export default {
     }
 
     .chart-num {
-        font: 14px pt-sans-pro;
+        font: 0.875rem pt-sans-pro;
     }
 
     .candle-green {
@@ -267,12 +269,22 @@ export default {
 
     .candle-controls {
         margin: 40px 0 0 5px;
-        padding: 7px 10px 2px;
+        padding: 18px 10px 8px;
         border-radius: $border-radius;
+
+        @media(min-width: 576px) {
+            padding: 7px 10px 0;
+        }
 
         .slidecontainer {
             margin-bottom: 10px;
             width: 100%;
+
+            &:first-child {
+                label {
+                    margin-top: 0;
+                }
+            }
 
             @media(min-width: 768px) {
                 margin-bottom: 0;
@@ -281,12 +293,13 @@ export default {
             label {
                 display: block;
                 color: #eee;
-                margin-bottom: 6px;
-                font-size: 0.9em;
+                margin: 5px 0 10px;
+                font-size: 0.95rem;
 
                 @media(min-width: 768px) {
-                    margin-bottom: 5px;
-                    font-size: 0.75em;
+                    font-size: 0.85rem;
+                    margin: 5px 0 0;
+
                 }
             }
 
@@ -307,9 +320,9 @@ export default {
             .slide::-webkit-slider-thumb {
                 -webkit-appearance: none;
                 appearance: none;
-                width: 32px;
-                height: 32px;
-                border-radius: 16px;
+                width: 30px;
+                height: 30px;
+                border-radius: 15px;
                 background: #fff;
                 cursor: pointer;
 
@@ -321,9 +334,9 @@ export default {
             }
 
             .slide::-moz-range-thumb {
-                width: 32px;
-                height: 32px;
-                border-radius: 16px;
+                width: 30px;
+                height: 30px;
+                border-radius: 15px;
                 background: #fff;
                 cursor: pointer;
 
@@ -335,93 +348,100 @@ export default {
             }
         }
 
-        .candle-color {
-            display: block;
-            color: #eee;
-            margin-bottom: 5px;
-            font-size: 0.9em;
+        .candlecolor {
+            margin-bottom: 14px;
 
-            @media(min-width: 768px) {
-                margin-bottom: 5px;
-                font-size: 0.75em;
-            }
-        }
+            p {
+                display: inline-block;
+                margin: 3px 0 0;
+                font-size: 1rem;
+                position: relative;
+                top: 5px;
 
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 65px;
-            height: 35px;
-
-            @media(min-width: 576px) {
-                width: 45px;
-                height: 25px;
+                @media(min-width: 768px) {
+                    font-size: 0.85rem;
+                    margin: 3px 0 0;
+                    top: 0;
+                }
             }
 
-            input {
-                opacity: 0;
-                width: 0;
-                height: 0;
-            }
-
-            .slider {
-                position: absolute;
-                cursor: pointer;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: $green;
-                -webkit-transition: 0.4s;
-                transition: 0.4s;
-            }
-
-            .slider:before {
-                position: absolute;
-                content: "";
-                height: 29px;
-                width: 29px;
-                left: 4px;
-                bottom: 3px;
-
-                background-color: white;
-                -webkit-transition: 0.4s;
-                transition: 0.4s;
+            .switch {
+                display: inline-block;
+                position: relative;
+                width: 65px;
+                height: 35px;
+                margin: 10px 10px 0 0;
 
                 @media(min-width: 576px) {
-                    height: 17px;
-                    width: 17px;
+                    width: 45px;
+                    height: 25px;
+                }
+
+                input {
+                    opacity: 0;
+                    width: 0;
+                    height: 0;
+                }
+
+                .slider {
+                    position: absolute;
+                    cursor: pointer;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-color: $green;
+                    -webkit-transition: 0.4s;
+                    transition: 0.4s;
+                }
+
+                .slider:before {
+                    position: absolute;
+                    content: "";
+                    height: 29px;
+                    width: 29px;
                     left: 4px;
-                    bottom: 4px;
+                    bottom: 3px;
+
+                    background-color: white;
+                    -webkit-transition: 0.4s;
+                    transition: 0.4s;
+
+                    @media(min-width: 576px) {
+                        height: 17px;
+                        width: 17px;
+                        left: 4px;
+                        bottom: 4px;
+                    }
                 }
-            }
 
-            input:checked + .slider {
-                background-color: $red;
-            }
-
-            input:focus + .slider {
-                box-shadow: 0 0 1px $red;
-            }
-
-            input:checked + .slider:before {
-                -webkit-transform: translateX(28px);
-                -ms-transform: translateX(28px);
-                transform: translateX(28px);
-
-                @media(min-width: 576px) {
-                    -webkit-transform: translateX(19px);
-                    -ms-transform: translateX(19px);
-                    transform: translateX(19px);
+                input:checked + .slider {
+                    background-color: $red;
                 }
-            }
 
-            .slider.round {
-                border-radius: 34px;
-            }
+                input:focus + .slider {
+                    box-shadow: 0 0 1px $red;
+                }
 
-            .slider.round:before {
-                border-radius: 50%;
+                input:checked + .slider:before {
+                    -webkit-transform: translateX(28px);
+                    -ms-transform: translateX(28px);
+                    transform: translateX(28px);
+
+                    @media(min-width: 576px) {
+                        -webkit-transform: translateX(19px);
+                        -ms-transform: translateX(19px);
+                        transform: translateX(19px);
+                    }
+                }
+
+                .slider.round {
+                    border-radius: 34px;
+                }
+
+                .slider.round:before {
+                    border-radius: 50%;
+                }
             }
         }
 
@@ -443,7 +463,7 @@ export default {
     .candle-builder {
 
         h3 {
-            color: $dark-text-color;
+            color: #fff;
         }
 
         .chart-bg {
@@ -483,8 +503,10 @@ export default {
 
             }
 
-            .candle-color {
-                color: #eee;
+            .candlecolor {
+                p {
+                    color: #eee;
+                }
             }
         }
 
@@ -534,8 +556,10 @@ export default {
                 }
             }
 
-            .candle-color {
-                color: #333;
+            .candlecolor {
+                p {
+                    color: #333;
+                }
             }
         }
     }

@@ -6,20 +6,20 @@
               type="text"
               v-on:keyup="isValid"
               v-model="response"></textarea>
-    <div>Sufficiently Intelligible
-      <span class="intelligible-marker">
-        <img v-if="valid"
-             class="animate-zoom"
-             src="~/assets/images/icons/checkmark_green.svg" />
-        <img v-else
-             class="animate-zoom"
-             src="~/assets/images/icons/cross_red.svg" />
-      </span>
-    </div>
-    <div>
+    <div class="response-controls">
+      <div>Sufficiently Intelligible
+        <span class="intelligible-marker">
+          <img v-if="valid"
+               class="animate-zoom"
+               src="~/assets/images/icons/checkmark_green.svg" />
+          <img v-else
+               class="animate-zoom"
+               src="~/assets/images/icons/cross_red.svg" />
+        </span>
+      </div>
       <b-btn class="btn-save-response"
-              v-bind:disabled="!valid"
-              v-on:click="saveResponse">Save My Response</b-btn>
+                v-bind:disabled="!valid"
+                v-on:click="saveResponse">Save My Response</b-btn>
     </div>
   </div>
 </div>
@@ -93,20 +93,51 @@ export default {
 
     button {
         font-size: 0.95em;
-        display: block;
-        width: 100%;
     }
 
     .response {
         width: 100%;
         height: 150px;
         padding: 10px 15px;
-        border-radius: 8px;
+        border-radius: 0;
     }
 
-    .intelligible-marker img {
-        height: 16px;
+    .response-controls {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        margin-top: 5px;
+
+        div {
+            display: inline-block;
+            align-self: center;
+            margin-bottom: 10px;
+        }
+
+        button {
+            align-self: center;
+            width: 100%;
+        }
+
+        .intelligible-marker img {
+            height: 16px;
+        }
+
+        @media(min-width: 576px) {
+            flex-direction: row;
+            justify-content: space-between;
+
+            div {
+                margin-bottom: 0;
+            }
+
+            button {
+                width: auto;
+            }
+        }
+
     }
+
 }
 
 // Dark/Light Theme Styles -----------------------------
@@ -114,7 +145,7 @@ export default {
 .dark {
 
     .question-open {
-        color: $dark-text-color;
+        color: #fff;
 
         .response {
             border-color: $dark-pane-border;
