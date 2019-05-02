@@ -241,7 +241,7 @@ section.view {
   .btn-secondary.disabled, .btn-secondary:disabled  {
     background-color: rgb(140, 140, 140);
     border-color: rgb(140, 140, 140);
-    
+
       &:active,
       &:focus,
       &:hover {
@@ -581,5 +581,9 @@ section.view {
 //------------------------------------------------------
 
 .intro-container {
-  margin-bottom: 3.5rem;
+  margin-bottom: 5rem;
+
+  @media(min-width: 768px) {
+    margin-bottom: 3.75rem;
+  }
 }

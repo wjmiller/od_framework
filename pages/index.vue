@@ -2,6 +2,12 @@
 <div class="container">
   <h1>Courses List:</h1>
   <nuxt-link to="od_js">Jumpstart</nuxt-link>
+
+  <h1>Tests:</h1>
+  <nuxt-link to="/test/activity">Activity</nuxt-link>
+  <nuxt-link to="/test/feedback">Feedback</nuxt-link>
+  <nuxt-link to="/test/game">Game</nuxt-link>
+  <nuxt-link to="/test/multichoice">Multi Choice</nuxt-link>
 </div>
 </template>
 
@@ -37,7 +43,7 @@ a {
         &:active,
         &:focus,
         &:hover {
-            color: $purple-med;
+            color: $purple;
         }
     }
 }
@@ -49,7 +55,7 @@ a {
         &:active,
         &:focus,
         &:hover {
-            color: $purple-med;
+            color: $purple;
         }
     }
 }

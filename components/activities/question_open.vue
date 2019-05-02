@@ -18,6 +18,7 @@
         </span>
       </div>
       <b-btn class="btn-save-response"
+                variant="success"
                 v-bind:disabled="!valid"
                 v-on:click="saveResponse">Save My Response</b-btn>
     </div>

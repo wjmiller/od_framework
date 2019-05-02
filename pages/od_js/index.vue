@@ -85,6 +85,12 @@ export default {
 // -----------------------------------------------------
 
 .course-info {
+    margin-bottom: 2.5rem;
+
+    @media(min-width: 768px) {
+        margin-bottom: 0;
+    }
+
     .course-title {
         margin: 2.5rem 0 1.4rem;
         font-size: 3.2rem;
@@ -105,10 +111,9 @@ export default {
 // -----------------------------------------------------
 
 .course-lessons {
-    margin: 50px 0 0;
 
     @media (min-width: 768px) {
-        margin: 2.95rem 0 0 1.2rem;
+        margin: 0 0 0 1.2rem;
     }
 
     h2 {
