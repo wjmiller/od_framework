@@ -32,6 +32,9 @@ export const Activity = {
     activityBusOn: {
       type: Boolean,
       default: true
+    },
+    feedback: {
+      type: Array
     }
   },
   data() {
@@ -128,15 +131,28 @@ export const Activity = {
     },
     isActive() {
       return this.activated
+    },
+    activityStyles() {
+      const styles = {
+        'activity-completed': this.completed,
+        'activity-correct': this.correct,
+        'activity-incorrect': this.incorrect,
+        'activity-attempted': this.attempts > 0,
+        'activity-activated': this.activated
+      }
+      styles[ `activity-attempted-${this.attempts}` ] = this.attempts > 0
+      return styles
     }
   },
   created() {
     //add any correct tests passed through props
     if ( this.correctTest ) {
+      this.correctTests = []
       typeof this.correctTest === 'function' ? this.addCorrectTest( this.correctTest ) : this.correctTest.forEach( this.addCorrectTest )
     }
     //add any complete tests passed through props
     if ( this.completeTest ) {
+      this.completeTests = []
       typeof this.completeTest === 'function' ? this.addCompleteTest( this.completeTest ) : this.completeTest.forEach( this.addCompleteTest )
     }
   },
