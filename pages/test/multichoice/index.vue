@@ -9,6 +9,7 @@
                     v-bind:multiple-select="true"
                     v-bind:attempts-allowed="3"
                     v-bind:feedback="feedback"
+                    v-bind:question="question"
                     v-on:activity-attempted="logdata">
         <template v-slot:option="{ option }">
           <span>•</span>
@@ -23,6 +24,9 @@
                     v-bind:multiple-select="true"
                     v-bind:attempts-allowed="3"
                     v-on:activity-attempted="displayFeedback">
+        <template v-slot:question>
+          <p>{{ question }}</p>
+        </template>
         <template v-slot:option="{ option }">
           <span>+</span>
           {{ option.text }}
@@ -54,6 +58,7 @@ export default {
     return {
       selected: '',
       activated: true,
+      question: 'What 2 or 3 options are best to select (wink, wink)?',
       options: [
         {
           name: 'one',
