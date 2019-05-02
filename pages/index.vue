@@ -32,6 +32,8 @@ a {
     font-weight: 600;
     text-decoration: none;
     margin-left: 0.8rem;
+    display: block;
+    margin-bottom: 5px;
 }
 
 // Dark/Light Theme Styles -----------------------------
