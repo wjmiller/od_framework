@@ -1,9 +1,7 @@
 const pkg = require( './package' )
 const axios = require( 'axios' )
-const body_parser = require( 'body-parser' )
 
-
-module.exports = {
+export default {
   mode: 'universal',
 
   /*
@@ -27,6 +25,9 @@ module.exports = {
         content: pkg.description
       }
     ],
+    script: [
+      { src: '/js/xapi.min.js' }
+    ],
     link: [ {
         rel: 'icon',
         type: 'image/x-icon',
@@ -42,9 +43,7 @@ module.exports = {
   /*
    ** Customize the progress-bar color
    */
-  loading: {
-    color: '#fff'
-  },
+  loading: { color: '#fff' },
 
   /*
    ** Global CSS
@@ -57,11 +56,11 @@ module.exports = {
    ** Plugins to load before mounting the App
    */
   plugins: [ {
-      src: '~plugins/vue-js-toggle-button',
-      ssr: false
+      src: '~plugins/vue-timeago'
     },
     {
-      src: '~plugins/vue-timeago'
+      src: '~plugins/xapi',
+      ssr: false
     },
     {
       src: '~plugins/vue-dialog',
@@ -75,7 +74,6 @@ module.exports = {
   modules: [
     'bootstrap-vue/nuxt',
     '@nuxtjs/axios',
-    'cookie-universal-nuxt',
     [
       'nuxt-fontawesome', {
         component: 'fa',
@@ -98,22 +96,13 @@ module.exports = {
     name: 'fade',
     mode: 'out-in'
   },
+
   /*
    ** Axios module configuration
    */
   axios: {
     baseURL: process.env.BASE_URL || 'https://ota-course-framework.firebaseio.com'
   },
-
-  env: {
-    baseUrl: process.env.BASE_URL || 'https://ota-course-framework.firebaseio.com',
-    fb_api_key: 'AIzaSyBirEEfUTCVTvOaYG7HHhol-YGSYzlm3sw'
-  },
-
-  serverMiddleware: [
-    body_parser.json(),
-    '~/api'
-  ],
 
   /*
    ** Build configuration

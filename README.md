@@ -1,6 +1,6 @@
 # od_framework
 
-> Online Trading Academy&#39;s On-Demand Framework
+> Online Trading Academy On-Demand Course Framework
 
 ## Build Setup
 

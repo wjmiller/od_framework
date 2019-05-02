@@ -1,5 +1,7 @@
+@import './mixins.scss';
 @import './variables.scss';
 @import './icon_font.scss';
+
 
 
 //------------------------------------------------------
@@ -72,23 +74,23 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 h1 {
-  font-size: 1.8rem;
+  font-size: 2.1rem;
 }
 
 h2 {
-  font-size: 1.6rem;
+  font-size: 1.9rem;
 }
 
 h3 {
-  font-size: 1.45rem;
+  font-size: 1.75rem;
 }
 
 h4 {
-  font-size: 1.25rem;
+  font-size: 1.55rem;
 }
 
 h5 {
-  font-size: 1.1rem;
+  font-size: 1.4rem;
 }
 
 h6 {
@@ -208,6 +210,68 @@ section.view {
   }
 }
 
+.btn-secondary:active,
+.btn-secondary:focus,
+.btn-secondary:hover {
+  background-color: lighten($purple-med, 4%);
+  border-color: lighten($purple-med, 4%);
+  color: #fff;
+}
+
+.btn-secondary  {
+  color: #fff;
+  background-color: $purple-med;
+  border-color: $purple-med;
+}
+
+.dark {
+  .btn-secondary.disabled, .btn-secondary:disabled {
+    background-color: $purple-med;
+    border-color: $purple-med;
+    &:active,
+    &:focus,
+    &:hover {
+      background-color: $purple-med;
+      border-color: $purple-med;
+    }
+  }
+}
+
+.light {
+  .btn-secondary.disabled, .btn-secondary:disabled  {
+      &:active,
+      &:focus,
+      &:hover,
+      &:visited {
+        background-color: rga(140, 140, 140);
+        border-color: rga(140, 140, 140);
+      }
+    }
+}
+
+.btn-success:active,
+.btn-success:focus,
+.btn-success:hover {
+  background-color: lighten($green-med, 3%);
+  border-color: lighten($green-med, 3%);
+  color: #fff;
+}
+
+.btn-success.disabled {
+  &:active,
+  &:focus,
+  &:hover {
+    background-color: $green-med;
+    border-color: $green-med;
+  }
+}
+
+.btn-success {
+  color: #fff;
+  background-color: $green-med;
+  border-color: $green-med;
+}
+
 .btn-secondary:not(:disabled):not(.disabled):active:focus,
 .btn-secondary:not(:disabled):not(.disabled).active:focus,
 .show > .btn-secondary.dropdown-toggle:focus {
@@ -222,84 +286,6 @@ section.view {
   opacity: 0.6;
 }
 
-// Dark/Light Theme Styles -----------------------------
-
-.dark {
-  .btn-secondary:active,
-  .btn-secondary:focus,
-  .btn-secondary:hover {
-    background-color: lighten($purple-med, 6%);
-    border-color: lighten($purple-med, 6%);
-    color: #fff;
-  }
-
-  .btn-secondary.disabled {
-    &:active,
-    &:focus,
-    &:hover,
-    &:visited {
-      background-color: $purple-med;
-      border-color: $purple-med;
-    }
-  }
-
-  .btn-secondary  {
-    color: #fff;
-    background-color: $purple-med;
-    border-color: $purple-med;
-  }
-}
-
-.light {
-  .btn-secondary:active,
-  .btn-secondary:focus,
-  .btn-secondary:hover {
-    background-color: lighten($purple-med, 6%);
-    border-color: lighten($purple-med, 6%);
-    color: white;
-  }
-
-  .btn-secondary.disabled {
-    &:active,
-    &:focus,
-    &:hover,
-    &:visited {
-      background-color: rga(140, 140, 140);
-      border-color: rga(140, 140, 140);
-    }
-  }
-
-  .btn-secondary {
-    color: white;
-    background-color: $purple-med;
-    border-color: $purple-med;
-  }
-}
-
-.btn-success:active,
-.btn-success:focus,
-.btn-success:hover,
-.btn-success:visited {
-  background-color: lighten($green-med, 3%);
-  border-color: lighten($green-med, 3%);
-  color: #fff;
-}
-
-.btn-success.disabled {
-  &:active,
-  &:focus,
-  &:hover,
-  &:visited {
-    background-color: $green-med;
-    border-color: $green-med;
-  }
-}
-
-.btn-success {
-  color: #fff;
-  background-color: $green-med;
-  border-color: $green-med;
-}
 
 //------------------------------------------------------
 // Button Variations
@@ -360,6 +346,10 @@ section.view {
 // Progress Bars
 //------------------------------------------------------
 
+.progress-bar {
+  height: 100%;
+}
+
 .dark {
     .progress {
         background-color: $dark-gray-med;
@@ -375,7 +365,7 @@ section.view {
         background-color: $light-gray-med;
 
         .progress-bar {
-          background-color: $green;
+          background-color: $green-med;
         }
     }
 }
@@ -545,24 +535,12 @@ section.view {
 
       .dg-btn--cancel {
         color: #fff;
-        background: lighten($dark-gray-med, 7%);
-        border-color: lighten($dark-gray-med, 7%);
-
-        &:hover, &:focus, &:active {
-          background: lighten($dark-gray-med, 13%);
-          border-color: lighten($dark-gray-med, 13%);
-        }
+        @include button-color($gray, 5%)
       }
 
       .dg-btn--ok {
         color: #fff;
-        background: darken($red, 3%);
-        border-color: darken($red, 3%);
-
-        &:hover {
-          background: lighten($red, 4%);
-          border-color: lighten($red, 4%);
-        }
+        @include button-color($red, 6%)
       }
 
     }
@@ -583,24 +561,12 @@ section.view {
 
       .dg-btn--cancel {
         color: #fff;
-        background: lighten($light-gray-med-dark, 5%);
-        border-color: lighten($light-gray-med-dark, 5%);
-
-        &:hover, &:focus, &:active {
-          background: lighten($light-gray, 3%);
-          border-color: lighten($light-gray, 3%);
-        }
+        @include button-color($gray, 5%)
       }
 
       .dg-btn--ok {
         color: #fff;
-        background: darken($red, 3%);
-        border-color: darken($red, 3%);
-
-        &:hover {
-          background: lighten($red, 7%);
-          border-color: lighten($red, 7%);
-        }
+        @include button-color($red, 6%)
       }
 
     }

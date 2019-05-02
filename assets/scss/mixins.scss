@@ -1,0 +1,16 @@
+
+// -----------------------------------------------------
+// Button Color
+// -----------------------------------------------------
+
+@mixin button-color($bgColor, $lightenPrcnt) {
+  background: $bgColor;
+  border-color: $bgColor;
+
+  &:active,
+  &:focus,
+  &:hover {
+    background: lighten($bgColor, $lightenPrcnt);
+    border-color: lighten($bgColor, $lightenPrcnt);
+  }
+}

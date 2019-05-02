@@ -1,11 +1,11 @@
 <template>
 <section>
-  <navbar v-on:notes_toggle="toggle_notes"
-          v-bind:open="notes_open"></navbar>
+  <navbar v-on:notes-toggle="toggleNotes"
+          v-bind:open="notesOpen"></navbar>
   <nuxt class="page-content" />
   <foot></foot>
-  <notes v-on:close_notes="toggle_notes"
-         v-bind:open="notes_open"></notes>
+  <notes v-on:close-notes="toggleNotes"
+         v-bind:open="notesOpen"></notes>
 </section>
 </template>
 
@@ -24,25 +24,25 @@ export default {
     notes
   },
   computed: {
-    ...mapGetters( [ 'get_user_prefs' ] )
+    ...mapGetters( [ 'getUserPrefs' ] )
   },
   data() {
     return {
-      notes_open: false
+      notesOpen: false
     }
   },
   methods: {
-    toggle_notes() {
-      this.notes_open = !this.notes_open
+    toggleNotes() {
+      this.notesOpen = !this.notesOpen
     }
   },
   head() {
     return {
       htmlAttrs: {
-        class: this.get_user_prefs.theme_dark ? 'dark' : 'light'
+        class: this.getUserPrefs.theme_dark ? 'dark' : 'light'
       },
       bodyAttrs: {
-        class: this.notes_open ? 'noscroll' : ''
+        class: this.notesOpen ? 'noscroll' : ''
       }
     }
   },
