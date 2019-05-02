@@ -1,7 +1,7 @@
 <template>
 <div class="container">
-  <h1>Courses List:</h1>
-  <nuxt-link to="od_js">Jumpstart</nuxt-link>
+  <h1>Courses:</h1>
+  <nuxt-link to="/od_js">Jumpstart</nuxt-link>
 
   <h1>Tests:</h1>
   <nuxt-link to="/test/activity">Activity</nuxt-link>
