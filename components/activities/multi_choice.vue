@@ -1,5 +1,10 @@
 <template lang="html">
   <div class="multi-choice" v-bind:class="activityStyles">
+    <div class="multi-choice-question">
+      <slot name="question">
+        {{ question }}
+      </slot>
+    </div>
     <div class="multi-choice-options">
       <div class="multi-choice-option"
         v-for="option in localOptions"
@@ -82,6 +87,9 @@ export default {
     },
     feedback: {
       type: Array
+    },
+    question: {
+      type: String
     }
   },
   data() {
