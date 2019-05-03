@@ -23,6 +23,7 @@
                     v-bind:options="options"
                     v-bind:multiple-select="true"
                     v-bind:attempts-allowed="3"
+                    options-class="custom-options"
                     v-on:activity-attempted="displayFeedback">
         <template v-slot:question>
           <p>{{ question }}</p>

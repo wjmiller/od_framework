@@ -1,5 +1,11 @@
 <template lang="html">
   <div class="feedback">
+    <b-button
+      variant="primary"
+      v-if="!auto"
+      v-bind:disabled="!activated"
+      v-on:click="revealFeedback">{{ buttonTitle }}
+    </b-button>
     <div class="feedback-messages">
       <transition-group name="messages" tag="p" v-if="displayOn">
       <div class="feedback-message"
@@ -17,12 +23,6 @@
       {{ inactiveMessage }}
     </div>
     </div>
-    <b-button
-      variant="primary"
-      v-if="!auto"
-      v-bind:disabled="!activated"
-      v-on:click="revealFeedback">{{ buttonTitle }}
-    </b-button>
   </div>
 </template>
 
