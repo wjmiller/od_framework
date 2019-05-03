@@ -10,8 +10,7 @@
         v-for="option in localOptions"
         v-bind:class="{'option-selected': option.selected}"
         v-bind:key="option.name"
-        v-on:click="selectOption(option)"
-      >
+        v-on:click="selectOption(option)">
         <slot name="option" v-bind:option="option">
           <!-- Fallback content -->
           <div>
@@ -19,19 +18,17 @@
           </div>
         </slot>
       </div>
-      <b-button
-        variant="primary"
+      <b-btn
         v-on:click="submitAnswer"
-        v-bind:disabled="completed"
-      > {{buttonTitle}}
-      </b-button>
+        v-bind:disabled="completed">
+        {{buttonTitle}}
+      </b-btn>
       <div v-if="hasFeedback">
         <feedback-display
           v-bind:auto="true"
           v-bind:activated="completed"
           v-bind:messages="feedback"
-          v-bind:displayed="feedbackDisplayed"
-        >
+          v-bind:displayed="feedbackDisplayed">
 
         </feedback-display>
       </div>
