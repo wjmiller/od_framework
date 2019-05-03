@@ -1,38 +1,44 @@
 <template>
 <b-container>
   <b-row>
-    <b-col>
+    <b-col lg="8">
       <multi-choice v-bind:auto="true"
                     v-bind:activity-bus-on="false"
                     v-bind:activated="activated"
-                    v-bind:options="options"
-                    v-bind:multiple-select="true"
+                    v-bind:options="options_single"
+                    v-bind:multiple-select="false"
                     v-bind:attempts-allowed="3"
                     v-bind:feedback="feedback"
-                    v-bind:question="question"
+                    v-bind:question="question_single"
                     v-on:activity-attempted="logdata">
+        <template v-slot:question>
+          <p>{{ question_single }}</p>
+        </template>
         <template v-slot:option="{ option }">
-          <span>•</span>
-          {{ option.text }}
+          <span></span>
+          <span>{{ option.text }}</span>
         </template>
       </multi-choice>
+
 
       <multi-choice v-bind:auto="true"
                     v-bind:activity-bus-on="false"
                     v-bind:activated="activated"
-                    v-bind:options="options"
+                    v-bind:options="options_multi"
+                    v-bind:question="question_multi"
                     v-bind:multiple-select="true"
                     v-bind:attempts-allowed="3"
                     options-class="custom-options"
                     v-on:activity-attempted="displayFeedback">
         <template v-slot:question>
-          <p>{{ question }}</p>
+          <p>{{ question_multi }}</p>
         </template>
         <template v-slot:option="{ option }">
-          <span>+</span>
-          {{ option.text }}
+          <span></span>
+          <span>{{ option.text }}</span>
         </template>
       </multi-choice>
+
 
       <feedback-display v-bind:auto="true"
                         v-bind:activated="true"
@@ -43,6 +49,24 @@
           {{ message.text }}
         </template>
       </feedback-display>
+
+      <multi-choice v-bind:auto="true"
+                    v-bind:activity-bus-on="false"
+                    v-bind:activated="activated"
+                    v-bind:options="options_multi"
+                    v-bind:question="question_multi"
+                    v-bind:multiple-select="true"
+                    v-bind:attempts-allowed="3"
+                    v-bind:feedback="feedback"
+                    v-on:activity-attempted="logdata">
+        <template v-slot:question>
+          <p>{{ question_multi }}</p>
+        </template>
+        <template v-slot:option="{ option }">
+          <span></span>
+          <span>{{ option.text }}</span>
+        </template>
+      </multi-choice>
     </b-col>
   </b-row>
 
@@ -59,8 +83,28 @@ export default {
     return {
       selected: '',
       activated: true,
-      question: 'What 2 or 3 options are best to select (wink, wink)?',
-      options: [
+      question_single: '1. What number makes a couple?',
+      question_multi: '2. What 2 or 3 options are best to select (wink, wink)?',
+      options_single: [
+        {
+          name: 'one',
+          text: 'number one'
+        },
+        {
+          name: 'two',
+          text: 'number two',
+          correct: true
+        },
+        {
+          name: 'three',
+          text: 'number three'
+        },
+        {
+          name: 'four',
+          text: 'number four'
+        }
+      ],
+      options_multi: [
         {
           name: 'one',
           text: 'number one'
@@ -157,18 +201,5 @@ export default {
 </script>
 
 <style lang="scss">
-// -----------------------------------------------------
-// Import Variables
-// -----------------------------------------------------
 
-@import '~assets/scss/variables.scss';
-
-.feedback-messages {
-    min-height: 100px;
-}
-
-.option-selected {
-    background-color: #FFF;
-    color: $dark-body-bg;
-}
 </style>

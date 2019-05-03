@@ -1,5 +1,5 @@
 <template>
-<b-navbar>
+<b-navbar v-bind:sticky="true">
   <b-navbar-nav class="ml-auto">
     <b-nav-item>
       <i v-on:click="toggleNotes"

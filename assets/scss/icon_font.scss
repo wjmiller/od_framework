@@ -1,11 +1,11 @@
 
 @font-face {
   font-family: 'custom-icons';
-  src:  url('~assets/fonts/custom.eot?tqyqnx');
-  src:  url('~assets/fonts/custom.eot?tqyqnx#iefix') format('embedded-opentype'),
-    url('~assets/fonts/custom.ttf?tqyqnx') format('truetype'),
-    url('~assets/fonts/custom.woff?tqyqnx') format('woff'),
-    url('~assets/fonts/custom.svg?tqyqnx#icomoon') format('svg');
+  src:  url('~assets/fonts/custom.eot?9fooz1');
+  src:  url('~assets/fonts/custom.eot?9fooz1#iefix') format('embedded-opentype'),
+    url('~assets/fonts/custom.ttf?9fooz1') format('truetype'),
+    url('~assets/fonts/custom.woff?9fooz1') format('woff'),
+    url('~assets/fonts/custom.svg?9fooz1#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -31,11 +31,20 @@
 .icon-dollar:before {
   content: "\e901";
 }
-.icon-spin:before {
-  content: "\e902";
+.icon-checkmark:before {
+  content: "\e908";
 }
 .icon-cross:before {
-  content: "\ea0f";
+  content: "\e90b";
+}
+.icon-plus:before {
+  content: "\e909";
+}
+.icon-minus:before {
+  content: "\e90a";
+}
+.icon-spin:before {
+  content: "\e902";
 }
 .icon-edit:before {
   content: "\e903";
@@ -58,7 +67,10 @@
 .icon-arrow_drop_down:before {
   content: "\e5c5";
 }
-.icon-brightness_3:before {
+.icon-dot:before {
+  content: "\e3a6";
+}
+.icon-brightness:before {
   content: "\e3a8";
 }
 .icon-close:before {
@@ -82,7 +94,7 @@
 .icon-play_arrow:before {
   content: "\e037";
 }
-.icon-play:before {
+.icon-play_circle_outline:before {
   content: "\e039";
 }
 .icon-replay:before {

@@ -18,11 +18,15 @@
           </div>
         </slot>
       </div>
-      <b-btn
-        v-on:click="submitAnswer"
-        v-bind:disabled="completed">
-        {{buttonTitle}}
-      </b-btn>
+      <div class="multi-choice-controls">
+        <b-btn
+          v-on:click="submitAnswer"
+          v-bind:disabled="completed">
+          {{buttonTitle}}
+        </b-btn>
+        <div>{{completedText}}</div>
+      </div>
+
       <div v-if="hasFeedback">
         <feedback-display
           v-bind:auto="true"
@@ -125,6 +129,9 @@ export default {
     correctOptions() {
       return this.localOptions.filter( item => item.correct )
     },
+    completedText() {
+      return this.completed && this.correct ? 'Correct' : 'Incorrect'
+    },
     feedbackDisplayed() {
       const isCorrect = this.correct ? 'correct' : 'incorrect'
       return this.completed ?
@@ -149,10 +156,295 @@ export default {
 }
 </script>
 
-<style lang="css">
+<style lang="scss">
+// -----------------------------------------------------
+// Import Variables
+// -----------------------------------------------------
+
+@import '~assets/scss/variables.scss';
 
 .multi-choice .multi-choice-option {
-  cursor: pointer;
+    cursor: pointer;
 }
 
+.multi-choice-question {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1.7rem;
+}
+
+.multi-choice-options {
+    padding-left: 10px;
+
+    &.multi-select,
+    &.single-select {
+        .multi-choice-option {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            margin-bottom: 14px;
+
+            span {
+                display: block;
+            }
+
+            span:first-child {
+                width: 2.5rem;
+                height: 2.5rem;
+                font-size: 1.8rem;
+                text-align: center;
+                line-height: 2.5rem;
+                margin-right: 10px;
+            }
+
+            span:last-child {
+                font-size: 1rem;
+                line-height: 2.5rem;
+            }
+        }
+    }
+
+    &.single-select {
+
+        .multi-choice-option {
+
+            span:first-child {
+                border-radius: 50%;
+                font-size: 1.2rem;
+            }
+
+            &.option-selected {
+                span:first-child {
+                    &:before {
+                        content: "\e3a6";
+                        font-family: 'custom-icons';
+                    }
+                }
+            }
+        }
+    }
+
+    &.multi-select {
+
+        .multi-choice-option {
+
+            span:first-child {
+                //border-radius: 0.2rem;
+            }
+
+            &.option-selected {
+                span:first-child {
+                    &:before {
+                        content: "\e908";
+                        font-family: 'custom-icons';
+                    }
+                }
+            }
+        }
+    }
+}
+
+.multi-choice {
+    .multi-choice-controls {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        margin-top: 1.8rem;
+        font-size: 1.4rem;
+
+        button {
+            margin-right: 1.2rem;
+        }
+
+        div {
+            font-weight: 600;
+            align-self: center;
+            visibility: hidden;
+
+            &:before {
+                margin-right: 10px;
+                font-size: 1.3rem;
+            }
+        }
+    }
+
+    .feedback-inactive {
+        display: none;
+    }
+}
+
+.feedback {
+    margin-top: 1.5rem;
+    min-height: 100px;
+}
+
+.dark {
+
+    .multi-choice.activity-completed {
+        .multi-choice-controls {
+            div {
+                color: lighten($red, 8%);
+                visibility: visible;
+
+                &:before {
+                    content: '\e90b';
+                    font-family: 'custom-icons';
+                }
+            }
+        }
+
+        &.activity-correct {
+            .multi-choice-controls {
+                div {
+                    color: darken($green, 5%);
+
+                    &:before {
+                        content: '\e908';
+                        font-family: 'custom-icons';
+                    }
+                }
+            }
+        }
+    }
+
+    .multi-choice-options {
+
+        &.multi-select,
+        &.single-select {
+
+            .multi-choice-option {
+                span:first-child {
+                    background: #fff;
+                }
+
+                &.option-selected {
+                    span:first-child {
+                        background: darken($purple, 5%);
+                    }
+                }
+            }
+
+        }
+    }
+
+    .activity-completed {
+        .multi-choice-options {
+
+            &.multi-select,
+            &.single-select {
+
+                .multi-choice-option {
+                    &.option-selected {
+                        span:first-child {
+                            background: $red;
+                        }
+                    }
+                }
+            }
+        }
+
+        &.activity-correct {
+            .multi-choice-options {
+
+                &.multi-select,
+                &.single-select {
+
+                    .multi-choice-option {
+                        &.option-selected {
+                            span:first-child {
+                                background: darken($green, 4%);
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+}
+
+.light {
+
+    .multi-choice.activity-completed {
+        .multi-choice-controls {
+            div {
+                color: $red;
+                visibility: visible;
+
+                &:before {
+                    content: '\e90b';
+                    font-family: 'custom-icons';
+                }
+            }
+        }
+
+        &.activity-correct {
+            .multi-choice-controls {
+                div {
+                    color: $green-med;
+
+                    &:before {
+                        content: '\e908';
+                        font-family: 'custom-icons';
+                    }
+                }
+            }
+        }
+    }
+    .multi-choice-options {
+        &.multi-select,
+        &.single-select {
+
+            .multi-choice-option {
+                span:first-child {
+                    background: $light-gray-med;
+                }
+
+                &.option-selected {
+                    span:first-child {
+                        background: $purple-med;
+                        color: #fff;
+                    }
+                }
+            }
+
+        }
+    }
+
+    .activity-completed {
+        .multi-choice-options {
+
+            &.multi-select,
+            &.single-select {
+
+                .multi-choice-option {
+                    &.option-selected {
+                        span:first-child {
+                            background: $red;
+                        }
+                    }
+                }
+            }
+        }
+
+        &.activity-correct {
+            .multi-choice-options {
+
+                &.multi-select,
+                &.single-select {
+
+                    .multi-choice-option {
+                        &.option-selected {
+                            span:first-child {
+                                background: $green-med;
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+}
 </style>
