@@ -177,12 +177,23 @@ export default {
                 border-radius: 0;
                 background: #fff;
                 color: $light-text-color;
-                border-color: $purple-med;
+                border-color: $light-gray-med-dark;
+                /*
+                &:first-child {
+                    border-top-left-radius: 4px;
+                    border-bottom-left-radius: 4px;
+                }
+
+                &:last-child {
+                    border-top-right-radius: 4px;
+                    border-bottom-right-radius: 4px;
+                }
+                */
 
                 &.active {
                     opacity: 1;
                     color: #fff;
-                    background: $purple-med;
+                    background: $light-gray-med-dark;
                 }
 
                 &:hover {
@@ -232,6 +243,7 @@ export default {
 
     .dropdown-menu {
         border-color: #fff;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.9);
     }
 }
 
@@ -258,7 +270,8 @@ export default {
     }
 
     .dropdown-menu {
-        border-color: #aaa;
+        border-color: #ccc;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.2);
     }
 }
 </style>
