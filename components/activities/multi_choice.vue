@@ -5,7 +5,7 @@
         {{ question }}
       </slot>
     </div>
-    <div class="multi-choice-options">
+    <div class="multi-choice-options" v-bind:class="[multipleSelect ? 'multi-select' : 'single-select', optionsClass]">
       <div class="multi-choice-option"
         v-for="option in localOptions"
         v-bind:class="{'option-selected': option.selected}"
@@ -73,6 +73,9 @@ export default {
       default () {
         return []
       }
+    },
+    optionsClass: {
+      type: String
     },
     multipleSelect: {
       type: Boolean,
