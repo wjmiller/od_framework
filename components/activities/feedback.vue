@@ -1,7 +1,6 @@
 <template lang="html">
   <div class="feedback">
     <b-button
-      variant="primary"
       v-if="!auto"
       v-bind:disabled="!activated"
       v-on:click="revealFeedback">{{ buttonTitle }}
@@ -10,16 +9,19 @@
       <transition-group name="messages" tag="p" v-if="displayOn">
       <div class="feedback-message"
         v-for="message in displayedMessages"
-        v-bind:key="message.name">
+        v-bind:key="message.name"
+        v-bind:class="message.name">
         <div>
           <slot name="message" v-bind:message="message">
             <!-- Fallback content -->
-            {{ message.name }}: {{ message.text }}
+            {{ message.text }}
           </slot>
         </div>
       </div>
     </transition-group>
     <div class="feedback-inactive" v-if="!activated">
+      <fa :icon="['fas', 'lock']"
+          aria-label="locked" />
       {{ inactiveMessage }}
     </div>
     </div>
@@ -118,30 +120,35 @@ export default {
 //------------------------------------------------------
 
 .feedback {
-    margin-top: 25px;
+    margin-bottom: 1.5rem;
+    max-width: 900px;
+    width: 100%;
 
     button {
-        font-size: 0.95em;
         display: block;
         width: 100%;
     }
 
-    .feedback-display {
+    .feedback-messages {
         position: relative;
-        margin: 20px 0;
-        padding: 10px;
         border-radius: $border-radius;
-        min-height: 120px;
+        padding: 0.7rem 1rem;
     }
 
     .feedback-message,
     .feedback-overlay {
-        font-size: 0.95em;
+        font-size: 1rem;
     }
 
     @media(min-width: 576px) {
         margin-top: 0;
 
+    }
+
+    .feedback-inactive {
+        svg {
+            margin-right: 8px;
+        }
     }
 }
 
@@ -149,10 +156,14 @@ export default {
 
 .dark {
     .feedback {
-        .feedback-display {
-            background-color: $dark-pane-bg;
+        .feedback-messages {
+            background-color: darken($dark-pane-bg, 2%);
             border: 1px solid $dark-pane-border;
             color: $dark-text-color;
+        }
+
+        .feedback-inactive {
+            color: $gold;
         }
     }
 }
@@ -160,10 +171,17 @@ export default {
 .light {
 
     .feedback {
-        .feedback-display {
+        .feedback-messages {
             background: $light-pane-bg;
             border: 1px solid $light-pane-border;
             color: $light-text-color;
+        }
+
+        .feedback-inactive {
+            color: darken($gold, 18%);
+            svg {
+                color: darken($gold, 10%);
+            }
         }
     }
 }

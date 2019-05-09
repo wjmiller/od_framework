@@ -1,19 +1,107 @@
-<template lang="html">
-  <div class="custom-balance-game container">
+<template>
+<div class="fullscreen">
+  <div class="custom-balance-game container-fluid"
+       v-bind:class="{'level-over': levelOver}"
+       ref="game">
     <b-row>
-      <b-col xs="3"> Buy {{ unfilled.buy }} </b-col>
-      <b-col xs="3"> {{ displayPrice }} </b-col>
-      <b-col xs="3"> Sell {{ unfilled.sell }} </b-col>
-      <b-col xs="3"> {{ levelTime }} </b-col>
+      <b-btn variant="link"
+             v-on:click="closeGame"
+             class="close-btn"><i class="icon-close"
+           aria-label="close"></i></b-btn>
+    </b-row>
+    <!--
+    <b-row>
+      <b-col>
+        <h2>Balance Price Game</h2>
+      </b-col>
+    </b-row>
+  -->
+    <b-row>
+      <b-col class="game-toolbar">
+
+        <div class="game-timer">
+          <no-ssr>
+            <vac ref="gameTimer"
+                 v-bind:left-time="levelTimeEnd * tick"
+                 v-bind:auto-start="false">
+              <span slot="before">00:00</span>
+              <span slot="process"
+                    slot-scope="{ timeObj }">{{ `${timeObj.m}:${timeObj.s}` }}</span>
+              <span slot="finish">Level Finished!</span>
+            </vac>
+          </no-ssr>
+        </div>
+      </b-col>
     </b-row>
     <b-row>
-      <b-col xs="6"><button v-on:click="increment(-1)" v-bind:disabled="!activeLevel"> - </button></b-col>
-      <b-col xs="6"><button v-on:click="increment(1)" v-bind:disabled="!activeLevel"> + </button></b-col>
-    </b-row>
-    <b-row>
-      <b-col xs="12"><button v-on:click="startLevel()" v-bind:disabled="activeLevel"> Start Level {{level + 1}}</button></b-col>
+      <b-col cols="7">
+        <div class="orders">
+          <div class="orders-buy">
+            <h3>Unfilled Buy</h3>
+            <span class="unfilled-label">{{unfilled.buy}}</span>
+            <transition-group name="drop-unfilled"
+                              class="unfilled"
+                              tag="ul">
+              <li v-for="(order, ix) in unfilled.buy"
+                  v-bind:key="'unfilled-buy-' + ix"></li>
+            </transition-group>
+            <transition-group name="drop-filled"
+                              class="filled"
+                              tag="ul">
+
+              <li v-for="order in filled.buy"
+                  v-bind:key="'filled-buy-' + ix"></li>
+            </transition-group>
+            <h3>Filled Buy</h3>
+            <span class="filled-label">{{filled.buy}}</span>
+          </div>
+          <div class="orders-sell">
+            <h3>Unfilled Sell</h3>
+            <span class="unfilled-label">{{unfilled.sell}}</span>
+            <transition-group name="drop-unfilled"
+                              class="unfilled"
+                              tag="ul">
+              <li v-for="(order, ix) in unfilled.sell"
+                  v-bind:key="'unfilled-sell-' + ix"></li>
+            </transition-group>
+            <transition-group name="drop-filled"
+                              class="filled"
+                              tag="ul">
+
+              <li v-for="order in filled.sell"
+                  v-bind:key="'filled-sell-' + ix"></li>
+            </transition-group>
+            </ul>
+            <h3>Filled Sell</h3>
+            <span class="filled-label">{{filled.sell}}</span>
+          </div>
+        </div>
+      </b-col>
+      <b-col cols="5">
+        <div class="price-controls">
+          <h3>Price</h3>
+          <span>{{displayPrice}}</span>
+          <div>
+            <b-btn variant="info"
+                   v-on:click="increment(-1)"
+                   v-bind:disabled="!activeLevel">
+              <fa :icon="['fas', 'minus']"
+                  aria-label="lower price" />
+            </b-btn>
+            <b-btn variant="info"
+                   v-on:click="increment(1)"
+                   v-bind:disabled="!activeLevel">
+              <fa :icon="['fas', 'plus']"
+                  aria-label="raise price" />
+            </b-btn>
+          </div>
+          <b-btn v-on:click="startLevel()"
+                 v-bind:disabled="activeLevel"> Start Level {{level + 1}}</b-btn>
+        </div>
+      </b-col>
     </b-row>
   </div>
+</div>
 </template>
 
 <script>
@@ -24,6 +112,7 @@ export default {
       level: 0, //current level
       levelTime: 1, //current time of level
       levelTimeEnd: 60, //time ends at this point for each level, represents how many ticks will
+      levelOver: false,
       startingPrice: 10000, //default level price
       price: 10000, //current price, set as integer for two decimal places on display
       targetPrice: 0, //level-specific target price
@@ -85,7 +174,32 @@ export default {
     }
   },
   methods: {
+    init() {
+      const starterData = {
+        target: {
+          window: {
+            innerWidth: window.innerWidth,
+            innerHeight: window.innerHeight
+          }
+        }
+      }
+
+      this.handleResize( starterData )
+    },
+    handleResize( event ) {
+
+      const scale = Math.min(
+        event.target.window.innerWidth / this.$refs.game.clientWidth,
+        event.target.window.innerHeight / this.$refs.game.clientHeight
+      )
+
+      this.$refs.game.style.transform = "translate(-50%, -50%) " + "scale(" + scale + ")"
+    },
+    closeGame() {
+      this.$emit( 'close' )
+    },
     startTimer() {
+      this.$refs.gameTimer.startCountdown( 'restart' )
       this.$options.timerInterval = setInterval( () => {
         if ( this.autoPricer ) {
           this.autoPrice()
@@ -105,6 +219,8 @@ export default {
           .active = true
         this.setLevelData()
         this.startTimer()
+
+        this.levelOver = false;
       }
     },
     endLevel() {
@@ -254,12 +370,339 @@ export default {
     levelTime() {
       this.setTick()
       if ( this.levelTime === this.levelTimeEnd ) {
+        this.levelOver = true;
         this.endLevel()
       }
     }
+  },
+  mounted: function () {
+    window.addEventListener( 'resize', this.handleResize )
+    this.init()
+  },
+  beforeDestroy: function () {
+    window.removeEventListener( 'resize', this.handleResize )
   }
 }
 </script>
 
 <style lang="scss" scoped>
+// -----------------------------------------------------
+// Import Variables
+// -----------------------------------------------------
+
+@import '~assets/scss/variables.scss';
+@import '~assets/scss/mixins.scss';
+
+.fullscreen {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1400;
+}
+
+.custom-balance-game {
+    width: 1600px;
+    height: 900px;
+    padding: 0 4rem;
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transform-origin: center center;
+    z-index: 1400;
+    font-size: 2.4rem;
+
+    &.level-over {
+        .game-toolbar {
+            .game-timer {
+                color: #fff;
+
+                &:before {
+                    content: "";
+                    margin-right: 0;
+                }
+            }
+        }
+
+        .orders {
+            .orders-buy {
+                opacity: 0.5;
+            }
+
+            .orders-sell {
+                opacity: 0.5;
+            }
+        }
+    }
+
+    .row:first-child {
+        display: flex;
+        justify-content: flex-end;
+
+        .close-btn {
+            margin-top: 15px;
+            margin-right: 20px;
+            font-size: 9rem;
+        }
+    }
+
+    h2 {
+        font-size: 3.2rem;
+    }
+
+    h3 {
+        font-size: 2.2rem;
+        text-align: center;
+    }
+
+    .game-toolbar {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        margin: 1.5rem 0 6rem;
+
+        .game-timer {
+            align-self: center;
+            font-weight: 600;
+            font-size: 3rem;
+
+            &:before {
+                content: "\e90e";
+                font-family: "custom-icons";
+                margin-right: 0.6rem;
+                position: relative;
+                top: 0.15rem;
+            }
+        }
+    }
+
+    .orders {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        margin-bottom: 7rem;
+
+        .orders-buy,
+        .orders-sell {
+            width: 280px;
+            margin-right: 30px;
+            position: relative;
+
+            span {
+                position: absolute;
+                left: 107px;
+                width: 66px;
+                height: 50px;
+                border: 4px solid #2B314D;
+                background: #22263C;
+                line-height: 22px;
+                font-size: 30px;
+                font-weight: 600;
+                text-align: center;
+                padding-top: 10px;
+                border-radius: 25px;
+            }
+
+            span.unfilled-label {
+                top: 100px;
+            }
+
+            span.filled-label {
+                top: 325px;
+            }
+
+            ul {
+                display: flex;
+                list-style-type: none;
+                height: 200px;
+                padding: 0;
+                overflow: hidden;
+                margin-bottom: 0;
+
+                li {
+                    width: 100%;
+                    height: 8px;
+                    margin-bottom: 5px;
+                }
+            }
+
+            ul.unfilled {
+                flex-direction: column-reverse;
+                justify-content: flex-start;
+                border-bottom: 8px solid #fff;
+
+                li {}
+            }
+
+            ul.filled {
+                margin-top: 5px;
+                flex-direction: column;
+                justify-content: flex-start;
+            }
+        }
+
+        .orders-buy {
+            ul.filled li,
+            ul.unfilled li {
+                background: $green;
+            }
+
+            ul.filled li {
+                opacity: 0.6;
+            }
+        }
+
+        .orders-sell {
+            ul.filled li,
+            ul.unfilled li {
+                background: $red;
+            }
+
+            ul.filled li {
+                opacity: 0.6;
+            }
+        }
+    }
+
+    .price-controls {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        h3 {
+            align-self: center;
+            margin-bottom: 8.5rem;
+        }
+
+        span {
+            display: block;
+            align-self: center;
+            font-size: 4.5rem;
+            font-weight: 600;
+            margin-bottom: 4rem;
+        }
+
+        div {
+            align-self: center;
+            margin-bottom: 2.5rem;
+
+            button {
+                font-size: 3rem;
+                padding: 0.8rem 1.8rem;
+                @include game-button();
+
+                &:first-child {
+                    margin-right: 1rem;
+                }
+
+            }
+        }
+
+        > button {
+            align-self: center;
+            font-size: 1.8rem;
+            border-radius: 2.5rem;
+            padding: 1rem 1.6rem;
+            color: #fff;
+            font-weight: 600;
+            @include game-button();
+
+            //margin-right: 2.3rem;
+
+            &:after {
+                content: "\e037";
+                font-family: "custom-icons";
+                margin-left: 0.5rem;
+                position: relative;
+                top: 0.07rem;
+                //font-size: 1.2rem;
+            }
+        }
+
+    }
+
+    @media(min-width: 500px) {
+        font-size: 2.4rem;
+
+    }
+
+    @media(min-width: 900px) {
+        font-size: 2rem;
+
+        h2 {
+            font-size: 2.8rem;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+        }
+
+        .row:first-child {
+            .close-btn {
+                font-size: 4.5rem;
+            }
+        }
+
+    }
+
+    @media(min-width: 1200px) {
+        .price-controls {
+            button {
+                font-size: 1.4rem;
+            }
+        }
+    }
+
+    @media(min-width: 1400px) {
+        font-size: 1.6rem;
+    }
+
+}
+
+.drop-unfilled-enter-active {
+    transition: all 0.3s ease;
+}
+.drop-unfilled-leave-active {
+    transition: all 0.3s ease;
+}
+
+.drop-unfilled-enter {
+    transform: translateY(-200px);
+    opacity: 0;
+}
+
+.drop-unfilled-leave-to {
+    opacity: 0;
+}
+
+.drop-filled-enter-active {
+    transition: all 0.3s ease;
+}
+.drop-filled-leave-active {
+    transition: all 0.5s ease;
+}
+
+.drop-filled-enter {
+    transform: translateY(-50px);
+    opacity: 0;
+}
+
+.drop-filled-leave-to {
+    transform: translateY(250px);
+    opacity: 0;
+}
+
+.dark {
+    .fullscreen {
+        background: $dark-body-bg;
+    }
+}
+
+.light {
+    .fullscreen {
+        background: #fff;
+    }
+}
 </style>

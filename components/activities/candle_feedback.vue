@@ -81,62 +81,66 @@ export default {
 // Candle Feedback Styles
 // -----------------------------------------------------
 
-.feedback {
+.candle-row {
+    .feedback {
 
-    .feedback-display {
-        margin: 18px 0;
-        padding: 10px;
-        border-radius: $border-radius;
-        height: 165px;
-        transition: background-color border-color opacity 0.5s;
+        .feedback-display {
+            position: relative;
+            padding: 10px;
+            border-radius: $border-radius;
+            min-height: 120px;
+            margin: 18px 0;
+            height: 165px;
+            transition: background-color border-color opacity 0.5s;
 
-        @media(min-width: 769px) {
-            min-height: 211px;
-        }
+            @media(min-width: 769px) {
+                min-height: 211px;
+            }
 
-        .feedback-message {
-            font-size: 0.95em;
+            .feedback-message {
+                font-size: 0.95em;
 
-            .feedback-correct {
-                font-size: 1.2em;
-                font-weight: 600;
-                margin-bottom: 5px;
+                .feedback-correct {
+                    font-size: 1.2em;
+                    font-weight: 600;
+                    margin-bottom: 5px;
 
-                img {
-                    display: block;
-                    width: 78px;
-                    height: 78px;
-                    margin: 24px auto 0;
+                    img {
+                        display: block;
+                        width: 78px;
+                        height: 78px;
+                        margin: 24px auto 0;
 
-                    @media(min-width: 769px) {
-                        margin: 48px auto 0;
-                    }
+                        @media(min-width: 769px) {
+                            margin: 48px auto 0;
+                        }
 
-                    &.animate-zoom {
-                        -webkit-animation: zoom-in-out 0.5s ease-in 0s 1 normal;
-                        -moz-animation: zoom-in-out 0.5s ease-in 0s 1 normal;
-                        -ms-animation: zoom-in-out 0.5s ease-in 0s 1 normal;
-                        animation: zoom-in-out 0.5s ease-in 0s 1 normal;
+                        &.animate-zoom {
+                            -webkit-animation: zoom-in-out 0.5s ease-in 0s 1 normal;
+                            -moz-animation: zoom-in-out 0.5s ease-in 0s 1 normal;
+                            -ms-animation: zoom-in-out 0.5s ease-in 0s 1 normal;
+                            animation: zoom-in-out 0.5s ease-in 0s 1 normal;
+                        }
                     }
                 }
-            }
 
-            .feedback-incorrect {
-                font-size: 1.2em;
-                font-weight: 600;
-                color: $red;
-                margin-bottom: 5px;
+                .feedback-incorrect {
+                    font-size: 1.2em;
+                    font-weight: 600;
+                    color: $red;
+                    margin-bottom: 5px;
+                }
             }
         }
-    }
 
-    button {
-        margin-top: 25px;
-        display: block;
-        width: 100%;
+        button {
+            margin-top: 25px;
+            display: block;
+            width: 100%;
 
-        @media(min-width: 576px) {
-            margin-top: 22px;
+            @media(min-width: 576px) {
+                margin-top: 22px;
+            }
         }
     }
 }
@@ -144,44 +148,55 @@ export default {
 // Dark/Light Theme Styles -----------------------------
 
 .dark {
-    .feedback-display {
-        background-color: darken($dark-pane-bg, 2%);
-        border-width: 1px;
-        border-style: solid;
-        border-color: darken($dark-pane-border, 2%);
-        color: #fff;
 
-        &.correct {
-            background-color: rgba(99, 200, 72, 0.13);
-            border-width: 4px;
+    .candle-row {
+        .feedback-display {
+            border-width: 1px;
             border-style: solid;
-            border-color: rgba(99, 200, 72, 0.7);
+            background-color: darken($dark-pane-bg, 2%);
+            border: 1px solid darken($dark-pane-bg, 2%);
+            color: $dark-text-color;
+
+            &.correct {
+                background-color: rgba(99, 200, 72, 0.13);
+                border-width: 4px;
+                border-style: solid;
+                border-color: rgba(99, 200, 72, 0.7);
+            }
+        }
+
+        .feedback-message {
+            .feedback-correct {
+                color: $green;
+            }
         }
     }
 
-    .feedback-message {
-        .feedback-correct {
-            color: $green;
-        }
-    }
 }
 
 .light {
-    .feedback-display {
-        background: $light-pane-bg;
-        border: 1px solid $light-pane-border;
-        color: $light-text-color;
-    }
+    .candle-row {
 
-    .feedback-message {
-        .feedback-correct {
-            color: darken($green, 10%);
+        .feedback-display {
+            background: $light-pane-bg;
+            border: 1px solid $light-pane-border;
+            color: $light-text-color;
+        }
+
+        .feedback-message {
+            .feedback-correct {
+                color: darken($green, 10%);
+            }
         }
     }
+
 }
 
-.feedback-overlay.hidden {
-    opacity: 0;
+.candle-row {
+    .feedback-overlay.hidden {
+        opacity: 0;
+    }
+
 }
 
 @-webkit-keyframes zoom-in-out {

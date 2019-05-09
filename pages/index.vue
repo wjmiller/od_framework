@@ -4,11 +4,10 @@
   <nuxt-link to="/od_js">Jumpstart</nuxt-link>
 
   <h1>Tests:</h1>
-  <nuxt-link to="/test/activity">Activity</nuxt-link>
   <nuxt-link to="/test/feedback">Feedback</nuxt-link>
-  <nuxt-link to="/test/game">Game</nuxt-link>
   <nuxt-link to="/test/multichoice">Multi Choice</nuxt-link>
-  <nuxt-link to="/test/scopedcss">Scoped CSS</nuxt-link>
+  <nuxt-link to="/test/game">Game</nuxt-link>
+  <nuxt-link to="/test/activity">Activity</nuxt-link>
 </div>
 </template>
 

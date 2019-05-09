@@ -35,7 +35,8 @@
                   v-bind:theme="theme" />
 
   <b-row>
-    <b-col md="8">
+    <b-col md="8"
+           class="questions">
 
       <multi-choice v-bind:auto="true"
                     v-bind:activity-bus-on="false"
@@ -59,11 +60,30 @@
       <multi-choice v-bind:auto="true"
                     v-bind:activity-bus-on="false"
                     v-bind:activated="activated"
+                    v-bind:options="options_arrows"
+                    v-bind:multiple-select="false"
+                    v-bind:attempts-allowed="3"
+                    v-bind:feedback="feedback"
+                    options-class="options-arrows"
+                    v-bind:question="question_arrows"
+                    v-on:activity-attempted="logdata">
+        <template v-slot:question>
+          <p>{{ question_arrows }}</p>
+        </template>
+        <template v-slot:option="{ option }">
+          <span></span>
+          <span>{{ option.text }}</span>
+        </template>
+      </multi-choice>
+
+
+      <multi-choice v-bind:auto="true"
+                    v-bind:activity-bus-on="false"
+                    v-bind:activated="activated"
                     v-bind:options="options_multi"
                     v-bind:question="question_multi"
                     v-bind:multiple-select="true"
                     v-bind:attempts-allowed="3"
-                    options-class="custom-options"
                     v-on:activity-attempted="displayFeedback">
         <template v-slot:question>
           <p>{{ question_multi }}</p>
@@ -147,7 +167,8 @@ export default {
       selected: '',
       activated: true,
       question_single: '1. What number makes a couple?',
-      question_multi: '2. What 2 or 3 options are best to select (wink, wink)?',
+      question_arrows: '2. What type of trend is visible in this chart?',
+      question_multi: '3. What 2 or 3 options are best to select (wink, wink)?',
       options_single: [
         {
           name: 'one',
@@ -165,6 +186,17 @@ export default {
         {
           name: 'four',
           text: 'number four'
+        }
+      ],
+      options_arrows: [
+        {
+          name: 'up',
+          text: 'Up-trend'
+        },
+        {
+          name: 'down',
+          text: 'Down-trend',
+          correct: true
         }
       ],
       options_multi: [
@@ -189,48 +221,12 @@ export default {
       ],
       feedback: [
         {
-          name: 'default',
-          text: 'This is feedback that will display regardless of whether or not the answer is correct. Especially useful for true or false.'
+          name: 'default-correct',
+          text: 'Correct'
         },
         {
-          name: 'hint-1',
-          text: 'this is a hint'
-        },
-        {
-          name: 'hint-2',
-          text: 'this is another hint'
-        },
-        {
-          name: 'correct',
-          text: 'general feedback if correct'
-        },
-        {
-          name: 'incorrect',
-          text: 'general feedback if incorrect'
-        },
-        {
-          name: 'three',
-          text: 'general feedback (3) if response is selected regardless if correct or not'
-        },
-        {
-          name: 'three-incorrect',
-          text: 'specific feedback (3) if selected option is incorrect'
-        },
-        {
-          name: 'three-correct',
-          text: 'specific feedback (3) if selected option is correct'
-        },
-        {
-          name: 'four',
-          text: 'general feedback (4) if response is selected regardless if correct or not'
-        },
-        {
-          name: 'four-incorrect',
-          text: 'specific feedback (4) if selected option is incorrect'
-        },
-        {
-          name: 'four-correct',
-          text: 'specific feedback (4) if selected option is correct'
+          name: 'default-incorrect',
+          text: 'Incorrect'
         }
       ],
       secondFeedback: [],

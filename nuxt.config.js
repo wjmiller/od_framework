@@ -65,6 +65,10 @@ export default {
     {
       src: '~plugins/vue-dialog',
       ssr: false
+    },
+    {
+      src: '~plugins/vue-awesome-countdown',
+      ssr: false
     }
   ],
 

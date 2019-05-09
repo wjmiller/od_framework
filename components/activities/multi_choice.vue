@@ -18,14 +18,11 @@
           </div>
         </slot>
       </div>
-      <div class="multi-choice-controls">
-        <b-btn
-          v-on:click="submitAnswer"
-          v-bind:disabled="completed">
-          {{buttonTitle}}
-        </b-btn>
-        <div>{{completedText}}</div>
-      </div>
+      <b-btn
+        v-on:click="submitAnswer"
+        v-bind:disabled="completed">
+        {{buttonTitle}}
+      </b-btn>
 
       <div v-if="hasFeedback">
         <feedback-display
@@ -242,28 +239,60 @@ export default {
             }
         }
     }
+
+    button {
+        display: block;
+        margin: 1.8rem 0 1.5rem;
+    }
 }
 
 .multi-choice {
-    .multi-choice-controls {
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-start;
-        margin-top: 1.8rem;
-        font-size: 1.4rem;
 
-        button {
-            margin-right: 1.2rem;
+    .feedback {
+        display: block;
+        opacity: 0;
+        margin-bottom: 3rem;
+        min-height: 3.9rem;
+        transition: opacity cubic-bezier(.71,.55,.62,1.57) 0.2s;
+
+        .feedback-messages {
+            background: none;
+            padding: 0;
+            border: 0;
+
+            p {
+                margin: 0;
+            }
+
+            .feedback-message {
+                padding: 0 0.7rem;
+
+                &:first-child {
+                    padding-top: 0.7rem;
+                }
+
+                &:last-child {
+                    padding-bottom: 0.7rem;
+                }
+            }
         }
 
-        div {
-            font-weight: 600;
-            align-self: center;
-            visibility: hidden;
+        .feedback-message.default-correct,
+        .feedback-message.default-incorrect {
 
-            &:before {
-                margin-right: 10px;
+            div {
+                font-weight: 600;
                 font-size: 1.3rem;
+                margin-bottom: 0.9rem;
+                /*
+                animation-duration: 0.4s;
+                animation-name: fadeAndScale;
+                animation-timing-function: cubic-bezier(.71,.55,.62,1.57);
+                */
+
+                &:before {
+                    margin-right: 5px;
+                }
             }
         }
     }
@@ -271,37 +300,44 @@ export default {
     .feedback-inactive {
         display: none;
     }
-}
 
-.feedback {
-    margin-top: 1.5rem;
-    min-height: 100px;
+    &.activity-completed {
+
+        .feedback {
+            opacity: 1;
+        }
+    }
 }
 
 .dark {
 
+    .questions {
+        .feedback-messages {
+            background: none;
+            border: 0;
+        }
+    }
+
     .multi-choice.activity-completed {
-        .multi-choice-controls {
+
+        .feedback-message.default-correct {
             div {
-                color: lighten($red, 8%);
-                visibility: visible;
+                color: darken($green, 5%);
 
                 &:before {
-                    content: '\e90b';
+                    content: '\e908';
                     font-family: 'custom-icons';
                 }
             }
         }
 
-        &.activity-correct {
-            .multi-choice-controls {
-                div {
-                    color: darken($green, 5%);
+        .feedback-message.default-incorrect {
+            div {
+                color: lighten($red, 8%);
 
-                    &:before {
-                        content: '\e908';
-                        font-family: 'custom-icons';
-                    }
+                &:before {
+                    content: '\e90b';
+                    font-family: 'custom-icons';
                 }
             }
         }
@@ -366,28 +402,32 @@ export default {
 
 .light {
 
+    .questions {
+        .feedback-messages {
+            background: none;
+            border: 0;
+        }
+    }
+
     .multi-choice.activity-completed {
-        .multi-choice-controls {
+        .feedback-message.default-correct {
             div {
-                color: $red;
-                visibility: visible;
+                color: $green-med;
 
                 &:before {
-                    content: '\e90b';
+                    content: '\e908';
                     font-family: 'custom-icons';
                 }
             }
         }
 
-        &.activity-correct {
-            .multi-choice-controls {
-                div {
-                    color: $green-med;
+        .feedback-message.default-incorrect {
+            div {
+                color: $red;
 
-                    &:before {
-                        content: '\e908';
-                        font-family: 'custom-icons';
-                    }
+                &:before {
+                    content: '\e90b';
+                    font-family: 'custom-icons';
                 }
             }
         }
@@ -447,4 +487,20 @@ export default {
         }
     }
 }
+/*
+@keyframes fadeAndScale {
+    0% {
+        opacity: 0;
+        transform: scale(.8, .8);
+    }
+    50% {
+        opacity: 0.75;
+        transform: scale(1.2, 1.2);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1, 1);
+    }
+}
+*/
 </style>

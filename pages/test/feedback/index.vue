@@ -22,8 +22,7 @@
           </div>
         </b-form-checkbox-group>
       </b-form-group>
-      <b-button variant="primary"
-                v-on:click="activatefeedback">activate feedback
+      <b-button v-on:click="activatefeedback">Activate Feedback
       </b-button>
     </b-col>
   </b-row>

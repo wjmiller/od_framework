@@ -14,3 +14,29 @@
     border-color: lighten($bgColor, $lightenPrcnt);
   }
 }
+
+@mixin game-button() {
+  background: $purple-med;
+  border-color: $purple-med;
+
+  &:active,
+  &:focus,
+  &:hover {
+    background: lighten($purple-med, 4%);
+    border-color: lighten($purple-med, 4%);
+  }
+
+  &.disabled, &:disabled  {
+    background-color: $dark-gray-med;
+    border-color: $dark-gray-med;
+    opacity: 0.4;
+
+      &:active,
+      &:focus,
+      &:hover {
+        background-color: $dark-gray-med;
+        border-color: $dark-gray-med;
+        opacity: 0.4;
+      }
+    }
+}

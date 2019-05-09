@@ -47,6 +47,7 @@ html {
 
 html, body {
   height: 100%;
+  touch-action: manipulation;
 }
 
 body {
@@ -239,14 +240,14 @@ section.view {
 
 .light {
   .btn-secondary.disabled, .btn-secondary:disabled  {
-    background-color: rgb(140, 140, 140);
-    border-color: rgb(140, 140, 140);
+    background-color: #6c757d;
+    border-color: #6c757d;
 
       &:active,
       &:focus,
       &:hover {
-        background-color: rgb(140, 140, 140);
-        border-color: rgb(140, 140, 140);
+        background-color: #6c757d;
+        border-color: #6c757d;
       }
     }
 }
@@ -288,6 +289,34 @@ section.view {
   opacity: 0.6;
 }
 
+.btn-info:active,
+.btn-info:focus,
+.btn-info:hover {
+  background-color: lighten($dark-gray-med, 20%);
+  border-color: lighten($dark-gray-med, 20%);
+  color: #fff;
+}
+
+.btn-info.disabled, .btn-info:disabled {
+  background-color: lighten($dark-gray-med, 20%);
+  border-color: lighten($dark-gray-med, 20%);
+  opacity: 0.3;
+  &:active,
+  &:focus,
+  &:hover {
+    background-color: lighten($dark-gray-med, 20%);
+    border-color: lighten($dark-gray-med, 20%);
+    opacity: 0.3;
+  }
+}
+
+.btn-info {
+  color: #fff;
+  background-color: lighten($dark-gray-med, 10%);
+  border-color: lighten($dark-gray-med, 10%);
+  border-radius: 50%;
+}
+
 
 //------------------------------------------------------
 // Button Variations
@@ -299,6 +328,50 @@ section.view {
     text-shadow: none;
     line-height: 3rem;
 }
+
+.close-btn {
+    position: relative;
+    font-size: 2.5rem;
+    line-height: 1rem;
+    padding: 0;
+}
+
+.dark {
+  .close-btn {
+      color: #fff;
+
+      &:active,
+      &:focus,
+      &:hover {
+          text-decoration: none;
+      }
+
+      &:active,
+      &:focus,
+      &:hover {
+          color: rgba(255, 255, 255, 0.6);
+      }
+  }
+}
+
+.light {
+  .close-btn {
+      color: $light-gray;
+
+      &:active,
+      &:focus,
+      &:hover {
+          text-decoration: none;
+      }
+
+      &:active,
+      &:focus,
+      &:hover {
+          color: lighten($light-gray, 15%);
+      }
+  }
+}
+
 
 // Dark/Light Theme Styles -----------------------------
 

@@ -13,7 +13,7 @@
                aria-label="plus sign"></i> Add</b-button>
         </div>
         <b-button variant="link"
-                  class="notes-close"
+                  class="close-btn"
                   v-on:click="closeNotes"><i class="icon-close"
              aria-label="close"></i></b-button>
       </b-col>
@@ -242,13 +242,6 @@ export default {
                     margin-top: 0.25rem;
                     padding: 0.3rem 1.2rem 0.3rem 0.9rem;
                 }
-
-                .notes-close {
-                    position: relative;
-                    font-size: 2.5rem;
-                    line-height: 1rem;
-                    padding: 0;
-                }
             }
         }
 
@@ -373,24 +366,6 @@ export default {
         border-top: 1px solid lighten($dark-blue, 10%);
         color: #fff;
 
-        .notes-pane-head .col {
-            .notes-close {
-                color: #fff;
-
-                &:active,
-                &:focus,
-                &:hover {
-                    text-decoration: none;
-                }
-
-                &:active,
-                &:focus,
-                &:hover {
-                    color: rgba(255, 255, 255, 0.6);
-                }
-            }
-        }
-
         textarea {
             background: rgba(255, 255, 255, 0.08);
             color: #fff;
@@ -418,24 +393,6 @@ export default {
         background-color: $light-gray-notes;
         color: $light-text-color;
         border-top: 1px solid $light-gray-med;
-
-        .notes-pane-head .col {
-            .notes-close {
-                color: $light-gray;
-
-                &:active,
-                &:focus,
-                &:hover {
-                    text-decoration: none;
-                }
-
-                &:active,
-                &:focus,
-                &:hover {
-                    color: lighten($light-gray, 15%);
-                }
-            }
-        }
 
         textarea {
             border: 1px solid $light-pane-border;
