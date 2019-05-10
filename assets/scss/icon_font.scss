@@ -1,11 +1,11 @@
 
 @font-face {
   font-family: 'custom-icons';
-  src:  url('~assets/fonts/custom.eot?ufwbqp');
-  src:  url('~assets/fonts/custom.eot?ufwbqp#iefix') format('embedded-opentype'),
-    url('~assets/fonts/custom.ttf?ufwbqp') format('truetype'),
-    url('~assets/fonts/custom.woff?ufwbqp') format('woff'),
-    url('~assets/fonts/custom.svg?ufwbqp#icomoon') format('svg');
+  src:  url('~assets/fonts/custom.eot?mwj8c2');
+  src:  url('~assets/fonts/custom.eot?mwj8c2#iefix') format('embedded-opentype'),
+    url('~assets/fonts/custom.ttf?mwj8c2') format('truetype'),
+    url('~assets/fonts/custom.woff?mwj8c2') format('woff'),
+    url('~assets/fonts/custom.svg?mwj8c2#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -135,6 +135,9 @@
 }
 .icon-gears:before {
   content: "\f085";
+}
+.icon-bell:before {
+  content: "\f0f3";
 }
 .icon-angle-right:before {
   content: "\f105";

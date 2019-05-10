@@ -1,5 +1,13 @@
 <template>
 <b-container>
+  <b-row class="btn-row">
+    <b-col>
+      <nuxt-link class="btn btn-secondary"
+                 to="/">
+        <fa :icon="['fas', 'chevron-left']"
+            aria-label="left arrow" /> Exit Activity</nuxt-link>
+    </b-col>
+  </b-row>
   <b-row>
     <b-col md="12">
       <activity-button-guess activity-id="activity-button-guess-1"
@@ -29,5 +37,5 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 </style>

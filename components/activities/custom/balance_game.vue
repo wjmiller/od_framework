@@ -9,27 +9,14 @@
              class="close-btn"><i class="icon-close"
            aria-label="close"></i></b-btn>
     </b-row>
-    <!--
-    <b-row>
-      <b-col>
-        <h2>Balance Price Game</h2>
-      </b-col>
-    </b-row>
-  -->
     <b-row>
       <b-col class="game-toolbar">
 
-        <div class="game-timer">
-          <no-ssr>
-            <vac ref="gameTimer"
-                 v-bind:left-time="levelTimeEnd * tick"
-                 v-bind:auto-start="false">
-              <span slot="before">00:00</span>
-              <span slot="process"
-                    slot-scope="{ timeObj }">{{ `${timeObj.m}:${timeObj.s}` }}</span>
-              <span slot="finish">Level Finished!</span>
-            </vac>
-          </no-ssr>
+        <div class="game-timer"
+             v-bind:class="{'opening': !showTime && !levelOver, 'trading': showTime, 'closing': levelOver}">
+          <span v-if="!showTime && !levelOver">Opening Bell</span>
+          <span v-if="showTime">{{hoursLeft}} hrs to trade</span>
+          <span v-if="levelOver && !showTime">Closing Bell</span>
         </div>
       </b-col>
     </b-row>
@@ -113,6 +100,7 @@ export default {
       levelTime: 1, //current time of level
       levelTimeEnd: 60, //time ends at this point for each level, represents how many ticks will
       levelOver: false,
+      showTime: false,
       startingPrice: 10000, //default level price
       price: 10000, //current price, set as integer for two decimal places on display
       targetPrice: 0, //level-specific target price
@@ -209,7 +197,7 @@ export default {
       this.$emit( 'close' )
     },
     startTimer() {
-      this.$refs.gameTimer.startCountdown( 'restart' )
+      this.showTime = true;
       this.$options.timerInterval = setInterval( () => {
         if ( this.autoPricer ) {
           this.autoPrice()
@@ -272,7 +260,7 @@ export default {
       console.log( JSON.stringify( data ) )
       //push data to activeLevel
       this.activeLevel.ticks.push( data )
-      this.setProcessed(data)
+      this.setProcessed( data )
 
       //flush filled orders and add new orders
       this.ordersFilled = this.ordersFilled + totalFilled
@@ -298,12 +286,12 @@ export default {
     setProcessed() {
       this.processed.unfilled.buy = this.orders.buy
       this.processed.unfilled.sell = this.orders.sell
-      setTimeout(() => {
+      setTimeout( () => {
         this.processed.unfilled.buy = this.unfilled.buy
         this.processed.unfilled.sell = this.unfilled.sell
         this.processed.filled.buy = this.filled.buy
         this.processed.filled.sell = this.filled.sell
-      }, this.tick/2)
+      }, this.tick / 2 )
     },
     segmentTicks( num ) {
       if ( num <= 0 ) num = 1
@@ -388,7 +376,11 @@ export default {
     },
     levelIsActive() {
       return this.activeLevel ? true : false
-    }
+    },
+    hoursLeft() {
+      return ( 6.5 - ( ( this.levelTime - 1 ) / 9.2308 ) )
+        .toFixed( 2 )
+    },
 
   },
   watch: {
@@ -396,6 +388,7 @@ export default {
       this.setTick()
       if ( this.levelTime === this.levelTimeEnd ) {
         this.levelOver = true;
+        this.showTime = false;
         this.endLevel()
       }
     }
@@ -420,6 +413,7 @@ export default {
 
 .fullscreen {
     position: fixed;
+    background: $dark-body-bg;
     top: 0;
     bottom: 0;
     left: 0;
@@ -437,15 +431,14 @@ export default {
     transform: translate(-50%, -50%);
     transform-origin: center center;
     z-index: 1400;
-    font-size: 2.4rem;
+    font-size: 2.9rem;
 
     &.level-over {
         .game-toolbar {
             .game-timer {
-                color: #fff;
-
                 &:before {
                     content: "";
+                    color: $gold;
                     margin-right: 0;
                 }
             }
@@ -469,36 +462,55 @@ export default {
         .close-btn {
             margin-top: 15px;
             margin-right: 20px;
-            font-size: 9rem;
+            font-size: 6rem;
         }
     }
 
     h2 {
-        font-size: 3.2rem;
+        font-size: 3.7rem;
+        color: #fff;
     }
 
     h3 {
-        font-size: 2.2rem;
+        font-size: 2.7rem;
         text-align: center;
+        color: #fff;
     }
 
     .game-toolbar {
         display: flex;
         flex-direction: row;
         justify-content: center;
-        margin: 1.5rem 0 6rem;
+        margin: 0 0 7rem;
 
         .game-timer {
             align-self: center;
             font-weight: 600;
-            font-size: 3rem;
+            font-size: 3.5rem;
+            color: $dark-header-color;
 
             &:before {
-                content: "\e90e";
                 font-family: "custom-icons";
-                margin-right: 0.6rem;
                 position: relative;
+                color: $gold;
                 top: 0.15rem;
+            }
+
+            &.closing,
+            &.opening {
+                &:before {
+                    content: "\f0f3";
+                    font-size: 3rem;
+                    margin-right: 0.9rem;
+                }
+            }
+
+            &.trading {
+                &:before {
+                    content: "\e90e";
+                    font-size: 3rem;
+                    margin-right: 0.2rem;
+                }
             }
         }
     }
@@ -517,6 +529,8 @@ export default {
 
             span {
                 position: absolute;
+                border: 5px solid #2B314D;
+                background: #22263C;
                 left: 107px;
                 width: 66px;
                 height: 50px;
@@ -524,17 +538,18 @@ export default {
                 font-size: 30px;
                 font-weight: 600;
                 text-align: center;
-                padding-top: 10px;
+                padding-top: 9px;
                 border-radius: 25px;
                 z-index: 1400;
+                color: #fff;
             }
 
             span.unfilled-label {
-                top: 100px;
+                top: 112px;
             }
 
             span.filled-label {
-                top: 325px;
+                top: 330px;
             }
 
             ul {
@@ -549,18 +564,43 @@ export default {
                     width: 100%;
                     height: 8px;
                     margin-bottom: 5px;
+                    border-radius: 4px;
                 }
             }
 
             ul.unfilled {
                 flex-direction: column-reverse;
                 justify-content: flex-start;
+                border-bottom: 8px solid #fff;
             }
 
             ul.filled {
                 margin-top: 5px;
                 flex-direction: column;
                 justify-content: flex-start;
+            }
+
+        }
+
+        .orders-buy {
+            ul.filled li,
+            ul.unfilled li {
+                background: $green;
+            }
+
+            ul.filled li {
+                opacity: 0.6;
+            }
+        }
+
+        .orders-sell {
+            ul.filled li,
+            ul.unfilled li {
+                background: $red;
+            }
+
+            ul.filled li {
+                opacity: 0.6;
             }
         }
     }
@@ -573,19 +613,21 @@ export default {
         h3 {
             align-self: center;
             margin-bottom: 8.5rem;
+            color: #fff;
         }
 
         span {
             display: block;
             align-self: center;
-            font-size: 4.5rem;
+            font-size: 5rem;
             font-weight: 600;
             margin-bottom: 4rem;
+            color: #fff;
         }
 
         div {
             align-self: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2.8rem;
 
             button {
                 font-size: 3rem;
@@ -623,19 +665,19 @@ export default {
     }
 
     @media(min-width: 500px) {
-        font-size: 2.4rem;
+        font-size: 2.9rem;
 
     }
 
     @media(min-width: 900px) {
-        font-size: 2rem;
+        font-size: 2.5rem;
 
         h2 {
-            font-size: 2.8rem;
+            font-size: 3.3rem;
         }
 
         h3 {
-            font-size: 1.8rem;
+            font-size: 2.3rem;
         }
 
         .row:first-child {
@@ -655,7 +697,11 @@ export default {
     }
 
     @media(min-width: 1400px) {
-        font-size: 1.6rem;
+        font-size: 2.1rem;
+
+        .game-toolbar {
+            margin: 1.5rem 0 7rem;
+        }
     }
 
 }
@@ -692,13 +738,19 @@ export default {
     transform: translateY(250px);
     opacity: 0;
 }
-
+/*
 .dark {
     .fullscreen {
         background: $dark-body-bg;
     }
 
     .custom-balance-game {
+
+        .game-timer {
+            &:before {
+                color: $gold;
+            }
+        }
 
         .game-toolbar {
             .game-timer {
@@ -709,7 +761,7 @@ export default {
             .orders-buy,
             .orders-sell {
                 span {
-                    border: 4px solid #2B314D;
+                    border: 5px solid #2B314D;
                     background: #22263C;
                 }
 
@@ -750,28 +802,34 @@ export default {
 
     .custom-balance-game {
 
-        .game-toolbar {
-            .game-timer {
-                color: $light-header-color;
+        .game-timer {
+            &:before {
+                color: $gold;
             }
         }
+
         .orders {
             .orders-buy,
             .orders-sell {
+
+                h3 {
+                    color: $light-text-color;
+                }
+
                 span {
-                    border: 4px solid #8E8F98;
+                    border: 5px solid $light-gray-med-dark;
                     background: #fff;
                 }
 
                 ul.unfilled {
-                    border-bottom: 8px solid lighten($light-gray-dark,10%);
+                    border-bottom: 8px solid $light-text-color;
                 }
             }
 
             .orders-buy {
                 ul.filled li,
                 ul.unfilled li {
-                    background: $green-med;
+                    background: darken($green-med, 5%);
                 }
 
                 ul.filled li {
@@ -790,6 +848,13 @@ export default {
                 }
             }
         }
+
+        .price-controls {
+            h3 {
+                color: $light-text-color;
+            }
+        }
     }
 }
+*/
 </style>

@@ -1,5 +1,13 @@
 <template>
 <b-container>
+  <b-row class="btn-row">
+    <b-col>
+      <nuxt-link class="btn btn-secondary"
+                 to="/">
+        <fa :icon="['fas', 'chevron-left']"
+            aria-label="left arrow" /> Exit Multiple Choice</nuxt-link>
+    </b-col>
+  </b-row>
   <b-row>
     <b-col md="8"
            class="questions">

@@ -4,6 +4,7 @@ export const state = () => ( {
   userLessons: [],
   userActivities: [],
   userNotes: [],
+  user: {},
   course: null,
   lesson: null
 } );

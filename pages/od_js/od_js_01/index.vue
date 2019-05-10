@@ -27,6 +27,21 @@
     </b-col>
   </b-row>
 
+  <b-row>
+    <b-col>
+      <h2>Balance Price Game</h2>
+      <p style="font-style: italic;">Step in to the shoes of a price setter and adjust price to balance buy and sell orders on trading day.</p>
+      <img v-on:click="toggleGame"
+           class="game-poster"
+           src="~/assets/images/balance_price.png" />
+      <transition name="fade">
+        <custom-balance-game v-if="gameOpen"
+                             v-bind:open="gameOpen"
+                             v-on:close="toggleGame" />
+      </transition>
+    </b-col>
+  </b-row>
+
   <!-- Lesson Activities -->
   <activity-group v-for="(activity, index) in data.activities"
                   v-bind:key="`act-group-${index}`"
@@ -115,6 +130,7 @@ import VideoPlayer from '~/components/activities/video_player'
 import AppData from '~/assets/data/app_data.js'
 import MultiChoice from '~/components/activities/multi_choice'
 import FeedbackDisplay from '~/components/activities/feedback'
+import CustomBalanceGame from '~/components/activities/custom/balance_game'
 //import xAPI from '~/plugins/xapi.js'
 
 import {
@@ -230,14 +246,17 @@ export default {
         }
       ],
       secondFeedback: [],
-      feedbackToDisplay: []
+      feedbackToDisplay: [],
+      startActivated: true,
+      gameOpen: false
     }
   },
   components: {
     ActivityGroup,
     VideoPlayer,
     MultiChoice,
-    FeedbackDisplay
+    FeedbackDisplay,
+    CustomBalanceGame
   },
   watch: {
     user( auth ) {
@@ -267,6 +286,9 @@ export default {
         text: `You have ${totalCorrect} options marked correctly.`
       } ]
       this.feedbackToDisplay = [ 'default' ]
+    },
+    toggleGame() {
+      this.gameOpen = !this.gameOpen
     }
   }
 }
@@ -325,6 +347,16 @@ export default {
         .course-title {
             color: $light-text-color;
         }
+    }
+}
+
+.game-poster {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 0 5rem;
+
+    &:hover {
+        cursor: pointer;
     }
 }
 </style>
