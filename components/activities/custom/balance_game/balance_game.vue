@@ -365,6 +365,7 @@ export default {
     previousTick() {
       return this.activeLevel ? this.activeLevel.ticks[ this.activeLevel.ticks.length - 1 ] : null
     }
+
   },
   watch: {
     levelTime() {
@@ -495,14 +496,13 @@ export default {
                 left: 107px;
                 width: 66px;
                 height: 50px;
-                border: 4px solid #2B314D;
-                background: #22263C;
                 line-height: 22px;
                 font-size: 30px;
                 font-weight: 600;
                 text-align: center;
                 padding-top: 10px;
                 border-radius: 25px;
+                z-index: 1400;
             }
 
             span.unfilled-label {
@@ -531,37 +531,12 @@ export default {
             ul.unfilled {
                 flex-direction: column-reverse;
                 justify-content: flex-start;
-                border-bottom: 8px solid #fff;
-
-                li {}
             }
 
             ul.filled {
                 margin-top: 5px;
                 flex-direction: column;
                 justify-content: flex-start;
-            }
-        }
-
-        .orders-buy {
-            ul.filled li,
-            ul.unfilled li {
-                background: $green;
-            }
-
-            ul.filled li {
-                opacity: 0.6;
-            }
-        }
-
-        .orders-sell {
-            ul.filled li,
-            ul.unfilled li {
-                background: $red;
-            }
-
-            ul.filled li {
-                opacity: 0.6;
             }
         }
     }
@@ -698,11 +673,99 @@ export default {
     .fullscreen {
         background: $dark-body-bg;
     }
+
+    .custom-balance-game {
+
+        .game-toolbar {
+            .game-timer {
+                color: $dark-header-color;
+            }
+        }
+        .orders {
+            .orders-buy,
+            .orders-sell {
+                span {
+                    border: 4px solid #2B314D;
+                    background: #22263C;
+                }
+
+                ul.unfilled {
+                    border-bottom: 8px solid #fff;
+                }
+            }
+
+            .orders-buy {
+                ul.filled li,
+                ul.unfilled li {
+                    background: $green;
+                }
+
+                ul.filled li {
+                    opacity: 0.6;
+                }
+            }
+
+            .orders-sell {
+                ul.filled li,
+                ul.unfilled li {
+                    background: $red;
+                }
+
+                ul.filled li {
+                    opacity: 0.6;
+                }
+            }
+        }
+    }
 }
 
 .light {
     .fullscreen {
         background: #fff;
+    }
+
+    .custom-balance-game {
+
+        .game-toolbar {
+            .game-timer {
+                color: $light-header-color;
+            }
+        }
+        .orders {
+            .orders-buy,
+            .orders-sell {
+                span {
+                    border: 4px solid #8E8F98;
+                    background: #fff;
+                }
+
+                ul.unfilled {
+                    border-bottom: 8px solid lighten($light-gray-dark,10%);
+                }
+            }
+
+            .orders-buy {
+                ul.filled li,
+                ul.unfilled li {
+                    background: $green-med;
+                }
+
+                ul.filled li {
+                    opacity: 0.8;
+                }
+            }
+
+            .orders-sell {
+                ul.filled li,
+                ul.unfilled li {
+                    background: darken($red, 10%);
+                }
+
+                ul.filled li {
+                    opacity: 0.8;
+                }
+            }
+        }
     }
 }
 </style>
