@@ -38,42 +38,42 @@
         <div class="orders">
           <div class="orders-buy">
             <h3>Unfilled Buy</h3>
-            <span class="unfilled-label">{{unfilled.buy}}</span>
+            <span class="unfilled-label">{{processed.unfilled.buy}}</span>
             <transition-group name="drop-unfilled"
                               class="unfilled"
                               tag="ul">
-              <li v-for="(order, ix) in unfilled.buy"
-                  v-bind:key="'unfilled-buy-' + ix"></li>
+              <li v-for="order in processed.unfilled.buy"
+                  v-bind:key="'unfilled-buy-' + order"></li>
             </transition-group>
             <transition-group name="drop-filled"
                               class="filled"
                               tag="ul">
 
-              <li v-for="order in filled.buy"
-                  v-bind:key="'filled-buy-' + ix"></li>
+              <li v-for="order in processed.filled.buy"
+                  v-bind:key="'filled-buy-' + order"></li>
             </transition-group>
             <h3>Filled Buy</h3>
-            <span class="filled-label">{{filled.buy}}</span>
+            <span class="filled-label">{{processed.filled.buy}}</span>
           </div>
           <div class="orders-sell">
             <h3>Unfilled Sell</h3>
-            <span class="unfilled-label">{{unfilled.sell}}</span>
+            <span class="unfilled-label">{{processed.unfilled.sell}}</span>
             <transition-group name="drop-unfilled"
                               class="unfilled"
                               tag="ul">
-              <li v-for="(order, ix) in unfilled.sell"
-                  v-bind:key="'unfilled-sell-' + ix"></li>
+              <li v-for="order in processed.unfilled.sell"
+                  v-bind:key="'unfilled-sell-' + order"></li>
             </transition-group>
             <transition-group name="drop-filled"
                               class="filled"
                               tag="ul">
 
-              <li v-for="order in filled.sell"
-                  v-bind:key="'filled-sell-' + ix"></li>
+              <li v-for="order in processed.filled.sell"
+                  v-bind:key="'filled-sell-' + order"></li>
             </transition-group>
             </ul>
             <h3>Filled Sell</h3>
-            <span class="filled-label">{{filled.sell}}</span>
+            <span class="filled-label">{{processed.filled.sell}}</span>
           </div>
         </div>
       </b-col>
@@ -84,19 +84,19 @@
           <div>
             <b-btn variant="info"
                    v-on:click="increment(-1)"
-                   v-bind:disabled="!activeLevel">
+                   v-bind:disabled="!levelIsActive">
               <fa :icon="['fas', 'minus']"
                   aria-label="lower price" />
             </b-btn>
             <b-btn variant="info"
                    v-on:click="increment(1)"
-                   v-bind:disabled="!activeLevel">
+                   v-bind:disabled="!levelIsActive">
               <fa :icon="['fas', 'plus']"
                   aria-label="raise price" />
             </b-btn>
           </div>
           <b-btn v-on:click="startLevel()"
-                 v-bind:disabled="activeLevel"> Start Level {{level + 1}}</b-btn>
+                 v-bind:disabled="levelIsActive"> Start Level {{level + 1}}</b-btn>
         </div>
       </b-col>
     </b-row>
@@ -116,7 +116,7 @@ export default {
       startingPrice: 10000, //default level price
       price: 10000, //current price, set as integer for two decimal places on display
       targetPrice: 0, //level-specific target price
-      tick: 1500, //milliseconds, how often orders will be processed and new orders will appear,
+      tick: 2000, //milliseconds, how often orders will be processed and new orders will appear,
       avgOrdersPerTick: 10,
       ordersFilled: 0, //current number of orders filled
       emotionalReaction: 0.8, //ratio that provides opposite orders, for example, if a big increase in price because no one is selling, then sell orders are added: price change * emotionalReaction
@@ -133,6 +133,16 @@ export default {
       unfilled: { // current number of unfilled orders
         buy: 0,
         sell: 0
+      },
+      processed: {
+        filled: {
+          buy: 0,
+          sell: 0
+        },
+        unfilled: {
+          buy: 0,
+          sell: 0
+        }
       },
       levels: [
         {
@@ -262,6 +272,7 @@ export default {
       console.log( JSON.stringify( data ) )
       //push data to activeLevel
       this.activeLevel.ticks.push( data )
+      this.setProcessed(data)
 
       //flush filled orders and add new orders
       this.ordersFilled = this.ordersFilled + totalFilled
@@ -283,6 +294,16 @@ export default {
       this.targetPrice = this.startingPrice * this.activeLevel.targetPrice
       this.ordersFilled = 0
       this.levelTime = 1
+    },
+    setProcessed() {
+      this.processed.unfilled.buy = this.orders.buy
+      this.processed.unfilled.sell = this.orders.sell
+      setTimeout(() => {
+        this.processed.unfilled.buy = this.unfilled.buy
+        this.processed.unfilled.sell = this.unfilled.sell
+        this.processed.filled.buy = this.filled.buy
+        this.processed.filled.sell = this.filled.sell
+      }, this.tick/2)
     },
     segmentTicks( num ) {
       if ( num <= 0 ) num = 1
@@ -364,6 +385,9 @@ export default {
     },
     previousTick() {
       return this.activeLevel ? this.activeLevel.ticks[ this.activeLevel.ticks.length - 1 ] : null
+    },
+    levelIsActive() {
+      return this.activeLevel ? true : false
     }
 
   },
