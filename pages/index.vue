@@ -8,6 +8,7 @@
   <nuxt-link to="/test/multichoice">Multi Choice</nuxt-link>
   <nuxt-link to="/test/game">Game</nuxt-link>
   <nuxt-link to="/test/activity">Activity</nuxt-link>
+  <nuxt-link to="/test/unfilledslider">Unfilled Slider</nuxt-link>
 </div>
 </template>
 
