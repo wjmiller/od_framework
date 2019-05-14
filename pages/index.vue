@@ -9,6 +9,7 @@
   <nuxt-link to="/test/game">Game</nuxt-link>
   <nuxt-link to="/test/activity">Activity</nuxt-link>
   <nuxt-link to="/test/unfilledslider">Unfilled Slider</nuxt-link>
+  <nuxt-link to="/test/unfilledselect">Unfilled Select</nuxt-link>
 </div>
 </template>
 

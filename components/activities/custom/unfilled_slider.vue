@@ -30,15 +30,15 @@
         <vue-slider v-model="price"
                     v-bind:direction="'btt'"
                     v-bind:process="process"
-                    v-bind:min="0"
-                    v-bind:max="10"
+                    v-bind:min="'-5'"
+                    v-bind:max="'5'"
                     v-bind:height="'100%'"
                     v-bind:tooltip="'none'"
                     v-on:change="calcOrders()"
-                    v-bind:class="{'price-up':price > 5, 'price-down':price < 5}"></vue-slider>
+                    v-bind:class="{'price-up':price > 0, 'price-down':price < 0}"></vue-slider>
       </div>
       <span class="price-label"
-            v-if="labels">Price <i v-bind:class="{'price-up':price > 5, 'price-down':price < 5}"></i></span>
+            v-if="labels">Price <i v-bind:class="{'price-up':price > 0, 'price-down':price < 0}"></i></span>
     </div>
   </b-col>
 </b-row>
@@ -50,21 +50,21 @@ export default {
   props: [ 'labels' ],
   data() {
     return {
-      buyOrderLabel: 'Buy 100',
-      sellOrderLabel: 'Sell 100',
+      buyOrderLabel: 'Buy 100M',
+      sellOrderLabel: 'Sell 100M',
       process: dotsPos => [ [ 50, dotsPos[ 0 ] ] ],
       buyOrders: 0,
       sellOrders: 0,
-      price: 5
+      price: 0
     }
   },
   methods: {
     calcOrders() {
-      if ( this.price > 5 ) {
-        this.buyOrders = this.price - 5
+      if ( this.price > 0 ) {
+        this.buyOrders = this.price
         this.sellOrders = 0
-      } else if ( this.price < 5 ) {
-        this.sellOrders = 5 - this.price
+      } else if ( this.price < 0 ) {
+        this.sellOrders = - +this.price
         this.buyOrders = 0
       } else {
         this.buyOrders, this.sellOrders = 0
@@ -169,7 +169,7 @@ export default {
             justify-content: flex-start;
             height: 265px;
 
-            > div {
+            .price-slider {
                 height: 80%;
                 width: 160px;
                 margin: 15px 10px 0 0;
@@ -324,6 +324,46 @@ export default {
                     li {
                         background: darken($red, 5%);
                     }
+                }
+            }
+        }
+
+        .price {
+            .price-slider-cont {
+                .price-slider {
+                    .vue-slider {
+                        .vue-slider-dot {
+
+                            .vue-slider-dot-handle {
+                                border: 6px solid lighten($light-gray-med-dark, 10%);
+
+                                &:before {
+                                    color: lighten($light-gray-med-dark, 10%);
+                                }
+                            }
+
+                            &:before {
+                                background: lighten($light-gray-med-dark, 10%);
+                            }
+
+                            &:after {
+                                background: lighten($light-gray-med-dark, 10%);
+                            }
+                        }
+
+                        &.price-up {
+                            .vue-slider-process {
+                                background: $green-med !important;
+                            }
+                        }
+
+                        &.price-down {
+                            .vue-slider-process {
+                                background: darken($red, 5%) !important;
+                            }
+                        }
+                    }
+
                 }
             }
         }
