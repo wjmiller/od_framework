@@ -3,8 +3,30 @@
   <b-row>
     <b-col cols="12">
       <candle-chart
-      v-bind:prices="[1,2,3,4,5,6,7,8,9,10]"
       v-bind:candles="candles"
+      v-bind:height="500"
+      >
+      </candle-chart>
+    </b-col>
+  </b-row>
+  <b-row>
+    <b-col>
+      <b-button
+        v-on:click="changeData"
+      >
+      Change Data
+    </b-button>
+    </b-col>
+  </b-row>
+  <b-row>
+    <b-col cols="12">
+      <candle-chart
+      v-bind:candles="candles"
+      v-bind:height="300"
+      v-bind:force-range="[0,20]"
+      v-bind:price-display="5"
+      v-bind:candle-width="20"
+      v-bind:candle-spacing="30"
       >
       </candle-chart>
     </b-col>
@@ -20,8 +42,18 @@ export default {
   data() {
     return {
       candles: [
-        {open: 3, close: 8, high: 10, low: 1},
-        {open: 6, close: 4, high: 7, low: 3}
+        {open: 3.40, close: 8.20, high: 10, low: 1.5},
+        {open: 6, close: 4, high: 10, low: 3},
+        {open: 0, close: 2, high: 8, low: 0}
+      ]
+    }
+  },
+  methods: {
+    changeData() {
+      this.candles = [
+        {open: 6, close: 2, high: 7, low: 1},
+        {open: 4, close: 5, high: 13, low: 2},
+        {open: 1, close: 2, high: 8, low: 1}
       ]
     }
   },
