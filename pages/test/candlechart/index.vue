@@ -18,6 +18,19 @@
     </b-button>
     </b-col>
   </b-row>
+  <b-row>
+    <b-col cols="12">
+      <candle-chart
+      v-bind:candles="candles"
+      v-bind:height="300"
+      v-bind:force-range="[0,20]"
+      v-bind:price-display="5"
+      v-bind:candle-width="20"
+      v-bind:candle-spacing="30"
+      >
+      </candle-chart>
+    </b-col>
+  </b-row>
 </b-container>
 </template>
 
