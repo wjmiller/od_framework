@@ -524,6 +524,18 @@ export default {
             .price-slider-cont {
                 .price-slider {
                     .vue-slider {
+
+                        &.price-up {
+                            .vue-slider-process {
+                                background: $green-med !important;
+                            }
+                        }
+
+                        &.price-down {
+                            .vue-slider-process {
+                                background: darken($red, 5%) !important;
+                            }
+                        }
                         .vue-slider-dot {
 
                             .vue-slider-dot-handle {

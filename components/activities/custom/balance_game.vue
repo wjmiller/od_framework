@@ -14,9 +14,9 @@
 
         <div class="game-timer"
              v-bind:class="{'opening': !showTime && !levelOver, 'trading': showTime, 'closing': levelOver}">
-          <span v-if="!showTime && !levelOver">Opening Bell</span>
-          <span v-if="showTime">{{hoursLeft}} hrs to trade</span>
-          <span v-if="levelOver && !showTime">Closing Bell</span>
+          <span v-if="!showTime && !levelOver">OPENING BELL</span>
+          <span v-if="showTime">{{hoursLeft}} HRS TO TRADE</span>
+          <span v-if="levelOver && !showTime">CLOSING BELL</span>
         </div>
       </b-col>
     </b-row>
@@ -24,7 +24,7 @@
       <b-col cols="7">
         <div class="orders">
           <div class="orders-buy">
-            <h3>Unfilled Buy</h3>
+            <h3>UNFILLED BUY</h3>
             <span class="unfilled-label">{{processed.unfilled.buy}}</span>
             <transition-group name="drop-unfilled"
                               class="unfilled"
@@ -39,11 +39,11 @@
               <li v-for="order in processed.filled.buy"
                   v-bind:key="'filled-buy-' + order"></li>
             </transition-group>
-            <h3>Filled Buy</h3>
+            <h3>FILLED BUY</h3>
             <span class="filled-label">{{processed.filled.buy}}</span>
           </div>
           <div class="orders-sell">
-            <h3>Unfilled Sell</h3>
+            <h3>UNFILLED SELL</h3>
             <span class="unfilled-label">{{processed.unfilled.sell}}</span>
             <transition-group name="drop-unfilled"
                               class="unfilled"
@@ -59,14 +59,14 @@
                   v-bind:key="'filled-sell-' + order"></li>
             </transition-group>
             </ul>
-            <h3>Filled Sell</h3>
+            <h3>FILLED SELL</h3>
             <span class="filled-label">{{processed.filled.sell}}</span>
           </div>
         </div>
       </b-col>
       <b-col cols="5">
         <div class="price-controls">
-          <h3>Price</h3>
+          <h3>PRICE</h3>
           <span>{{displayPrice}}</span>
           <div>
             <b-btn variant="info"
@@ -467,12 +467,12 @@ export default {
     }
 
     h2 {
-        font-size: 3.7rem;
+        font-size: 3.2rem;
         color: #fff;
     }
 
     h3 {
-        font-size: 2.7rem;
+        font-size: 2rem;
         text-align: center;
         color: #fff;
     }
@@ -481,26 +481,26 @@ export default {
         display: flex;
         flex-direction: row;
         justify-content: center;
-        margin: 0 0 7rem;
+        margin: 0 0 5rem;
 
         .game-timer {
             align-self: center;
             font-weight: 600;
-            font-size: 3.5rem;
-            color: $dark-header-color;
+            font-size: 2rem;
+            color: #FFFFFF;
+            background: rgba(255, 255, 255, 0.07);
+            padding: 1rem 2.4rem;
+            border-radius: 3rem;
 
             &:before {
                 font-family: "custom-icons";
-                position: relative;
-                color: $gold;
-                top: 0.15rem;
             }
 
             &.closing,
             &.opening {
                 &:before {
                     content: "\f0f3";
-                    font-size: 3rem;
+                    font-size: 1.5rem;
                     margin-right: 0.9rem;
                 }
             }
@@ -508,7 +508,7 @@ export default {
             &.trading {
                 &:before {
                     content: "\e90e";
-                    font-size: 3rem;
+                    font-size: 1.5rem;
                     margin-right: 0.2rem;
                 }
             }
@@ -564,7 +564,7 @@ export default {
                     width: 100%;
                     height: 8px;
                     margin-bottom: 5px;
-                    border-radius: 4px;
+                    //border-radius: 4px;
                 }
             }
 
@@ -677,7 +677,7 @@ export default {
         }
 
         h3 {
-            font-size: 2.3rem;
+            font-size: 1.4rem;
         }
 
         .row:first-child {
