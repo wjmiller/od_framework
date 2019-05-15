@@ -69,6 +69,10 @@ export default {
     {
       src: '~plugins/vue-awesome-countdown',
       ssr: false
+    },
+    {
+      src: '~plugins/vue-slider-component',
+      ssr: false
     }
   ],
 
