@@ -1,28 +1,26 @@
 <!-- Template -->
 <template lang="html">
-<svg id="chart"
-         v-bind:width="chartWidth"
-         v-bind:height="chartHeight"
-         v-on:click="checkData">
+<div style="padding:1rem;overflow:visible;">
+  <svg
+    class="candle-chart"
+    v-bind:width="chartWidth"
+    v-bind:height="`${height + chartPadding}px`"
+  >
       <g>
         <!-- Chart Background -->
-        <rect width="100%"
-              height="100%"
+        <rect v-bind:width="chartWidth"
+              v-bind:height="chartHeight"
               class="chart-bg"></rect>
-        <!-- Price Axis Label -->
-        <text x="0"
-              y="15"
-              class="chart-num">Price</text>
         <!-- Price Labels -->
         <text x="0"
-              v-for="(price,index) in priceReverse"
+              v-for="(price, index) in priceReverse"
               v-bind:key="'price-' + index"
-              v-bind:y="priceOffset + (priceLineHeight * index)"
-              class="chart-num">{{price}}</text>
+              v-bind:y="pricePosition(price)"
+              class="chart-num">{{displayPrice(price)}}</text>
         <!-- Price Lines -->
-        <line v-for="(price,index) in prices"
-              v-bind:y1="priceOffset + (priceLineHeight * index)"
-              v-bind:y2="priceOffset + (priceLineHeight * index)"
+        <line v-for="(price, index) in prices"
+              v-bind:y1="pricePosition(price)"
+              v-bind:y2="pricePosition(price)"
               v-bind:key="'line-' + index"
               class="chart-pline"
               v-bind:x1="priceOffset"
@@ -30,22 +28,23 @@
       </g>
       <!-- Candlestick -->
       <g
-        v-for="(candle, index) in candles"
+        v-for="(candle, index) in chartCandles"
         v-bind:key="`candle-${index}`">
         <!-- Candle Top Wick -->
-        <line v-bind:x1="155 * (index + 1)"
-              v-bind:x2="155 * (index + 1)"
-              v-bind:y1="candle.high"
-              v-bind:y2="candle.low"
+        <line v-bind:x1="candle.line.x1"
+              v-bind:x2="candle.line.x2"
+              v-bind:y1="candle.line.y1"
+              v-bind:y2="candle.line.y2"
               class="candle-wick" />
         <!-- Candle Body -->
-        <rect width="60"
-              v-bind:x="125 * (index + 1)"
-              v-bind:y="candle.open"
-              v-bind:height="candle.close"
-              v-bind:class="`candle-${candle.close > candle.open ? 'green' : 'red'}`" />
+        <rect v-bind:width="candle.rect.width"
+              v-bind:x="candle.rect.x"
+              v-bind:y="candle.rect.y"
+              v-bind:height="candle.rect.height"
+              v-bind:class="`candle-${candle.rect.color}`" />
       </g>
     </svg>
+  </div>
   </template>
 
 
@@ -65,13 +64,28 @@ export default {
       type: Number,
       default: 100
     },
-    prices: {
-      type: Array,
-      default() { return [] }
-    },
     priceOffset: {
       type: Number,
       default: 50
+    },
+    chartPadding: {
+      type: Number,
+      default: 40
+    },
+    forceRange: {
+      type: Array
+    },
+    priceDisplay: {
+      type: Number,
+      default: 10
+    },
+    candleWidth: {
+      type: Number,
+      default: 30
+    },
+    candleSpacing: {
+      type: Number,
+      default: 70
     }
   },
   data() {
@@ -79,14 +93,72 @@ export default {
     }
   },
   computed: {
+    priceRange() {
+      if (this.forceRange && this.forceRange.length > 0) {
+        return this.forceRange
+      } else {
+        const priceValues = [].concat(...this.candles.map(item => [item.high, item.low]))
+        return [Math.min(...priceValues), Math.max(...priceValues)]
+      }
+    },
+    priceTick() {
+      return (this.priceRange[1] - this.priceRange[0])/this.priceDisplay
+    },
+    prices() {
+      console.log(this.priceRange)
+      console.log([this.priceRange[0], ...Array(this.priceDisplay)].map((_, ix) => this.priceTick * (ix + 1)))
+      return [...Array(this.priceDisplay + 1)].map((_, ix) => ix === 0 ? this.priceRange[0] : this.priceRange[0] + (this.priceTick * (ix)))
+    },
+    chartOffset() { return this.chartPadding/2 },
     chartWidth() { return `${this.width}%` },
     chartHeight() { return `${this.height}px` },
     priceLength() { return this.prices.length },
-    priceReverse() { return this.prices.slice().sort((a,b) => b - a) },
-    priceLineHeight() { return this.height/this.priceLength }
+    priceReverse() { console.log(this.prices);
+      return this.prices.slice().sort((a,b) => b - a) },
+    priceLineHeight() { return this.height/this.priceLength },
+    pricePosition() {
+      return val => this.chartOffset + this.height - ((val - this.priceRange[0])/(this.priceRange[1] - this.priceRange[0]) * this.height)
+    },
+    localPrices() {
+      return this.prices && this.prices.length > 0 ? this.prices : this.calcPrices(this.candles)
+    },
+    chartCandles() {
+      const candlesLength = this.candles.length
+      const priceRange = this.priceRange[1] - this.priceRange[0]
+      return this.candles.reduce((memo, item, ix) => {
+        const color = item.close >= item.open ? 'green' : 'red'
+        const rectTop = color === 'green' ? item.close : item.open
+        memo.push({
+          line: {
+            x1: this.priceOffset + this.candleSpacing * (ix + 1),
+            x2: this.priceOffset + this.candleSpacing * (ix + 1),
+            y1: this.pricePosition(item.high),
+            y2: this.pricePosition(item.low)
+          },
+          rect: {
+            x: this.priceOffset + this.candleSpacing * (ix + 1) - this.candleWidth/2,
+            y: this.pricePosition(rectTop),
+            height: this.pricePosition(color === 'green' ? item.open : item.close) - this.pricePosition(rectTop),
+            width: this.candleWidth,
+            color: color
+          }
+        })
+        return memo;
+      }, [])
+    }
   },
   methods: {
-    checkData() {console.log(this.chartCandles, this.candles)}
+    calcPrices(prices) {
+      return prices.reduce((memo, item) => {
+        const values = Object.values(item)
+        memo[0] = Math.min(...values, memo[0])
+        memo[1] = Math.max(...values, memo[1])
+        return memo
+      }, [])
+    },
+    displayPrice(val) {
+      return parseFloat(Math.round(val * 100) / 100).toFixed(2)
+    }
   }
 }
 </script>
