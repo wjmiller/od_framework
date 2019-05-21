@@ -463,7 +463,7 @@ export default {
 
                             &.active,
                             &.hover {
-                                background: $green-med;
+                                background: $green;
                             }
 
                             &.hover {
@@ -488,7 +488,7 @@ export default {
 
                             &.active,
                             &.hover {
-                                background: darken($red, 5%);
+                                background: $red;
                             }
 
                             &.hover {
@@ -527,13 +527,13 @@ export default {
 
                         &.price-up {
                             .vue-slider-process {
-                                background: $green-med !important;
+                                background: $green !important;
                             }
                         }
 
                         &.price-down {
                             .vue-slider-process {
-                                background: darken($red, 5%) !important;
+                                background: $red !important;
                             }
                         }
                         .vue-slider-dot {

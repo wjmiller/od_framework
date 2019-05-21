@@ -4,12 +4,17 @@
   <nuxt-link to="/od_js">Jumpstart</nuxt-link>
 
   <h1>Tests:</h1>
-  <nuxt-link to="/test/feedback">Feedback</nuxt-link>
-  <nuxt-link to="/test/multichoice">Multi Choice</nuxt-link>
-  <nuxt-link to="/test/game">Game</nuxt-link>
-  <nuxt-link to="/test/activity">Activity</nuxt-link>
+  <nuxt-link to="/test/candlebuilder">Candle Builder</nuxt-link>
+  <nuxt-link to="/test/candlechart">Candle Chart</nuxt-link>
+  <nuxt-link to="/test/game">Balance Price Game</nuxt-link>
   <nuxt-link to="/test/unfilledslider">Unfilled Slider</nuxt-link>
   <nuxt-link to="/test/unfilledselect">Unfilled Select</nuxt-link>
+  <nuxt-link to="/test/multichoice">Multi Choice</nuxt-link>
+  <nuxt-link to="/test/sorting">Candle Sorting</nuxt-link>
+  <nuxt-link to="/test/feedback">Feedback</nuxt-link>
+  <nuxt-link to="/test/activity">Activity</nuxt-link>
+
+
 </div>
 </template>
 

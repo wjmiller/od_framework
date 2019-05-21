@@ -314,7 +314,7 @@ export default {
             div:nth-child(1) {
                 ul {
                     li {
-                        background: $green-med;
+                        background: $green;
                     }
                 }
             }
@@ -322,7 +322,7 @@ export default {
             div:nth-child(2) {
                 ul {
                     li {
-                        background: darken($red, 5%);
+                        background: $red;
                     }
                 }
             }
@@ -353,13 +353,13 @@ export default {
 
                         &.price-up {
                             .vue-slider-process {
-                                background: $green-med !important;
+                                background: $green !important;
                             }
                         }
 
                         &.price-down {
                             .vue-slider-process {
-                                background: darken($red, 5%) !important;
+                                background: $red !important;
                             }
                         }
                     }

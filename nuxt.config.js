@@ -73,6 +73,14 @@ export default {
     {
       src: '~plugins/vue-slider-component',
       ssr: false
+    },
+    {
+      src: '~plugins/vue-draggable',
+      ssr: false
+    },
+    {
+      src: '~plugins/vue-spinners',
+      ssr: false
     }
   ],
 
