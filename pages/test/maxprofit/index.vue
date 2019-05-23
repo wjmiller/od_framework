@@ -5,78 +5,54 @@
       <nuxt-link class="btn btn-secondary"
                  to="/">
         <fa :icon="['fas', 'chevron-left']"
-            aria-label="left arrow" /> Exit Candle Chart</nuxt-link>
+            aria-label="left arrow" /> Exit Max Profit</nuxt-link>
     </b-col>
   </b-row>
   <b-row>
-    <b-col cols="12">
-      <h2 class="chart-header">First Day of Trading (Side Details)</h2>
+    <b-col lg="8">
+      <p class="question">
+        Place the <b>Enter</b> and <b>Exit</b> points on the chart below to capture the maximum profit that could have been achieved during this trading period.
+      </p>
     </b-col>
   </b-row>
+  <max-profit v-bind:candles1="candles2"
+              v-bind:chart-height="260"
+              v-bind:chart-lines="chartLines1"
+              v-bind:candle-highlight="false"
+              v-bind:profit-potential="[33,0,0]">
+  </max-profit>
+  <div class="spacer"></div>
   <b-row>
-    <b-col cols="12">
-      <candle-chart v-bind:candles="candles"
-                    v-bind:height="260"
-                    v-bind:force-range="[0,40]"
-                    v-bind:price-display="5"
-                    v-bind:price-width="60"
-                    v-bind:candle-width="8"
-                    v-bind:candle-spacing="16"
-                    v-bind:detail-pane="true"
-                    v-bind:detail-position="'side'">
-      </candle-chart>
+    <b-col lg="8">
+      <p class="question">
+        Place the <b>Enter</b> and <b>Exit</b> points for a trade on the chart below and click <b>Resume Trading</b> to see if you can fill a trade for a profit.
+      </p>
     </b-col>
   </b-row>
-  <b-row>
-    <b-col cols="12">
-      <h2 class="chart-header second">First Day of Trading (Top Details)</h2>
-    </b-col>
-  </b-row>
-  <b-row>
-    <b-col cols="12">
-      <candle-chart v-bind:candles="candles"
-                    v-bind:height="300"
-                    v-bind:force-range="[0,40]"
-                    v-bind:price-display="5"
-                    v-bind:price-width="60"
-                    v-bind:candle-width="12"
-                    v-bind:candle-spacing="24"
-                    v-bind:detail-pane="true"
-                    v-bind:detail-position="'top'">
-      </candle-chart>
-    </b-col>
-  </b-row>
-  <b-row>
-    <b-col cols="9">
-      <h2 class="chart-header second">First Day of Trading (Entry/Exit)</h2>
-    </b-col>
-  </b-row>
-  <b-row>
-    <b-col cols="9">
-      <candle-chart v-bind:candles="candles"
-                    v-bind:height="260"
-                    v-bind:force-range="[0,40]"
-                    v-bind:price-display="5"
-                    v-bind:price-width="60"
-                    v-bind:candle-width="8"
-                    v-bind:candle-spacing="16"
-                    v-bind:detail-pane="false"
-                    v-bind:chart-lines="chartLines">
-      </candle-chart>
-    </b-col>
-  </b-row>
+  <max-profit v-bind:candles1="candles1"
+              v-bind:candles2="candles2"
+              v-bind:progressive="true"
+              v-bind:chart-height="260"
+              v-bind:chart-lines="chartLines2"
+              v-bind:enter-disabled="true"
+              v-bind:candle-highlight="false"
+              v-bind:profit-potential="[33,0,0]">
+  </max-profit>
 </b-container>
 </template>
 
 <script>
-import CandleChart from '~/components/activities/candle_chart'
+import MaxProfit from '~/components/activities/custom/max_profit'
 
 export default {
-  name: 'lesson',
+  components: {
+    MaxProfit
+  },
   data() {
     return {
-      chartLines: [ 20, 30 ],
-      candles: [
+      chartLines1: [ 0, 0 ],
+      chartLines2: [ 1, 0 ],
+      candles1: [
         {
           open: 4,
           close: 2,
@@ -118,7 +94,9 @@ export default {
           close: 15,
           high: 22,
           low: 13
-        },
+        }
+      ],
+      candles2: [
         {
           open: 15,
           close: 16,
@@ -330,42 +308,8 @@ export default {
           low: 8
         }
       ]
+
     }
-  },
-  methods: {
-    pushCandle() {
-      this.candles.push( {
-        open: 4,
-        close: 2,
-        high: 7,
-        low: 1
-      } )
-    },
-    changeData() {
-      this.candles = [
-        {
-          open: 6,
-          close: 2,
-          high: 7,
-          low: 1
-        },
-        {
-          open: 4,
-          close: 5,
-          high: 13,
-          low: 2
-        },
-        {
-          open: 1,
-          close: 2,
-          high: 8,
-          low: 1
-        }
-      ]
-    }
-  },
-  components: {
-    CandleChart
   }
 }
 </script>
@@ -390,5 +334,14 @@ export default {
             text-align: center;
         }
     }
+}
+
+.spacer {
+    margin-bottom: 100px;
+}
+
+.question {
+    font-size: 1.05rem;
+    margin-bottom: 15px;
 }
 </style>

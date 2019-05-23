@@ -106,7 +106,9 @@ export default {
   created() {
     this.sortLoad = true
     this.orig = [ ...this.candles ]
-    this.shuffle( this.candles )
+    while ( this.arraysEqual( this.candles, this.orig ) ) {
+      this.shuffle( this.candles )
+    }
     setTimeout( () => {
       this.sortLoad = false
     }, 1000 )

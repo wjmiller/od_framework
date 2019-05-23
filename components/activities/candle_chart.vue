@@ -1,27 +1,23 @@
 <!-- Template -->
 <template>
 <div class="candle-chart"
-     v-bind:class="{'no-pane':!detailPane}">
+     v-bind:class="{'no-pane':!detailPane || (detailPane && detailPosition == 'top')}">
   <div class="chart-wrapper">
     <div class="chart-info"
-         v-if="!detailPane">
+         v-if="detailPane && (detailPosition == 'top')">
       <span>Open: {{currentCandle.open}}</span>
       <span>Close: {{currentCandle.close}}</span>
       <span>High: {{currentCandle.high}}</span>
       <span>Low: {{currentCandle.low}}</span>
     </div>
-    <div class="chart-canvas"
-         ref="chart_canvas">
+    <div class="chart"
+         ref="chart">
       <div>
 
         <svg class="chart-candles"
              ref="chart_candles"
              v-bind:viewBox="candleChart.x + ' 0 ' + candleChart.width + ' ' + `${height + chartPadding}`"
              v-bind:width="candleChart.width">
-          <!-- Chart Background -->
-          <rect v-bind:width="chartWidth"
-                v-bind:height="`${height + chartPadding}px`"
-                class="chart-bg"></rect>
           <!-- Candlestick -->
           <g v-for="(candle, index) in chartCandles"
              v-bind:key="`candle-${index}`">
@@ -39,11 +35,64 @@
                   v-bind:class="`candle-${candle.rect.color}`"
                   ref="candlebody" />
           </g>
+
+          <g v-if="chartLines">
+            <g>
+              <!-- Enter Label Box -->
+              <rect width="46"
+                    height="21"
+                    v-bind:x="candleChart.x"
+                    v-bind:y="enterLineY - 20"
+                    class="chart-label-bg"></rect>
+
+              <!-- Enter Label -->
+              <text v-bind:x="candleChart.x + 7"
+                    v-bind:y="enterLineY - 5"
+                    class="chart-label">Enter</text>
+            </g>
+
+            <!-- Enter Line -->
+            <line x1="0"
+                  v-bind:x2="priceLineWidth"
+                  v-bind:y1="enterLineY"
+                  v-bind:y2="enterLineY"
+                  class="chart-pline" />
+          </g>
+
+          <g v-if="chartLines">
+
+            <g>
+              <!-- Exit Label Box -->
+              <rect width="40"
+                    height="21"
+                    v-bind:x="candleChart.x + 55"
+                    v-bind:y="exitLineY - 20"
+                    class="chart-label-bg"></rect>
+
+              <!-- Exit Label -->
+              <text v-bind:x="candleChart.x + 62"
+                    v-bind:y="exitLineY - 5"
+                    class="chart-label">Exit</text>
+            </g>
+
+            <!-- Exit Line -->
+            <line v-bind:x1="candleChart.x + 55"
+                  v-bind:x2="priceLineWidth"
+                  v-bind:y1="exitLineY"
+                  v-bind:y2="exitLineY"
+                  class="chart-pline" />
+          </g>
+
+          <!-- Chart  -->
+          <rect v-bind:width="chartWidth"
+                v-bind:height="`${height + chartPadding}px`"
+                class="chart-canvas"></rect>
         </svg>
 
-        <vue-slider v-model="candleNum"
+        <vue-slider v-if="candleChart.totalWidth > candleChart.width"
+                    v-model="candleNum"
                     v-bind:min="0"
-                    v-bind:max="candles.length - 1"
+                    v-bind:max="candles.length"
                     v-bind:tooltip="'none'"
                     v-on:change="adjustChart()"></vue-slider>
 
@@ -52,25 +101,18 @@
            ref="chart_prices"
            v-bind:width="`${priceWidth}px`"
            v-bind:height="`${height + chartPadding}px`">
+
         <!-- Price Labels -->
         <text x="20"
               v-for="(price, index) in priceReverse"
               v-bind:key="'price-' + index"
               v-bind:y="pricePosition(price)"
               class="chart-num">{{displayPrice(price)}}</text>
-        <!-- Price Lines -->
-        <line v-for="(price, index) in prices"
-              v-bind:y1="pricePosition(price)"
-              v-bind:y2="pricePosition(price)"
-              v-bind:key="'line-' + index"
-              class="chart-pline"
-              v-bind:x1="priceOffset"
-              x2="96%" />
       </svg>
     </div>
   </div>
   <div class="candle-details"
-       v-if="detailPane">
+       v-if="detailPane && (detailPosition == 'side')">
     <div class="detail-container">
       <div class="detail-header">
         Candle Details
@@ -108,7 +150,14 @@ export default {
       type: Number,
       default: 100
     },
-    detailPane: Boolean,
+    detailPane: {
+      type: Boolean,
+      default: false
+    },
+    detailPosition: {
+      type: String,
+      default: 'side'
+    },
     priceOffset: {
       type: Number,
       default: 50
@@ -135,6 +184,13 @@ export default {
     candleSpacing: {
       type: Number,
       default: 70
+    },
+    chartLines: {
+      type: Array
+    },
+    candleHighlight: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -166,8 +222,6 @@ export default {
       return ( this.priceRange[ 1 ] - this.priceRange[ 0 ] ) / this.priceDisplay
     },
     prices() {
-      console.log( this.priceRange )
-      console.log( [ this.priceRange[ 0 ], ...Array( this.priceDisplay ) ].map( ( _, ix ) => this.priceTick * ( ix + 1 ) ) )
       return [ ...Array( this.priceDisplay + 1 ) ].map( ( _, ix ) => ix === 0 ? this.priceRange[ 0 ] : this.priceRange[ 0 ] + ( this.priceTick * ( ix ) ) )
     },
     chartOffset() {
@@ -183,12 +237,14 @@ export default {
       return this.prices.length
     },
     priceReverse() {
-      console.log( this.prices );
       return this.prices.slice()
         .sort( ( a, b ) => b - a )
     },
     priceLineHeight() {
       return this.height / this.priceLength
+    },
+    priceLineWidth() {
+      return this.candleChart.totalWidth > this.candleChart.width ? this.candleChart.totalWidth : this.candleChart.width
     },
     pricePosition() {
       return val => this.chartOffset + this.height - ( ( val - this.priceRange[ 0 ] ) / ( this.priceRange[ 1 ] - this.priceRange[ 0 ] ) * this.height )
@@ -219,29 +275,53 @@ export default {
         } )
         return memo;
       }, [] )
+    },
+    enterLineY() {
+      return this.chartOffset + this.height - ( ( this.chartLines[ 0 ] - this.priceRange[ 0 ] ) / ( this.priceRange[ 1 ] - this.priceRange[ 0 ] ) * this.height )
+    },
+    exitLineY() {
+      return this.chartOffset + this.height - ( ( this.chartLines[ 1 ] - this.priceRange[ 0 ] ) / ( this.priceRange[ 1 ] - this.priceRange[ 0 ] ) * this.height )
+    }
+  },
+  watch: {
+    candles: {
+      handler: function ( newValue, oldValue ) {
+        if ( newValue.length > oldValue.length ) {
+          this.candleNum = this.candles.length - 1
+          this.init( this.candles.length - 1 )
+        } else {
+          this.candleNum = 0
+          this.init( 0 )
+          this.candleChart.x = 0
+        }
+      },
+      deep: true
     }
   },
   methods: {
-    init() {
-      console.log( this.candleSpacing )
+    init( candleIndex ) {
       this.candleChart.totalWidth = ( this.candles.length * this.candleSpacing ) + ( 100 + this.priceWidth )
-      this.currentCandle = this.candles[ 0 ]
+      this.currentCandle = this.candles[ candleIndex ]
       this.adjustChart()
       this.handleResize()
     },
     handleResize() {
-      this.candleChart.width = this.$refs.chart_canvas.clientWidth - this.priceWidth
+      this.candleChart.width = this.$refs.chart.clientWidth - this.priceWidth
     },
     adjustChart() {
       if ( this.candleChart.totalWidth > this.candleChart.width ) {
         const increment = ( this.candleChart.totalWidth - this.candleChart.width ) / this.candles.length
         this.candleChart.x = this.candleNum * increment
 
-        for ( const ix in this.$refs[ 'candlebody' ] ) {
-          this.$refs[ 'candlebody' ][ ix ].style.strokeWidth = 0
+        if ( this.candleHighlight ) {
+          for ( const ix in this.$refs[ 'candlebody' ] ) {
+            this.$refs[ 'candlebody' ][ ix ].style.strokeWidth = 0
+          }
+          this.$refs[ 'candlebody' ][ this.candleNum ].style.strokeWidth = 4
+          this.currentCandle = this.candles[ this.candleNum ]
         }
-        this.$refs[ 'candlebody' ][ this.candleNum ].style.strokeWidth = 4
-        this.currentCandle = this.candles[ this.candleNum ]
+
+
       }
     },
     calcPrices( prices ) {
@@ -259,7 +339,7 @@ export default {
   },
   mounted: function () {
     window.addEventListener( 'resize', this.handleResize )
-    this.init()
+    this.init( 0 )
   },
   beforeDestroy: function () {
     window.removeEventListener( 'resize', this.handleResize )
@@ -291,7 +371,7 @@ export default {
     .chart-wrapper {
         width: 100%;
         margin-right: 30px;
-        margin-bottom: 60px;
+        margin-bottom: 50px;
 
         @media(min-width: 992px) {
             width: 70%;
@@ -324,7 +404,7 @@ export default {
             }
         }
 
-        .chart-canvas {
+        .chart {
             display: flex;
             flex-direction: row;
             justify-content: flex-start;
@@ -419,6 +499,11 @@ export default {
     }
 }
 
+.chart-canvas {
+    fill: rgba(255,255,255,0);
+}
+
+.chart-label,
 .chart-num {
     font: 0.875rem pt-sans-pro;
     font-weight: 600;
@@ -442,26 +527,31 @@ export default {
 }
 
 .chart-pline {
-    //stroke-width: 1;
-    //stroke-dasharray: 5;
+    stroke-width: 1;
+    stroke-dasharray: 5;
 
     &:last-child {
-        stroke-dasharray: 0;
+        //stroke-dasharray: 0;
     }
 }
 
 // Dark/Light Theme Styles -----------------------------
 
 .dark {
-
-    .chart-bg {
-        fill: $dark-group-bg;
-    }
     .chart-num {
         fill: #ddd;
     }
+
+    .chart-label {
+        fill: $dark-blue;
+    }
+
+    .chart-label-bg {
+        fill: #ddd;
+    }
+
     .chart-pline {
-        //stroke: #888;
+        stroke: #ddd;
     }
 
     .candle-wick {
@@ -488,7 +578,7 @@ export default {
                 color: darken($light-text-color, 10%);
             }
 
-            .chart-canvas {
+            .chart {
                 .vue-slider {
                     .vue-slider-dot-handle {
                         background: $light-header-color;
@@ -520,15 +610,20 @@ export default {
                 }
             }
         }
-
-        .chart-bg {
-            fill: $light-group-bg;
-        }
         .chart-num {
-            fill: #333;
+            fill: $light-header-color;
         }
+
+        .chart-label {
+            fill: #fff;
+        }
+
+        .chart-label-bg {
+            fill: $light-header-color;
+        }
+
         .chart-pline {
-            //stroke: #999;
+            stroke: $light-header-color;
         }
 
         .candle-wick {
