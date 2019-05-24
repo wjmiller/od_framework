@@ -24,6 +24,7 @@
 		"node-sass": "^4.12.0",
 		"nuxt": "^2.4.0",
 		"nuxt-fontawesome": "^0.4.0",
+		"responsive-sketchpad": "^0.2.1",
 		"sass-loader": "^7.1.0",
 		"string-similarity": "^3.0.0",
 		"vue-awesome-countdown": "^1.0.12",
