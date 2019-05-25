@@ -37,6 +37,14 @@
           </g>
 
           <g v-if="chartLines">
+
+            <!-- Enter Line -->
+            <line x1="0"
+                  v-bind:x2="priceLineWidth"
+                  v-bind:y1="enterLineY"
+                  v-bind:y2="enterLineY"
+                  class="chart-pline" />
+
             <g>
               <!-- Enter Label Box -->
               <rect width="46"
@@ -51,15 +59,16 @@
                     class="chart-label">Enter</text>
             </g>
 
-            <!-- Enter Line -->
-            <line x1="0"
-                  v-bind:x2="priceLineWidth"
-                  v-bind:y1="enterLineY"
-                  v-bind:y2="enterLineY"
-                  class="chart-pline" />
           </g>
 
           <g v-if="chartLines">
+
+            <!-- Exit Line -->
+            <line v-bind:x1="candleChart.x + 55"
+                  v-bind:x2="priceLineWidth"
+                  v-bind:y1="exitLineY"
+                  v-bind:y2="exitLineY"
+                  class="chart-pline" />
 
             <g>
               <!-- Exit Label Box -->
@@ -75,12 +84,27 @@
                     class="chart-label">Exit</text>
             </g>
 
-            <!-- Exit Line -->
-            <line v-bind:x1="candleChart.x + 55"
+          </g>
+
+          <g>
+            <!-- Timeline Labels -->
+            <text v-bind:x="0"
+                  v-bind:y="priceLineY + 17"
+                  class="chart-tlabel">{{timeLabel}}</text>
+
+            <text v-for="(candle, ix) in totalCandles"
+                  v-bind:key="`tlabel-${ix}`"
+                  v-if="ix % timeLabelInterval == 0"
+                  v-bind:x="(priceOffset + (candleSpacing * (ix + 1))) - (candleWidth / 2)"
+                  v-bind:y="priceLineY + 17"
+                  class="chart-tlabel">{{candle.label}}</text>
+
+            <!-- Timeline -->
+            <line v-bind:x1="0"
                   v-bind:x2="priceLineWidth"
-                  v-bind:y1="exitLineY"
-                  v-bind:y2="exitLineY"
-                  class="chart-pline" />
+                  v-bind:y1="priceLineY"
+                  v-bind:y2="priceLineY"
+                  class="chart-tline" />
           </g>
 
           <!-- Chart  -->
@@ -92,7 +116,7 @@
         <vue-slider v-if="candleChart.totalWidth > candleChart.width"
                     v-model="candleNum"
                     v-bind:min="0"
-                    v-bind:max="candles.length"
+                    v-bind:max="candles.length - 1"
                     v-bind:tooltip="'none'"
                     v-on:change="adjustChart()"></vue-slider>
 
@@ -142,9 +166,15 @@ export default {
         return []
       }
     },
+    totalCandles: {
+      type: Array,
+      default () {
+        return this.candles
+      }
+    },
     height: {
       type: Number,
-      default: 500
+      default: 260
     },
     width: {
       type: Number,
@@ -164,10 +194,16 @@ export default {
     },
     chartPadding: {
       type: Number,
-      default: 40
+      default: 60
     },
     forceRange: {
       type: Array
+    },
+    timeLabel: {
+      type: String
+    },
+    timeLabelInterval: {
+      type: Number
     },
     priceDisplay: {
       type: Number,
@@ -179,11 +215,11 @@ export default {
     },
     candleWidth: {
       type: Number,
-      default: 30
+      default: 20
     },
     candleSpacing: {
       type: Number,
-      default: 70
+      default: 40
     },
     chartLines: {
       type: Array
@@ -281,6 +317,12 @@ export default {
     },
     exitLineY() {
       return this.chartOffset + this.height - ( ( this.chartLines[ 1 ] - this.priceRange[ 0 ] ) / ( this.priceRange[ 1 ] - this.priceRange[ 0 ] ) * this.height )
+    },
+    priceLineY() {
+      return ( this.chartPadding - 20 ) + this.height - ( ( this.priceRange[ 0 ] ) / ( this.priceRange[ 1 ] - this.priceRange[ 0 ] ) * this.height )
+    },
+    priceTextY() {
+      return ( this.chartPadding - 15 ) + this.height - ( ( this.chartLines[ 1 ] - this.priceRange[ 0 ] ) / ( this.priceRange[ 1 ] - this.priceRange[ 0 ] ) * this.height )
     }
   },
   watch: {
@@ -300,9 +342,15 @@ export default {
   },
   methods: {
     init( candleIndex ) {
-      this.candleChart.totalWidth = ( this.candles.length * this.candleSpacing ) + ( 100 + this.priceWidth )
-      this.currentCandle = this.candles[ candleIndex ]
-      this.adjustChart()
+      if ( this.candles.length > 0 ) {
+        this.$emit( 'candle-change', candleIndex )
+        this.candleChart.totalWidth = ( this.candles.length * this.candleSpacing ) + ( 100 + this.priceWidth )
+        this.currentCandle = this.candles[ candleIndex ]
+        this.adjustChart()
+      } else {
+        this.$emit( 'candle-change', 0 )
+        this.candleChart.totalWidth = this.candleChart.width
+      }
       this.handleResize()
     },
     handleResize() {
@@ -410,7 +458,7 @@ export default {
             justify-content: flex-start;
 
             .vue-slider {
-                margin-top: 10px;
+                margin-top: 25px;
 
                 .vue-slider-dot-handle {
                     width: 40px;
@@ -504,7 +552,8 @@ export default {
 }
 
 .chart-label,
-.chart-num {
+.chart-num,
+.chart-tlabel {
     font: 0.875rem pt-sans-pro;
     font-weight: 600;
 }
@@ -535,10 +584,16 @@ export default {
     }
 }
 
+.chart-tline {
+    stroke-width: 1;
+}
+
 // Dark/Light Theme Styles -----------------------------
 
 .dark {
-    .chart-num {
+
+    .chart-num,
+    .chart-tlabel {
         fill: #ddd;
     }
 
@@ -551,7 +606,11 @@ export default {
     }
 
     .chart-pline {
-        stroke: #ddd;
+        stroke: rgba(255,227,44, 0.6); //rgba(232,116,248, 0.8); rgba(255,227,44, 0.6);
+    }
+
+    .chart-tline {
+        stroke: rgba(255,255,255,0.2);
     }
 
     .candle-wick {
@@ -610,7 +669,9 @@ export default {
                 }
             }
         }
-        .chart-num {
+
+        .chart-num,
+        .chart-tlabel {
             fill: $light-header-color;
         }
 
@@ -624,6 +685,10 @@ export default {
 
         .chart-pline {
             stroke: $light-header-color;
+        }
+
+        .chart-tline {
+            stroke: rgba(0,0,0,0.3);
         }
 
         .candle-wick {
