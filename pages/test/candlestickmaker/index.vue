@@ -28,16 +28,19 @@
     </b-col>
   </b-row>
   <b-row>
-    <b-col cols="12">
+    <b-col cols="9">
       <div ref="sketchpad" width="600" height="400"></div>
     </b-col>
-  </b-row>
-  <b-row>
-    <b-col cols="12">
+    <b-col cols="3">
       <b-button-group>
       <b-button v-on:click="clearPad">Clear</b-button>
       <b-button v-on:click="calcCandleData">Switch Data</b-button>
     </b-button-group>
+    <div>
+    <label for="range-1"># of Candles</label>
+    <b-form-input id="range-1" v-model.number="candleCount" type="range" min="0" max="100" step="5"></b-form-input>
+    <div class="mt-2">Value: {{ candleCount }}</div>
+    </div>
     </b-col>
   </b-row>
 </b-container>
@@ -51,7 +54,7 @@ export default {
   name: 'lesson',
   data() {
     return {
-      candleCount: 20,
+      candleCount: 30,
       chartLines: [ 20, 30 ],
       candles: [
         {open: 3, close: 4.75, high: 4.75, low: 3},
@@ -136,83 +139,89 @@ export default {
         .strokes[0]
         .points
 
-      var invertYCanvas = y => 1 - y
-      var decimals2 = val => Math.floor(val * 100)/100
-      var candles = Math.min(numOfCandles, pointData.length)
+      if (pointData) {
+        var invertYCanvas = y => 1 - y
+        var decimals2 = val => Math.floor(val * 100)/100
+        var candles = Math.min(numOfCandles, pointData.length)
 
-      var ranges = pointData.reduce((memo, item) => {
-        memo.x[0] = Math.min(memo.x[0], item.x)
-        memo.x[1] = Math.max(memo.x[1], item.x)
-        memo.y[0] = Math.min(memo.y[0], invertYCanvas(item.y))
-        memo.y[1] = Math.max(memo.y[1], invertYCanvas(item.y))
-        return memo
-      }, {x: [1, 0], y: [1, 0]})
+        var ranges = pointData.reduce((memo, item) => {
+          memo.x[0] = Math.min(memo.x[0], item.x)
+          memo.x[1] = Math.max(memo.x[1], item.x)
+          memo.y[0] = Math.min(memo.y[0], invertYCanvas(item.y))
+          memo.y[1] = Math.max(memo.y[1], invertYCanvas(item.y))
+          return memo
+        }, {x: [1, 0], y: [1, 0]})
 
-      var xDiff = ranges.x[1] - ranges.x[0]
-      var yDiff = ranges.y[1] - ranges.y[0]
-      var priceDiff = priceRange[1] - priceRange[0]
+        var xDiff = ranges.x[1] - ranges.x[0]
+        var yDiff = ranges.y[1] - ranges.y[0]
+        var priceDiff = priceRange[1] - priceRange[0]
 
-      var convertYToPrice = y => priceRange[0] + decimals2(priceDiff * ((invertYCanvas(y) - ranges.y[0])/yDiff))
+        var convertYToPrice = y => priceRange[0] + decimals2(priceDiff * ((invertYCanvas(y) - ranges.y[0])/yDiff))
 
-      //(canvasHeight - y)
-
-
-
-      var xValues = Array(numOfCandles)
-        .fill()
-        .map((item, ix) => ranges.x[0] + (xDiff/candles*ix))
-
-      var lineData = pointData.reduce((memo, item, ix, arr) => {
-        const nextInArr = arr[ix + 1] || arr[ix]
-        memo.push({
-          start: {x: item.x, y: item.y},
-          end: {x: nextInArr.x, y: nextInArr.y}
-        })
-        return memo
-      }, []);
-
-      var reducedLines = lineData.reduce((memo, item) => {
-        const inMemo = memo.find(m => m.start.x === item.start.x)
-        if (inMemo) {
-          inMemo.end = {x: item.end.x, y: convertYToPrice(item.end.y)}
-        } else {
-          memo.push({start: {x: item.start.x, y: convertYToPrice(item.start.y)}, end: {x: item.end.x, y: convertYToPrice(item.end.y)}})
-        }
-        return memo
-      }, [])
+        //(canvasHeight - y)
 
 
-      xValues.forEach(item => {
-      	const inReduced = reducedLines.find(rl => rl.start.x === item)
-      	if (!inReduced) {
-            const itemToSplit = reducedLines.find(rl => rl.start.x < item && rl.end.x > item)
-            const endValues = {x: itemToSplit.end.x, y: itemToSplit.end.y}
-            const splitValue = {
-              x: item,
-              y: itemToSplit.start.y + (itemToSplit.end.x - item)/(itemToSplit.end.x - itemToSplit.start.x)*(itemToSplit.end.y - itemToSplit.start.y)
-            }
-            itemToSplit.end = splitValue
-            reducedLines.push({start: splitValue, end: endValues})
+
+        var xValues = Array(numOfCandles)
+          .fill()
+          .map((item, ix) => ranges.x[0] + (xDiff/candles*ix))
+
+        var lineData = pointData.reduce((memo, item, ix, arr) => {
+          const nextInArr = arr[ix + 1] || arr[ix]
+          memo.push({
+            start: {x: item.x, y: item.y},
+            end: {x: nextInArr.x, y: nextInArr.y}
+          })
+          return memo
+        }, []);
+
+        var reducedLines = lineData.reduce((memo, item) => {
+          const inMemo = memo.find(m => m.start.x === item.start.x)
+          if (inMemo) {
+            inMemo.end = {x: item.end.x, y: convertYToPrice(item.end.y)}
+          } else {
+            memo.push({start: {x: item.start.x, y: convertYToPrice(item.start.y)}, end: {x: item.end.x, y: convertYToPrice(item.end.y)}})
           }
-      });
+          return memo
+        }, [])
 
-      reducedLines.sort((a, b) => a.start.x - b.start.x)
+
+        xValues.forEach(item => {
+        	const inReduced = reducedLines.find(rl => rl.start.x === item)
+        	if (!inReduced) {
+              const itemToSplit = reducedLines.find(rl => rl.start.x < item && rl.end.x > item)
+              const endValues = {x: itemToSplit.end.x, y: itemToSplit.end.y}
+              const splitValue = {
+                x: item,
+                y: itemToSplit.start.y + (itemToSplit.end.x - item)/(itemToSplit.end.x - itemToSplit.start.x)*(itemToSplit.end.y - itemToSplit.start.y)
+              }
+              itemToSplit.end = splitValue
+              reducedLines.push({start: splitValue, end: endValues})
+            }
+        });
+
+        reducedLines.sort((a, b) => a.start.x - b.start.x)
 
 
-      var candleData = xValues.reduce((memo, item, ix, arr) => {
-        const highValue = arr[ix + 1] || (ranges.x[1] + 1)
-        const lines = reducedLines.filter(rl => rl.start.x >= item && rl.start.x < highValue)
-        const lineEnds = lines.map(l => l.end.y)
-        memo.push({
-          open: decimals2(lines[0].start.y),
-          close: decimals2(lines[lines.length - 1].end.y),
-          high: decimals2(Math.max(...lineEnds, lines[0].start.y)),
-          low: decimals2(Math.min(...lineEnds, lines[0].start.y)),
-        })
-        return memo
-      }, [])
+        var candleData = xValues.reduce((memo, item, ix, arr) => {
+          const highValue = arr[ix + 1] || (ranges.x[1] + 1)
+          const lines = reducedLines.filter(rl => rl.start.x >= item && rl.start.x < highValue)
+          const lineEnds = lines.map(l => l.end.y)
+          memo.push({
+            open: decimals2(lines[0].start.y),
+            close: decimals2(lines[lines.length - 1].end.y),
+            high: decimals2(Math.max(...lineEnds, lines[0].start.y)),
+            low: decimals2(Math.min(...lineEnds, lines[0].start.y)),
+          })
+          return memo
+        }, [])
 
-      this.candles = candleData
+        if (this.candles.length > 0) {
+          this.candles = candleData
+        }
+      }
+
+
     },
     clearPad() {
       this.pad.clear()
@@ -220,6 +229,11 @@ export default {
   },
   components: {
     CandleChart
+  },
+  watch: {
+    candleCount() {
+      this.calcCandleData()
+    }
   },
   mounted() {
     var el = this.$refs.sketchpad;
