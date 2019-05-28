@@ -17,7 +17,6 @@
     <b-col cols="12">
       <candle-chart v-bind:candles="candles"
                     v-bind:height="260"
-                    v-bind:force-range="[0,40]"
                     v-bind:price-display="5"
                     v-bind:price-width="60"
                     v-bind:candle-width="8"
@@ -56,48 +55,7 @@ export default {
     return {
       candleCount: 30,
       chartLines: [ 20, 30 ],
-      candles: [
-        {open: 3, close: 4.75, high: 4.75, low: 3},
-        {open: 4.75, close: 5.86, high: 5.86, low: 4.75},
-        {open: 5.86, close: 7.54, high: 7.54, low: 5.86},
-        {open: 7.54, close: 10.14, high: 10.14, low: 7.54},
-        {open: 10.14, close: 12.41, high: 12.41, low: 10.14},
-        {open: 12.41, close: 12.42, high: 12.42, low: 12.41},
-        {open: 12.42, close: 13.67, high: 13.67, low: 12.42},
-        {open: 13.67, close: 16.86, high: 16.86, low: 13.67},
-        {open: 16.86, close: 16.95, high: 16.95, low: 16.86},
-        {open: 16.95, close: 18.72, high: 18.72, low: 16.95},
-        {open: 18.72, close: 18.82, high: 18.82, low: 18.72},
-        {open: 18.82, close: 20.44, high: 20.44, low: 18.82},
-        {open: 20.44, close: 23.52, high: 23.52, low: 20.44},
-        {open: 23.52, close: 23.66, high: 23.66, low: 23.52},
-        {open: 23.66, close: 26.01, high: 26.01, low: 23.66},
-        {open: 26.01, close: 26.04, high: 26.04, low: 26.01},
-        {open: 26.04, close: 26.51, high: 26.51, low: 26.04},
-        {open: 26.51, close: 27.47, high: 27.47, low: 26.51},
-        {open: 27.47, close: 28.53, high: 28.53, low: 27.47},
-        {open: 28.53, close: 29, high: 29, low: 28.53},
-        {open: 29, close: 28.5, high: 29, low: 28.5},
-        {open: 28.5, close: 25.77, high: 28.5, low: 25.77},
-        {open: 25.77, close: 22.23, high: 25.77, low: 22.23},
-        {open: 22.23, close: 20.32, high: 22.23, low: 20.32},
-        {open: 20.32, close: 16.45, high: 20.32, low: 16.45},
-        {open: 16.45, close: 14.35, high: 16.45, low: 14.35},
-        {open: 14.35, close: 13.76, high: 14.35, low: 13.76},
-        {open: 13.76, close: 15.86, high: 15.86, low: 13.76},
-        {open: 15.86, close: 17.06, high: 17.06, low: 15.86},
-        {open: 17.06, close: 17.18, high: 17.18, low: 17.06},
-        {open: 17.18, close: 16.91, high: 17.18, low: 16.91},
-        {open: 16.91, close: 16.39, high: 16.91, low: 16.39},
-        {open: 16.39, close: 15.5, high: 16.39, low: 15.5},
-        {open: 15.5, close: 14.15, high: 15.5, low: 14.15},
-        {open: 14.15, close: 10.02, high: 14.15, low: 10.02},
-        {open: 10.02, close: 8.77, high: 10.02, low: 8.77},
-        {open: 8.77, close: 8.31, high: 8.77, low: 8.31},
-        {open: 8.31, close: 8.25, high: 8.31, low: 8.25},
-        {open: 8.25, close: 5.22, high: 8.25, low: 5.22},
-        {open: 5.22, close: 3.26, high: 5.22, low: 3.26},
-      ]
+      candles: [{open: 1, close: 2, high: 3, low: 4}]
     }
   },
   methods: {
@@ -109,42 +67,19 @@ export default {
         low: 1
       } )
     },
-    changeData() {
-      this.candles = [
-        {
-          open: 6,
-          close: 2,
-          high: 7,
-          low: 1
-        },
-        {
-          open: 4,
-          close: 5,
-          high: 13,
-          low: 2
-        },
-        {
-          open: 1,
-          close: 2,
-          high: 8,
-          low: 1
-        }
-      ]
-    },
     calcCandleData() {
-      var priceRange = [3, 29]
-      var numOfCandles = this.candleCount
-      var pointData = this.pad
-        .toJSON()
-        .strokes[0]
-        .points
+      const priceRange = [25, 29]
+      const numOfCandles = this.candleCount
+      const padData = this.pad.toJSON()
 
-      if (pointData) {
-        var invertYCanvas = y => 1 - y
-        var decimals2 = val => Math.floor(val * 100)/100
-        var candles = Math.min(numOfCandles, pointData.length)
+      const pointData = padData && padData.strokes && padData.strokes[0] ? padData.strokes[0].points : []
 
-        var ranges = pointData.reduce((memo, item) => {
+      if (pointData.length > 0) {
+        const invertYCanvas = y => 1 - y
+        const decimals2 = val => Math.floor(val * 100)/100
+        const candles = Math.min(numOfCandles, pointData.length)
+
+        const ranges = pointData.reduce((memo, item) => {
           memo.x[0] = Math.min(memo.x[0], item.x)
           memo.x[1] = Math.max(memo.x[1], item.x)
           memo.y[0] = Math.min(memo.y[0], invertYCanvas(item.y))
@@ -152,21 +87,21 @@ export default {
           return memo
         }, {x: [1, 0], y: [1, 0]})
 
-        var xDiff = ranges.x[1] - ranges.x[0]
-        var yDiff = ranges.y[1] - ranges.y[0]
-        var priceDiff = priceRange[1] - priceRange[0]
+        const xDiff = ranges.x[1] - ranges.x[0]
+        const yDiff = ranges.y[1] - ranges.y[0]
+        const priceDiff = priceRange[1] - priceRange[0]
 
-        var convertYToPrice = y => priceRange[0] + decimals2(priceDiff * ((invertYCanvas(y) - ranges.y[0])/yDiff))
+        const convertYToPrice = y => priceRange[0] + decimals2(priceDiff * ((invertYCanvas(y) - ranges.y[0])/yDiff))
 
         //(canvasHeight - y)
 
 
 
-        var xValues = Array(numOfCandles)
+        const xValues = Array(numOfCandles)
           .fill()
           .map((item, ix) => ranges.x[0] + (xDiff/candles*ix))
 
-        var lineData = pointData.reduce((memo, item, ix, arr) => {
+        const lineData = pointData.reduce((memo, item, ix, arr) => {
           const nextInArr = arr[ix + 1] || arr[ix]
           memo.push({
             start: {x: item.x, y: item.y},
@@ -175,7 +110,7 @@ export default {
           return memo
         }, []);
 
-        var reducedLines = lineData.reduce((memo, item) => {
+        const reducedLines = lineData.reduce((memo, item) => {
           const inMemo = memo.find(m => m.start.x === item.start.x)
           if (inMemo) {
             inMemo.end = {x: item.end.x, y: convertYToPrice(item.end.y)}
@@ -203,7 +138,7 @@ export default {
         reducedLines.sort((a, b) => a.start.x - b.start.x)
 
 
-        var candleData = xValues.reduce((memo, item, ix, arr) => {
+        const candleData = xValues.reduce((memo, item, ix, arr) => {
           const highValue = arr[ix + 1] || (ranges.x[1] + 1)
           const lines = reducedLines.filter(rl => rl.start.x >= item && rl.start.x < highValue)
           const lineEnds = lines.map(l => l.end.y)
