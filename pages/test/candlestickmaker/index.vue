@@ -40,6 +40,11 @@
     <b-form-input id="range-1" v-model.number="candleCount" type="range" min="0" max="100" step="5"></b-form-input>
     <div class="mt-2">Value: {{ candleCount }}</div>
     </div>
+    <div>
+    <label for="range-1">Random Wick Size</label>
+    <b-form-input id="range-1" v-model.number="wickVariable" type="range" min="0" max="10" step="1"></b-form-input>
+    <div class="mt-2">Value: {{ wickVariable }}</div>
+    </div>
     </b-col>
   </b-row>
 </b-container>
@@ -54,8 +59,10 @@ export default {
   data() {
     return {
       candleCount: 30,
+      wickVariable: 1,
       chartLines: [ 20, 30 ],
-      candles: [{open: 1, close: 2, high: 3, low: 4}]
+      candles: [{open: 1, close: 2, high: 3, low: 4}],
+      priceRange: [25, 29]
     }
   },
   methods: {
@@ -68,7 +75,6 @@ export default {
       } )
     },
     calcCandleData() {
-      const priceRange = [25, 29]
       const numOfCandles = this.candleCount
       const padData = this.pad.toJSON()
 
@@ -89,9 +95,9 @@ export default {
 
         const xDiff = ranges.x[1] - ranges.x[0]
         const yDiff = ranges.y[1] - ranges.y[0]
-        const priceDiff = priceRange[1] - priceRange[0]
+        const priceDiff = this.priceRange[1] - this.priceRange[0]
 
-        const convertYToPrice = y => priceRange[0] + decimals2(priceDiff * ((invertYCanvas(y) - ranges.y[0])/yDiff))
+        const convertYToPrice = y => this.priceRange[0] + decimals2(priceDiff * ((invertYCanvas(y) - ranges.y[0])/yDiff))
 
         //(canvasHeight - y)
 
@@ -151,6 +157,22 @@ export default {
           return memo
         }, [])
 
+        if (this.wickVariable > 0) {
+          candleData.forEach(candle => {
+            const candleDiff = (candle.high - candle.low)
+            const candlePricePercent = 1 - candleDiff/priceDiff
+            const candleWickSize = this.wickVariable/20
+            const wickHigh = decimals2(candle.high + candlePricePercent * Math.random() * candleWickSize)
+            const wickLow = decimals2(candle.low - candlePricePercent * Math.random() * candleWickSize)
+            if (Math.random() >= 0.5) {
+              candle.high = wickHigh
+            }
+            if (Math.random() >= 0.5) {
+              candle.low = wickLow
+            }
+          })
+        }
+
         if (this.candles.length > 0) {
           this.candles = candleData
         }
@@ -167,6 +189,9 @@ export default {
   },
   watch: {
     candleCount() {
+      this.calcCandleData()
+    },
+    wickVariable() {
       this.calcCandleData()
     }
   },
