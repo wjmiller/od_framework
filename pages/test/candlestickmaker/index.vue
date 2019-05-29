@@ -22,6 +22,7 @@
                     v-bind:candle-width="8"
                     v-bind:candle-spacing="12"
                     v-bind:detail-pane="true"
+                    v-bind:candle-highlight="false"
                     v-bind:detail-position="'side'">
       </candle-chart>
     </b-col>
@@ -53,6 +54,11 @@
 <script>
 import CandleChart from '~/components/activities/candle_chart'
 import sketchpad from 'responsive-sketchpad'
+import AppData from '~/assets/data/app_data.js'
+
+import {
+  mapGetters
+} from 'vuex'
 
 export default {
   name: 'lesson',
@@ -74,11 +80,8 @@ export default {
         low: 1
       } )
     },
-    calcCandleData() {
+    strokeConverter(pointData) {
       const numOfCandles = this.candleCount
-      const padData = this.pad.toJSON()
-
-      const pointData = padData && padData.strokes && padData.strokes[0] ? padData.strokes[0].points : []
 
       if (pointData.length > 0) {
         const invertYCanvas = y => 1 - y
@@ -103,20 +106,25 @@ export default {
 
 
 
-        const xValues = Array(numOfCandles)
+        const xValues = Array(candles)
           .fill()
           .map((item, ix) => ranges.x[0] + (xDiff/candles*ix))
 
-        const lineData = pointData.reduce((memo, item, ix, arr) => {
-          const nextInArr = arr[ix + 1] || arr[ix]
-          memo.push({
-            start: {x: item.x, y: item.y},
-            end: {x: nextInArr.x, y: nextInArr.y}
-          })
-          return memo
-        }, []);
+        const lineData = pointData
+          .reduce((memo, item, ix, arr) => {
+            if (ix === 0) {
+              memo.last = {x: item.x, y: item.y}
+            } else if (item.x >= memo.last.x) {
+              memo.data.push({
+                start: {x: memo.last.x, y: memo.last.y},
+                end: { x: item.x, y: item.y }
+              })
+              memo.last = {x: item.x, y: item.y}
+            }
+            return memo
+          }, {data: []});
 
-        const reducedLines = lineData.reduce((memo, item) => {
+        const reducedLines = lineData.data.reduce((memo, item) => {
           const inMemo = memo.find(m => m.start.x === item.start.x)
           if (inMemo) {
             inMemo.end = {x: item.end.x, y: convertYToPrice(item.end.y)}
@@ -126,11 +134,11 @@ export default {
           return memo
         }, [])
 
-
         xValues.forEach(item => {
         	const inReduced = reducedLines.find(rl => rl.start.x === item)
-        	if (!inReduced) {
-              const itemToSplit = reducedLines.find(rl => rl.start.x < item && rl.end.x > item)
+        	if (!inReduced && reducedLines.length > 0) {
+              const itemToSplit = reducedLines.find(rl => rl.start.x < item && rl.end.x >= item)
+              //if (!itemToSplit) {console.log(ranges, lineData, reducedLines, xValues, item, xDiff, xDiff/numOfCandles, candles)}
               const endValues = {x: itemToSplit.end.x, y: itemToSplit.end.y}
               const splitValue = {
                 x: item,
@@ -172,16 +180,37 @@ export default {
             }
           })
         }
+        return candleData
+      }
 
-        if (this.candles.length > 0) {
+    },
+    calcCandleData() {
+      const padData = this.pad.toJSON()
+
+      if (padData && padData.strokes && padData.strokes.length > 0) {
+        const candleData = padData.strokes.reduce((memo, data) => {
+          const convertedData = this.strokeConverter(data.points)
+          memo = memo.concat(convertedData)
+          return memo
+        }, [])
+
+        if (this.candles.length > 0 && candleData.length > 0) {
           this.candles = candleData
         }
       }
 
-
     },
     clearPad() {
       this.pad.clear()
+    }
+  },
+  computed: {
+    ...mapGetters( [ 'getUserPrefs' ] ),
+    theme() {
+      return this.getUserPrefs.theme_dark ? 'dark' : 'light'
+    },
+    padColor() {
+      return this.theme === 'dark' ? '#FFFFFF' : '#000000'
     }
   },
   components: {
@@ -193,6 +222,13 @@ export default {
     },
     wickVariable() {
       this.calcCandleData()
+    },
+    padColor() {
+      const data = this.pad.toJSON()
+      this.pad.clear()
+      data.strokes.forEach(stroke => stroke.color = this.padColor)
+      this.pad.setLineColor(this.padColor)
+      this.pad.loadJSON(data)
     }
   },
   mounted() {
@@ -201,7 +237,7 @@ export default {
     el,
     {
       line: {
-          color: '#000000',
+          color: this.padColor,
           size: 5
       }
     });
