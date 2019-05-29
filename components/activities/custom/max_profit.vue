@@ -1,16 +1,18 @@
 <template>
 <b-row class="max-profit">
   <b-col lg="9">
-    <candle-chart v-bind:candles="candles"
+    <candle-chart v-on:candle-change="setCurrentCandle"
+                  v-bind:candles="candles"
+                  v-bind:total-candles="totalCandles"
+                  v-bind:time-label="timeLabel"
+                  v-bind:time-label-interval="timeLabelInterval"
                   v-bind:height="chartHeight"
                   v-bind:force-range="priceRange"
                   v-bind:price-display="priceDisplay"
                   v-bind:price-width="priceWidth"
                   v-bind:candle-width="candleWidth"
                   v-bind:candle-spacing="candleSpacing"
-                  v-bind:chart-lines="tradePoints"
-                  v-bind:enter-disabled="enterDisabled"
-                  v-bind:exit-disabled="exitDisabled"
+                  v-bind:chart-lines="tradeTargets"
                   v-bind:candle-highlight="candleHighlight">
     </candle-chart>
   </b-col>
@@ -18,36 +20,35 @@
     <div class="slider-cont">
       <div class="slider-group">
         <h3>Enter</h3>
-        <span v-html="tradePoints[0].toFixed(2)"></span>
-        <vue-slider v-model="tradePoints[0]"
+        <span v-html="tradeTargets[0].toFixed(2)"></span>
+        <vue-slider v-model="tradeTargets[0]"
                     v-bind:direction="'btt'"
                     v-bind:min="priceRange[0]"
                     v-bind:max="priceRange[1]"
                     v-bind:height="'100%'"
                     v-bind:tooltip="'none'"
                     v-bind:interval="sliderInterval"
-                    v-bind:disabled="tradingResumed || enterDisabled">
-
+                    v-bind:disabled="enterDisabled || resultsReady">
         </vue-slider>
       </div>
       <div class="slider-group">
         <h3>Exit</h3>
-        <span v-html="tradePoints[1].toFixed(2)"></span>
-        <vue-slider v-model="tradePoints[1]"
+        <span v-html="tradeTargets[1].toFixed(2)"></span>
+        <vue-slider v-model="tradeTargets[1]"
                     v-bind:direction="'btt'"
                     v-bind:min="priceRange[0]"
                     v-bind:max="priceRange[1]"
                     v-bind:height="'100%'"
                     v-bind:tooltip="'none'"
                     v-bind:interval="sliderInterval"
-                    v-bind:disabled="tradingResumed || exitDisabled">
+                    v-bind:disabled="exitDisabled || resultsReady">
         </vue-slider>
       </div>
     </div>
     <b-btn class="start-btn"
            v-on:click="resumeTrading"
            v-if="progressive && !resultsReady"
-           v-bind:disabled="tradingResumed">Resume Trading</b-btn>
+           v-bind:disabled="tradingResumed">{{resumeTradingText}}</b-btn>
     <b-btn class="start-btn"
            v-on:click="checkProfit"
            v-bind:class="{'btn-success': progressive && resultsReady}"
@@ -68,7 +69,7 @@
         </div>
         <div v-if="!error && unfilled"
              class="results-unfilled">
-          Your trade was not filled.
+          Your sell order was not filled because price did not hit your exit target.
         </div>
         <div v-if="!error && !unfilled">
           <div><span>Your Profit:</span><span>+{{profit}}</span></div>
@@ -81,7 +82,7 @@
         <b-btn v-if="error"
                v-on:click="clearError">Try Again</b-btn>
         <b-btn v-if="!error"
-               v-on:click="reset">Play Again</b-btn>
+               v-on:click="reset">Done</b-btn>
       </div>
     </div>
   </div>
@@ -100,13 +101,14 @@ export default {
       origCandles: [ ...this.candles1 ],
       candles: [ ...this.candles1 ],
       checkProfitText: this.progressive ? 'View Results' : 'Check Profitability',
-      tradePoints: this.chartLines,
+      tradeTargets: [ ...this.chartLines ],
       resultsLoad: false,
       resultsReady: false,
       tradingResumed: false,
       submitted: false,
       error: false,
-      unfilled: false
+      unfilled: false,
+      currentCandle: 0
     }
   },
   props: {
@@ -124,7 +126,7 @@ export default {
     },
     chartHeight: {
       type: Number,
-      default: 300
+      default: 260
     },
     chartLines: {
       type: Array,
@@ -132,13 +134,31 @@ export default {
         return [ 0, 0 ]
       }
     },
-    enterDisabled: {
-      type: Boolean,
-      default: false
+    timeLabel: {
+      type: String
     },
-    exitDisabled: {
-      type: Boolean,
-      default: false
+    timeLabelInterval: {
+      type: Number
+    },
+    enterDisabledAt: {
+      type: String,
+      default () {
+        return 'none'
+      }
+    },
+    exitDisabledAt: {
+      type: String,
+      default () {
+        return 'none'
+      }
+    },
+    startBtnLabel: {
+      type: String,
+      default: 'Start Trading'
+    },
+    progressBtnLabel: {
+      type: String,
+      default: 'In Progress'
     },
     priceRange: {
       type: Array,
@@ -156,11 +176,11 @@ export default {
     },
     candleWidth: {
       type: Number,
-      default: 8
+      default: 20
     },
     candleSpacing: {
       type: Number,
-      default: 16
+      default: 40
     },
     detailPane: {
       type: Boolean,
@@ -173,12 +193,6 @@ export default {
     candleHighlight: {
       type: Boolean,
       default: false
-    },
-    profitPotential: {
-      type: Array,
-      default () {
-        return [ 0, 0, 0 ]
-      }
     },
     sliderInterval: {
       type: Number,
@@ -198,7 +212,7 @@ export default {
       this.resultsLoad = true
       this.submitted = true
 
-      if ( Math.max( this.tradePoints[ 0 ], this.tradePoints[ 1 ] ) > this.priceHigh || Math.min( this.tradePoints[ 0 ], this.tradePoints[ 1 ] ) < this.priceLow ) {
+      if ( Math.max( this.tradeTargets[ 0 ], this.tradeTargets[ 1 ] ) > this.priceHigh || Math.min( this.tradeTargets[ 0 ], this.tradeTargets[ 1 ] ) < this.priceLow ) {
         this.progressive ? this.unfilled = true : this.error = true
       }
 
@@ -208,7 +222,7 @@ export default {
     },
     reset() {
       this.submitted = this.unfilled = this.error = this.resultsReady = false
-      this.tradePoints = [ 0, 0 ]
+      this.tradeTargets = [ ...this.chartLines ]
       this.candles = [ ...this.origCandles ]
 
       if ( this.progressive ) {
@@ -220,7 +234,7 @@ export default {
       this.error = false
     },
     resumeTrading() {
-      let i = 0;
+      let i = 0
       let oldCandles = [ ...this.candles ]
       this.tradingResumed = true
 
@@ -233,15 +247,15 @@ export default {
         this.candles = oldCandles
         i++;
       }, 1000 );
+    },
+    setCurrentCandle( ev ) {
+      this.currentCandle = ev
     }
   },
   computed: {
     profit() {
-      const profit = Math.max( this.tradePoints[ 0 ], this.tradePoints[ 1 ] ) - Math.min( this.tradePoints[ 0 ], this.tradePoints[ 1 ] )
+      const profit = Math.max( this.tradeTargets[ 0 ], this.tradeTargets[ 1 ] ) - Math.min( this.tradeTargets[ 0 ], this.tradeTargets[ 1 ] )
       return profit.toFixed( 2 )
-    },
-    maxProfit() {
-      return this.profitPotential[ 0 ].toFixed( 2 )
     },
     priceHigh() {
       return Math.max.apply( Math, this.candles.map( function ( o ) {
@@ -252,6 +266,25 @@ export default {
       return Math.min.apply( Math, this.candles.map( function ( o ) {
         return o.low;
       } ) )
+    },
+    maxProfit() {
+      const diff = Math.max( this.priceHigh, this.priceLow ) - Math.min( this.priceHigh, this.priceLow )
+      return diff.toFixed( 2 )
+    },
+    resumeTradingText() {
+      return this.tradingResumed ? this.progressBtnLabel : this.startBtnLabel
+    },
+    totalCandles() {
+      return this.progressive ? [ ...this.candles1, ...this.candles2 ] : [ ...this.candles1 ]
+    },
+    enterDisabled() {
+      if ( this.enterDisabledAt === 'none' ) return false
+      else return this.totalCandles.findIndex( o => o.label === this.enterDisabledAt ) <= this.currentCandle ? true : false
+
+    },
+    exitDisabled() {
+      if ( this.exitDisabledAt === 'none' ) return false
+      else return this.totalCandles.findIndex( o => o.label === this.exitDisabledAt ) <= this.currentCandle ? true : false
     }
   }
 
@@ -372,7 +405,7 @@ export default {
         height: 160px;
 
         @media(min-width: 768px) {
-            height: 200px;
+            height: 232px;
         }
 
         .slider-group {

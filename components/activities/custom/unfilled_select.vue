@@ -204,7 +204,7 @@ export default {
                     display: flex;
                     flex-direction: column;
                     justify-content: flex-start;
-                    height: 220px;
+                    height: 160px;
                     margin: 0;
                     padding: 0;
                     width: 130px;
@@ -216,11 +216,11 @@ export default {
                     li {
                         color: #fff;
                         font-weight: 600;
-                        margin-bottom: 10px;
-                        height: 24px;
+                        margin-bottom: 8px;
+                        height: 20px;
                         width: 100%;
-                        font-size: 16px;
-                        line-height: 24px;
+                        font-size: 14px;
+                        line-height: 20px;
                         text-align: center;
                         text-transform: uppercase;
                         transition: all 0.3s ease;
@@ -263,10 +263,14 @@ export default {
         display: flex;
         flex-direction: column;
         justify-content: center;
-        height: 90%;
+        height: 100%;
+
+        @media(min-width: 768px) {
+            height: 90%;
+        }
 
         .exchange-btn {
-            padding: 0.3rem 1.2rem;
+            padding: 0.6rem 1.2rem;
             font-size: 1.15rem;
             font-weight: 600;
             border-radius: 50px;
@@ -304,7 +308,7 @@ export default {
             display: flex;
             flex-direction: row;
             justify-content: flex-start;
-            height: 265px;
+            height: 228px;
 
             .price-slider {
                 height: 60%;

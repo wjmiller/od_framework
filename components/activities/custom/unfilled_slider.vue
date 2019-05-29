@@ -121,7 +121,7 @@ export default {
                 .order-none {
                     display: block;
                     position: absolute;
-                    bottom: 30px;
+                    bottom: 16px;
                     width: 100%;
                     font-size: 50px;
                     font-weight: 600;
@@ -133,7 +133,7 @@ export default {
                     display: flex;
                     flex-direction: column-reverse;
                     justify-content: flex-start;
-                    height: 220px;
+                    height: 160px;
                     margin: 0;
                     padding: 0;
                     width: 130px;
@@ -145,11 +145,11 @@ export default {
                     li {
                         color: #fff;
                         font-weight: 600;
-                        margin-bottom: 10px;
-                        height: 30px;
+                        margin-bottom: 8px;
+                        height: 20px;
                         width: 100%;
-                        font-size: 19px;
-                        line-height: 30px;
+                        font-size: 14px;
+                        line-height: 20px;
                         text-align: center;
                         text-transform: uppercase;
                     }
@@ -167,7 +167,7 @@ export default {
             display: flex;
             flex-direction: row;
             justify-content: flex-start;
-            height: 265px;
+            height: 190px;
 
             .price-slider {
                 height: 80%;
