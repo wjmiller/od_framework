@@ -46,6 +46,16 @@
     <b-form-input id="range-1" v-model.number="wickVariable" type="range" min="0" max="10" step="1"></b-form-input>
     <div class="mt-2">Value: {{ wickVariable }}</div>
     </div>
+    <b-row>
+      <b-col cols="6">
+        <label for="prince-range-start">Price Start</label>
+        <b-form-input type="number" name="price-range-start" v-model.number="priceRange[0]"></b-form-input>
+      </b-col>
+      <b-col cols="6">
+        <label for="prince-range-end">Price End</label>
+        <b-form-input type="number" name="price-range-end" v-model.number="priceRange[1]"></b-form-input>
+      </b-col>
+    </b-row>
     </b-col>
   </b-row>
 </b-container>
@@ -68,7 +78,7 @@ export default {
       wickVariable: 1,
       chartLines: [ 20, 30 ],
       candles: [{open: 1, close: 2, high: 3, low: 4}],
-      priceRange: [25, 29]
+      priceRange: [10, 20]
     }
   },
   methods: {
@@ -84,15 +94,29 @@ export default {
       const numOfCandles = this.candleCount
 
       if (pointData.length > 0) {
+        const lineData = pointData
+          .reduce((memo, item, ix, arr) => {
+            if (ix === 0) {
+              memo.last = {x: item.x, y: item.y}
+            } else if (item.x >= memo.last.x) {
+              memo.data.push({
+                start: {x: memo.last.x, y: memo.last.y},
+                end: { x: item.x, y: item.y }
+              })
+              memo.last = {x: item.x, y: item.y}
+            }
+            return memo
+          }, {data: []});
+
         const invertYCanvas = y => 1 - y
         const decimals2 = val => Math.floor(val * 100)/100
-        const candles = Math.min(numOfCandles, pointData.length)
+        const candles = Math.min(numOfCandles, lineData.data.length)
 
-        const ranges = pointData.reduce((memo, item) => {
-          memo.x[0] = Math.min(memo.x[0], item.x)
-          memo.x[1] = Math.max(memo.x[1], item.x)
-          memo.y[0] = Math.min(memo.y[0], invertYCanvas(item.y))
-          memo.y[1] = Math.max(memo.y[1], invertYCanvas(item.y))
+        const ranges = lineData.data.reduce((memo, item) => {
+          memo.x[0] = Math.min(memo.x[0], item.start.x, item.end.x)
+          memo.x[1] = Math.max(memo.x[1], item.start.x, item.end.x)
+          memo.y[0] = Math.min(memo.y[0], invertYCanvas(item.start.y), invertYCanvas(item.end.y))
+          memo.y[1] = Math.max(memo.y[1], invertYCanvas(item.start.y), invertYCanvas(item.end.y))
           return memo
         }, {x: [1, 0], y: [1, 0]})
 
@@ -109,20 +133,6 @@ export default {
         const xValues = Array(candles)
           .fill()
           .map((item, ix) => ranges.x[0] + (xDiff/candles*ix))
-
-        const lineData = pointData
-          .reduce((memo, item, ix, arr) => {
-            if (ix === 0) {
-              memo.last = {x: item.x, y: item.y}
-            } else if (item.x >= memo.last.x) {
-              memo.data.push({
-                start: {x: memo.last.x, y: memo.last.y},
-                end: { x: item.x, y: item.y }
-              })
-              memo.last = {x: item.x, y: item.y}
-            }
-            return memo
-          }, {data: []});
 
         const reducedLines = lineData.data.reduce((memo, item) => {
           const inMemo = memo.find(m => m.start.x === item.start.x)
