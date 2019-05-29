@@ -22,13 +22,8 @@
                     v-bind:candle-width="8"
                     v-bind:candle-spacing="12"
                     v-bind:detail-pane="true"
-<<<<<<< HEAD
-                    v-bind:detail-position="'side'"
-                    v-bind:candle-highlight="false">
-=======
                     v-bind:candle-highlight="false"
                     v-bind:detail-position="'side'">
->>>>>>> 4da8e838f9419141925230573fed9b4655765dbb
       </candle-chart>
     </b-col>
   </b-row>
@@ -40,7 +35,6 @@
     </b-col>
     <b-col cols="3">
       <b-button-group>
-<<<<<<< HEAD
         <b-button v-on:click="clearPad">Clear</b-button>
         <b-button v-on:click="calcCandleData">Switch Data</b-button>
       </b-button-group>
@@ -64,31 +58,20 @@
                       step="1"></b-form-input>
         <div class="mt-2">Value: {{ wickVariable }}</div>
       </div>
-=======
-      <b-button v-on:click="clearPad">Clear</b-button>
-      <b-button v-on:click="calcCandleData">Switch Data</b-button>
-    </b-button-group>
-    <div>
-    <label for="range-1"># of Candles</label>
-    <b-form-input id="range-1" v-model.number="candleCount" type="range" min="0" max="100" step="5"></b-form-input>
-    <div class="mt-2">Value: {{ candleCount }}</div>
-    </div>
-    <div>
-    <label for="range-1">Random Wick Size</label>
-    <b-form-input id="range-1" v-model.number="wickVariable" type="range" min="0" max="10" step="1"></b-form-input>
-    <div class="mt-2">Value: {{ wickVariable }}</div>
-    </div>
-    <b-row>
-      <b-col cols="6">
-        <label for="prince-range-start">Price Start</label>
-        <b-form-input type="number" name="price-range-start" v-model.number="priceRange[0]"></b-form-input>
-      </b-col>
-      <b-col cols="6">
-        <label for="prince-range-end">Price End</label>
-        <b-form-input type="number" name="price-range-end" v-model.number="priceRange[1]"></b-form-input>
-      </b-col>
-    </b-row>
->>>>>>> 4da8e838f9419141925230573fed9b4655765dbb
+      <b-row>
+        <b-col cols="6">
+          <label for="prince-range-start">Price Start</label>
+          <b-form-input type="number"
+                        name="price-range-start"
+                        v-model.number="priceRange[0]"></b-form-input>
+        </b-col>
+        <b-col cols="6">
+          <label for="prince-range-end">Price End</label>
+          <b-form-input type="number"
+                        name="price-range-end"
+                        v-model.number="priceRange[1]"></b-form-input>
+        </b-col>
+      </b-row>
     </b-col>
   </b-row>
 </b-container>
@@ -110,18 +93,13 @@ export default {
       candleCount: 30,
       wickVariable: 1,
       chartLines: [ 20, 30 ],
-<<<<<<< HEAD
       candles: [ {
         open: 1,
         close: 2,
         high: 3,
         low: 4
       } ],
-      priceRange: [ 25, 29 ]
-=======
-      candles: [{open: 1, close: 2, high: 3, low: 4}],
-      priceRange: [10, 20]
->>>>>>> 4da8e838f9419141925230573fed9b4655765dbb
+      priceRange: [ 10, 20 ]
     }
   },
   methods: {
@@ -133,50 +111,47 @@ export default {
         low: 1
       } )
     },
-    strokeConverter(pointData) {
+    strokeConverter( pointData ) {
       const numOfCandles = this.candleCount
-<<<<<<< HEAD
-      const padData = this.pad.toJSON()
-
-      const pointData = padData && padData.strokes && padData.strokes[ 0 ] ? padData.strokes[ 0 ].points : []
 
       if ( pointData.length > 0 ) {
-        const invertYCanvas = y => 1 - y
-        const decimals2 = val => Math.floor( val * 100 ) / 100
-        const candles = Math.min( numOfCandles, pointData.length )
-
-        const ranges = pointData.reduce( ( memo, item ) => {
-          memo.x[ 0 ] = Math.min( memo.x[ 0 ], item.x )
-          memo.x[ 1 ] = Math.max( memo.x[ 1 ], item.x )
-          memo.y[ 0 ] = Math.min( memo.y[ 0 ], invertYCanvas( item.y ) )
-          memo.y[ 1 ] = Math.max( memo.y[ 1 ], invertYCanvas( item.y ) )
-=======
-
-      if (pointData.length > 0) {
         const lineData = pointData
-          .reduce((memo, item, ix, arr) => {
-            if (ix === 0) {
-              memo.last = {x: item.x, y: item.y}
-            } else if (item.x >= memo.last.x) {
-              memo.data.push({
-                start: {x: memo.last.x, y: memo.last.y},
-                end: { x: item.x, y: item.y }
-              })
-              memo.last = {x: item.x, y: item.y}
+          .reduce( ( memo, item, ix, arr ) => {
+            if ( ix === 0 ) {
+              memo.last = {
+                x: item.x,
+                y: item.y
+              }
+            } else if ( item.x >= memo.last.x ) {
+              memo.data.push( {
+                start: {
+                  x: memo.last.x,
+                  y: memo.last.y
+                },
+                end: {
+                  x: item.x,
+                  y: item.y
+                }
+              } )
+              memo.last = {
+                x: item.x,
+                y: item.y
+              }
             }
             return memo
-          }, {data: []});
+          }, {
+            data: []
+          } );
 
         const invertYCanvas = y => 1 - y
-        const decimals2 = val => Math.floor(val * 100)/100
-        const candles = Math.min(numOfCandles, lineData.data.length)
+        const decimals2 = val => Math.floor( val * 100 ) / 100
+        const candles = Math.min( numOfCandles, lineData.data.length )
 
-        const ranges = lineData.data.reduce((memo, item) => {
-          memo.x[0] = Math.min(memo.x[0], item.start.x, item.end.x)
-          memo.x[1] = Math.max(memo.x[1], item.start.x, item.end.x)
-          memo.y[0] = Math.min(memo.y[0], invertYCanvas(item.start.y), invertYCanvas(item.end.y))
-          memo.y[1] = Math.max(memo.y[1], invertYCanvas(item.start.y), invertYCanvas(item.end.y))
->>>>>>> 4da8e838f9419141925230573fed9b4655765dbb
+        const ranges = lineData.data.reduce( ( memo, item ) => {
+          memo.x[ 0 ] = Math.min( memo.x[ 0 ], item.start.x, item.end.x )
+          memo.x[ 1 ] = Math.max( memo.x[ 1 ], item.start.x, item.end.x )
+          memo.y[ 0 ] = Math.min( memo.y[ 0 ], invertYCanvas( item.start.y ), invertYCanvas( item.end.y ) )
+          memo.y[ 1 ] = Math.max( memo.y[ 1 ], invertYCanvas( item.start.y ), invertYCanvas( item.end.y ) )
           return memo
         }, {
           x: [ 1, 0 ],
@@ -193,43 +168,17 @@ export default {
 
 
 
-<<<<<<< HEAD
-        const xValues = Array( numOfCandles )
+        const xValues = Array( candles )
           .fill()
           .map( ( item, ix ) => ranges.x[ 0 ] + ( xDiff / candles * ix ) )
 
-        const lineData = pointData.reduce( ( memo, item, ix, arr ) => {
-          const nextInArr = arr[ ix + 1 ] || arr[ ix ]
-          memo.push( {
-            start: {
-              x: item.x,
-              y: item.y
-            },
-            end: {
-              x: nextInArr.x,
-              y: nextInArr.y
-            }
-          } )
-          return memo
-        }, [] );
-
-        const reducedLines = lineData.reduce( ( memo, item ) => {
+        const reducedLines = lineData.data.reduce( ( memo, item ) => {
           const inMemo = memo.find( m => m.start.x === item.start.x )
           if ( inMemo ) {
             inMemo.end = {
               x: item.end.x,
               y: convertYToPrice( item.end.y )
             }
-=======
-        const xValues = Array(candles)
-          .fill()
-          .map((item, ix) => ranges.x[0] + (xDiff/candles*ix))
-
-        const reducedLines = lineData.data.reduce((memo, item) => {
-          const inMemo = memo.find(m => m.start.x === item.start.x)
-          if (inMemo) {
-            inMemo.end = {x: item.end.x, y: convertYToPrice(item.end.y)}
->>>>>>> 4da8e838f9419141925230573fed9b4655765dbb
           } else {
             memo.push( {
               start: {
@@ -245,29 +194,14 @@ export default {
           return memo
         }, [] )
 
-<<<<<<< HEAD
-
         xValues.forEach( item => {
           const inReduced = reducedLines.find( rl => rl.start.x === item )
-          if ( !inReduced ) {
-            const itemToSplit = reducedLines.find( rl => rl.start.x < item && rl.end.x > item )
+          if ( !inReduced && reducedLines.length > 0 ) {
+            const itemToSplit = reducedLines.find( rl => rl.start.x < item && rl.end.x >= item )
+            //if (!itemToSplit) {console.log(ranges, lineData, reducedLines, xValues, item, xDiff, xDiff/numOfCandles, candles)}
             const endValues = {
               x: itemToSplit.end.x,
               y: itemToSplit.end.y
-=======
-        xValues.forEach(item => {
-        	const inReduced = reducedLines.find(rl => rl.start.x === item)
-        	if (!inReduced && reducedLines.length > 0) {
-              const itemToSplit = reducedLines.find(rl => rl.start.x < item && rl.end.x >= item)
-              //if (!itemToSplit) {console.log(ranges, lineData, reducedLines, xValues, item, xDiff, xDiff/numOfCandles, candles)}
-              const endValues = {x: itemToSplit.end.x, y: itemToSplit.end.y}
-              const splitValue = {
-                x: item,
-                y: itemToSplit.start.y + (itemToSplit.end.x - item)/(itemToSplit.end.x - itemToSplit.start.x)*(itemToSplit.end.y - itemToSplit.start.y)
-              }
-              itemToSplit.end = splitValue
-              reducedLines.push({start: splitValue, end: endValues})
->>>>>>> 4da8e838f9419141925230573fed9b4655765dbb
             }
             const splitValue = {
               x: item,
@@ -315,22 +249,18 @@ export default {
         return candleData
       }
 
-<<<<<<< HEAD
-        if ( this.candles.length > 0 ) {
-=======
     },
     calcCandleData() {
       const padData = this.pad.toJSON()
 
-      if (padData && padData.strokes && padData.strokes.length > 0) {
-        const candleData = padData.strokes.reduce((memo, data) => {
-          const convertedData = this.strokeConverter(data.points)
-          memo = memo.concat(convertedData)
+      if ( padData && padData.strokes && padData.strokes.length > 0 ) {
+        const candleData = padData.strokes.reduce( ( memo, data ) => {
+          const convertedData = this.strokeConverter( data.points )
+          memo = memo.concat( convertedData )
           return memo
-        }, [])
+        }, [] )
 
-        if (this.candles.length > 0 && candleData.length > 0) {
->>>>>>> 4da8e838f9419141925230573fed9b4655765dbb
+        if ( this.candles.length > 0 && candleData.length > 0 ) {
           this.candles = candleData
         }
       }
@@ -362,24 +292,17 @@ export default {
     padColor() {
       const data = this.pad.toJSON()
       this.pad.clear()
-      data.strokes.forEach(stroke => stroke.color = this.padColor)
-      this.pad.setLineColor(this.padColor)
-      this.pad.loadJSON(data)
+      data.strokes.forEach( stroke => stroke.color = this.padColor )
+      this.pad.setLineColor( this.padColor )
+      this.pad.loadJSON( data )
     }
   },
   mounted() {
     var el = this.$refs.sketchpad;
     this.pad = new sketchpad(
-<<<<<<< HEAD
       el, {
         line: {
-          color: '#000000',
-=======
-    el,
-    {
-      line: {
           color: this.padColor,
->>>>>>> 4da8e838f9419141925230573fed9b4655765dbb
           size: 5
         }
       } );

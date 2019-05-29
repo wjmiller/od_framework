@@ -5,7 +5,7 @@
 
   <h1>Tests:</h1>
   <nuxt-link to="/test/candlebuilder">Candle Builder</nuxt-link>
-  <!--<nuxt-link to="/test/candlestickmaker">Candle Generator</nuxt-link>-->
+  <nuxt-link to="/test/candlestickmaker">Candle Generator</nuxt-link>
   <nuxt-link to="/test/candlechart">Candle Chart</nuxt-link>
   <nuxt-link to="/test/maxprofit">Max Profit</nuxt-link>
   <nuxt-link to="/test/regionhighlight">Region Highlight</nuxt-link>
