@@ -1,6 +1,8 @@
 @import './mixins.scss';
 @import './variables.scss';
+@import "vue-select/src/scss/vue-select.scss";
 @import './icon_font.scss';
+
 
 
 
@@ -189,9 +191,14 @@ section.view {
   }
 }
 
+.btn {
+  font-size: 1.1rem;
+  padding: 0.4rem 1.8rem;
+}
+
 .btn-secondary, .btn-success {
   border-radius: $border-radius-btn;
-  padding: 0.4rem 1.4rem;
+  //padding: 0.4rem 1.4rem;
   font-weight: 600;
 
   &.btn-sm {
@@ -669,4 +676,160 @@ section.view {
 
 .colored-text {
     color: lightblue;
+}
+
+//------------------------------------------------------
+// Vue Slider
+//------------------------------------------------------
+
+
+
+.vs__search, .vs__search:focus, .vs__selected, .vs__selected:focus, .vs__selected.vs--open {
+  font-size: 1.1rem;
+  line-height: 1.9;
+  text-transform: uppercase;
+  font-weight: 600;
+  padding: 0 14px;
+}
+
+.vs__dropdown-menu {
+  li {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    text-transform: uppercase;
+  }
+}
+
+.vs__actions {
+    padding: 6px 14px 0 3px;
+}
+
+.vs__dropdown-menu, .chart-key {
+
+  li {
+    font-weight: 600;
+
+    span.dot {
+      display: inline-block;
+      width: 16px !important;
+      height: 16px !important;
+      border-radius: 50% !important;
+      margin-left: 0.4rem;
+      position: relative;
+      top: 1px;
+
+      &:before {
+        content: "";
+      }
+    }
+
+    &:nth-child(1) {
+      span {
+        background: $pink;
+      }
+    }
+
+    &:nth-child(2) {
+      span {
+        background: $yellow;
+      }
+    }
+
+    &:nth-child(3) {
+      span {
+        background: $blue-light;
+      }
+    }
+
+    &:nth-child(4) {
+      span {
+        background: $orange-light;
+      }
+    }
+
+    &:nth-child(5) {
+      span {
+        background: $purple-bright;
+      }
+    }
+
+    &:nth-child(6) {
+      span {
+        background: $teal;
+      }
+    }
+    &:nth-child(7) {
+      span {
+        background: $blue;
+      }
+    }
+  }
+}
+
+.dark {
+  .vs__dropdown-toggle {
+    //background: rgba(255,255,255,0.1);
+    background: lighten($dark-blue, 3%);
+    border: 1px solid lighten($dark-blue, 15%);
+  }
+
+  .vs__search, .vs__selected, .vs__selected:focus {
+    color: #ffffff;
+  }
+
+  .vs__open-indicator {
+    fill: #ffffff;
+  }
+
+  .vs__dropdown-menu {
+    background: lighten($dark-blue, 3%);
+    border: 1px solid lighten($dark-blue, 15%);
+
+    li {
+      color: #ffffff;
+
+      &:hover {
+        background: lighten($dark-blue, 15%);
+      }
+    }
+  }
+
+  .vs__dropdown-option--highlight {
+    background: lighten($dark-blue, 15%);
+  }
+}
+
+.light {
+  .vs__dropdown-toggle {
+    background: #fcfcfc;
+    border: 1px solid #bbbbbb;
+  }
+
+  .vs__search, .vs__selected, .vs__selected:focus {
+    color: $light-header-color;
+  }
+
+  .vs__open-indicator {
+    fill: $light-header-color;
+  }
+
+  .vs__dropdown-menu {
+    background: #fcfcfc;
+    border: 1px solid #bbbbbb;
+    box-shadow: none;
+
+    li {
+      color: $light-header-color;
+
+      &:hover {
+        background: $light-header-color;
+        color: #ffffff;
+      }
+    }
+  }
+
+  .vs__dropdown-option--highlight {
+    background: $light-header-color;
+    color: #ffffff !important;
+  }
 }
