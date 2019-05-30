@@ -346,37 +346,48 @@ export default {
                 border-radius: 0;
                 background: lighten($dark-blue, 5%);
                 border: 1px solid lighten($dark-blue, 15%);
-            }
 
-            .vue-slider-process {
-                border-radius: 6px;
-                background: none !important;
-            }
+                .vue-slider-process {
+                    border-radius: 6px;
+                    background: none !important;
+                }
 
-            .vue-slider-dot {
-                width: 40px;
-
-                .vue-slider-dot-handle {
+                .vue-slider-dot {
                     width: 40px;
-                    height: 40px;
-                    position: relative;
-                    top: -14px;
-                    left: -13px;
-                    text-align: center;
-                    line-height: 40px;
-                    z-index: 1000;
-                    font-size: 36px;
-                    transform: rotate(90deg);
 
-                    &:before {
-                        content: "\e90f";
-                        font-family: "custom-icons";
+                    .vue-slider-dot-handle {
+                        width: 40px;
+                        height: 40px;
+                        position: relative;
+                        top: -14px;
+                        left: -13px;
+                        text-align: center;
+                        line-height: 40px;
+                        z-index: 1000;
+                        font-size: 26px;
 
-                        color: $dark-blue;
+                        &:before {
+                            //content: "\e90f";
+                            //font-family: "custom-icons";
+                            content: "R";
+                            color: $dark-blue;
+                            font-weight: 600;
+                        }
+
                     }
 
                 }
+
+                > div:nth-child(2) {
+                    .vue-slider-dot-handle {
+                        &:before {
+                            content: "L";
+                        }
+                    }
+                }
+
             }
+
         }
     }
 

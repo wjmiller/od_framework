@@ -105,7 +105,7 @@
 
           </g>
 
-          <g>
+          <g v-if="timeline">
             <!-- Timeline Labels -->
             <text v-bind:x="0"
                   v-bind:y="priceLineY + 17"
@@ -223,6 +223,10 @@ export default {
     },
     forceRange: {
       type: Array
+    },
+    timeline: {
+      type: Boolean,
+      default: false
     },
     timeLabel: {
       type: String
@@ -699,8 +703,7 @@ export default {
 .dark {
 
     .chart {
-        .chart-regions {
-            }
+        .chart-regions {}
     }
 
     .chart-num,

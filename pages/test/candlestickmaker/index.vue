@@ -5,91 +5,93 @@
       <nuxt-link class="btn btn-secondary"
                  to="/">
         <fa :icon="['fas', 'chevron-left']"
-            aria-label="left arrow" /> Exit Candle Chart</nuxt-link>
+            aria-label="left arrow" /> Exit Candle Generator</nuxt-link>
     </b-col>
   </b-row>
   <b-row>
-    <b-col cols="12">
-      <h2 class="chart-header">First Day of Trading (Side Details)</h2>
+    <b-col>
+      <p class="instructions">
+        Draw a formation on the canvas below and click Generate to see your drawn line come to life as a candle chart.
+      </p>
     </b-col>
   </b-row>
-  <b-row>
-    <b-col cols="12">
-      <candle-chart v-bind:candles="candles"
-                    v-bind:height="260"
-                    v-bind:price-display="5"
-                    v-bind:price-width="60"
-                    v-bind:candle-width="8"
-                    v-bind:candle-spacing="12"
-                    v-bind:detail-pane="true"
-                    v-bind:candle-highlight="false"
-                    v-bind:detail-position="'side'">
-      </candle-chart>
-    </b-col>
-  </b-row>
-  <b-row>
-    <b-col cols="9"
-           class="sketchpad-cont">
-      <div class="sketchpad"
-           ref="sketchpad"></div>
-    </b-col>
-    <b-col cols="3">
-      <b-button-group>
-        <b-button v-on:click="clearPad">Clear</b-button>
-        <b-button v-on:click="calcCandleData">Switch Data</b-button>
-      </b-button-group>
-      <div>
-        <label for="range-1"># of Candles</label>
-        <vue-slider v-model.number="candleCount"
-                    v-bind:direction="'ltr'"
-                    v-bind:min="0"
-                    v-bind:max="100"
-                    v-bind:tooltip="'none'"
-                    v-bind:interval="5">
-        </vue-slider>
-        <!--
-        <b-form-input id="range-1"
-                      v-model.number="candleCount"
-                      type="range"
-                      min="0"
-                      max="100"
-                      step="5"></b-form-input>-->
-        <div class="mt-2">Value: {{ candleCount }}</div>
-      </div>
-      <div>
-        <label for="range-1">Random Wick Size</label>
-        <vue-slider v-model.number="wickVariable"
-                    v-bind:direction="'ltr'"
-                    v-bind:min="0"
-                    v-bind:max="10"
-                    v-bind:tooltip="'none'"
-                    v-bind:interval="1">
-        </vue-slider>
-        <!--
-        <b-form-input id="range-1"
-                      v-model.number="wickVariable"
-                      type="range"
-                      min="0"
-                      max="10"
-                      step="1"></b-form-input>-->
-        <div class="mt-2">Value: {{ wickVariable }}</div>
-      </div>
-      <b-row>
-        <b-col cols="6">
-          <label for="prince-range-start">Price Start</label>
-          <b-form-input type="number"
-                        name="price-range-start"
-                        v-model.number="priceRange[0]"></b-form-input>
-        </b-col>
-        <b-col cols="6">
-          <label for="prince-range-end">Price End</label>
-          <b-form-input type="number"
-                        name="price-range-end"
-                        v-model.number="priceRange[1]"></b-form-input>
-        </b-col>
-      </b-row>
-    </b-col>
-  </b-row>
+  <div class="candle-generator">
+    <b-row>
+      <b-col>
+        <div class="sketchpad-container">
+          <div class="sketchpad"
+               ref="sketchpad"></div>
+        </div>
+        <div class="sketchpad-btns">
+          <b-button-group>
+            <b-button v-on:click="clearPad">Clear</b-button>
+            <b-button v-on:click="calcCandleData">Generate</b-button>
+          </b-button-group>
+        </div>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col class="generator">
+        <candle-chart v-bind:candles="candles"
+                      v-bind:height="260"
+                      v-bind:force-range="priceRange"
+                      v-bind:price-display="5"
+                      v-bind:price-width="60"
+                      v-bind:candle-width="12"
+                      v-bind:candle-spacing="18"
+                      v-bind:timeline="false"
+                      v-bind:detail-pane="false"
+                      v-bind:candle-highlight="false">
+        </candle-chart>
+        <div class="chart-controls">
+          <div>
+            <label for="range-1">Number of Candles ({{candleCount}})</label>
+            <vue-slider v-model.number="candleCount"
+                        v-bind:direction="'ltr'"
+                        v-bind:min="0"
+                        v-bind:max="100"
+                        v-bind:tooltip="'none'"
+                        v-bind:interval="5">
+            </vue-slider>
+          </div>
+          <div>
+            <label for="range-1">Random Wick Size ({{wickVariable}})</label>
+            <vue-slider v-model.number="wickVariable"
+                        v-bind:direction="'ltr'"
+                        v-bind:min="0"
+                        v-bind:max="10"
+                        v-bind:tooltip="'none'"
+                        v-bind:interval="1">
+            </vue-slider>
+          </div>
+          <b-row>
+            <b-col cols="6">
+              <label for="prince-range-start">Price Start</label>
+              <b-form-input type="number"
+                            name="price-range-start"
+                            v-model.number="priceRange[0]"></b-form-input>
+            </b-col>
+            <b-col cols="6">
+              <label for="prince-range-end">Price End</label>
+              <b-form-input type="number"
+                            name="price-range-end"
+                            v-model.number="priceRange[1]"></b-form-input>
+            </b-col>
+          </b-row>
+        </div>
+      </b-col>
+    </b-row>
+    <b-row>
+      <b-col>
+        <h3 class="export-header">Candle JSON Export</h3>
+        <b-form-textarea class="export-json"
+                         v-bind:value="candleJSON"
+                         rows="3"
+                         max-rows="6">
+        </b-form-textarea>
+      </b-col>
+    </b-row>
+  </div>
 </b-container>
 </template>
 
@@ -98,8 +100,8 @@ import CandleChart from '~/components/activities/candle_chart'
 import AppData from '~/assets/data/app_data.js'
 //import sketchpad from 'responsive-sketchpad'
 
-if (process.client) {
-  var sketchpad = require('~/mixins/sketchpad')
+if ( process.client ) {
+  var sketchpad = require( '~/mixins/sketchpad' )
 }
 
 import {
@@ -113,12 +115,7 @@ export default {
       candleCount: 30,
       wickVariable: 1,
       chartLines: [ 20, 30 ],
-      candles: [ {
-        open: 1,
-        close: 2,
-        high: 3,
-        low: 4
-      } ],
+      candles: [],
       priceRange: [ 10, 20 ]
     }
   },
@@ -296,7 +293,10 @@ export default {
       return this.getUserPrefs.theme_dark ? 'dark' : 'light'
     },
     padColor() {
-      return this.theme === 'dark' ? '#FFFFFF' : '#000000'
+      return this.theme === 'dark' ? '#FFFFFF' : '#112163'
+    },
+    candleJSON() {
+      return JSON.stringify( this.candles )
     }
   },
   components: {
@@ -321,11 +321,13 @@ export default {
     var el = this.$refs.sketchpad;
     this.pad = new sketchpad(
       el, {
+        aspectRatio: '0.5625',
         line: {
           color: this.padColor,
           size: 5
         }
-      } );
+      } )
+    window.onresize = e => this.pad.resize( el.offsetWidth )
   }
 }
 </script>
@@ -336,6 +338,182 @@ export default {
 // -----------------------------------------------------
 
 @import '~assets/scss/variables.scss';
+
+.candle-generator {
+
+    .sketchpad-container {
+        width: 100%;
+        //height: 345px;
+        margin-bottom: 30px;
+
+        .sketchpad {
+            width: 100% !important;
+            //height: 345px !important;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+    }
+
+    .sketchpad-btns {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 30px;
+
+        .btn-group {
+            width: 240px;
+            align-self: center;
+        }
+    }
+
+    .generator {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+
+        .candle-chart {
+            width: 100%;
+            margin-bottom: 30px;
+
+            @media(min-width: 992px) {
+                width: 70%;
+                margin-right: 25px;
+                margin-bottom: 0;
+            }
+
+        }
+
+        .chart-controls {
+            width: 100%;
+
+            @media(min-width: 992px) {
+                width: calc(30% - 25px);
+            }
+
+            > div {
+                margin-bottom: 35px;
+
+                label {
+                    display: block;
+                    width: 100%;
+                    font-weight: 600;
+                    font-size: 1.1rem;
+                    text-transform: uppercase;
+                    text-align: center;
+                    margin-bottom: 15px;
+                }
+
+                .vue-slider {
+                    width: calc(100% - 20px) !important;
+                    margin: 0 auto;
+
+                    .vue-slider-dot-handle {
+                        width: 40px;
+                        height: 40px;
+                        position: relative;
+                        top: -13px;
+                        text-align: center;
+                        line-height: 40px;
+                        font-size: 36px;
+                        transform: rotate(90deg);
+
+                        &:before {
+                            content: "\e90f";
+                            font-family: "custom-icons";
+                            color: $dark-blue;
+                        }
+                    }
+
+                    .vue-slider-rail {
+                        height: 12px;
+                        background: lighten($dark-blue, 3%);
+                        border: 1px solid lighten($dark-blue, 15%);
+                        border-radius: 0;
+                    }
+
+                    .vue-slider-process {
+                        background: none;
+                    }
+                }
+
+            }
+
+            .form-control {
+                color: #fff;
+                background: lighten($dark-blue, 3%);
+                border: 1px solid lighten($dark-blue, 15%);
+            }
+        }
+    }
+
+}
+
+.export-header {
+    text-align: center;
+    margin-top: 30px;
+    text-transform: uppercase;
+    font-size: 1.3rem;
+}
+
+.export-json {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.dark {
+    .candle-generator {
+        .sketchpad {
+            border: 1px solid lighten($dark-blue, 17%);
+        }
+    }
+
+    .export-json {
+        background: lighten($dark-blue, 3%);
+        border: 1px solid lighten($dark-blue, 17%);
+        color: #fff;
+    }
+}
+
+.light {
+    .candle-generator {
+        .sketchpad {
+            border: 1px solid #bbbbbb;
+        }
+
+        .generator {
+            .chart-controls {
+                .vue-slider {
+                    .vue-slider-dot-handle {
+                        background: $light-header-color;
+                        box-shadow: none;
+                        &:before {
+                            color: #fff;
+                        }
+                    }
+                    .vue-slider-rail {
+                        background: rgba(0,0,0,0.03);
+                        border: 1px solid #bbbbbb;
+                    }
+                }
+
+                .form-control {
+                    color: $light-text-color;
+                    background: #ffffff;
+                    border: 1px solid #bbbbbb;
+                }
+            }
+
+        }
+    }
+
+    .export-json {
+        background: #fff;
+        border: 1px solid #bbbbbb;
+        color: $light-text-color;
+    }
+}
 
 .chart-header {
     font-size: 1.8rem;
@@ -358,59 +536,10 @@ export default {
     }
 }
 
-.sketchpad-cont {
-    height: 320px;
-
-    @media(min-width: 768px) {
-        height: 320px;
-    }
-
-    .sketchpad {
-        width: 100%;
-        height: 100%;
-    }
-}
-
-label {
+.instructions {
     font-size: 1.1rem;
-    font-weight: 600;
     margin-bottom: 15px;
-}
-
-.vue-slider {
-
-    .vue-slider-dot-handle {
-        width: 40px;
-        height: 40px;
-        position: relative;
-        top: -13px;
-        text-align: center;
-        line-height: 40px;
-        font-size: 36px;
-        transform: rotate(90deg);
-
-        &:before {
-            content: "\e90f";
-            font-family: "custom-icons";
-            color: $dark-blue;
-        }
-    }
-
-    .vue-slider-rail {
-        height: 12px;
-        background: lighten($dark-blue, 3%);
-        border: 1px solid lighten($dark-blue, 15%);
-        border-radius: 0;
-    }
-
-    .vue-slider-process {
-        background: none;
-    }
-}
-
-.dark {
-    .sketchpad {
-        border: 1px solid lighten($dark-blue, 17%);
-    }
+    text-align: center;
+    font-weight: 600;
 }
 </style>
