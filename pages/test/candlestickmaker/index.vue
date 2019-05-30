@@ -63,8 +63,12 @@
 
 <script>
 import CandleChart from '~/components/activities/candle_chart'
-import sketchpad from 'responsive-sketchpad'
 import AppData from '~/assets/data/app_data.js'
+//import sketchpad from 'responsive-sketchpad'
+
+if (process.client) {
+  var sketchpad = require('~/mixins/sketchpad')
+}
 
 import {
   mapGetters
@@ -170,7 +174,7 @@ export default {
             open: decimals2(lines[0].start.y),
             close: decimals2(lines[lines.length - 1].end.y),
             high: decimals2(Math.max(...lineEnds, lines[0].start.y)),
-            low: decimals2(Math.min(...lineEnds, lines[0].start.y)),
+            low: decimals2(Math.min(...lineEnds, lines[0].start.y))
           })
           return memo
         }, [])
