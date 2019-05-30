@@ -95,8 +95,12 @@
 
 <script>
 import CandleChart from '~/components/activities/candle_chart'
-import sketchpad from 'responsive-sketchpad'
 import AppData from '~/assets/data/app_data.js'
+//import sketchpad from 'responsive-sketchpad'
+
+if (process.client) {
+  var sketchpad = require('~/mixins/sketchpad')
+}
 
 import {
   mapGetters
