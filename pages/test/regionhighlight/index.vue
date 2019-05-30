@@ -9,7 +9,7 @@
     </b-col>
   </b-row>
   <b-row>
-    <b-col lg="8">
+    <b-col lg="9">
       <p class="question">
         This activity provides 3 pre-set region types. The learner will edit each region using the Edit Location sliders.
       </p>
@@ -23,7 +23,7 @@
   </region-highlight>
   <div class="spacer"></div>
   <b-row>
-    <b-col lg="8">
+    <b-col lg="9">
       <p class="question">
         This activity has no pre-set region types for the learner to set. The learner will add new regions and then edit the locations of the added regions.
       </p>
@@ -307,6 +307,6 @@ export default {
 
 .question {
     font-size: 1.05rem;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 </style>

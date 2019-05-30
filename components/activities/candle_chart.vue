@@ -10,13 +10,6 @@
       <span>High: {{currentCandle.high}}</span>
       <span>Low: {{currentCandle.low}}</span>
     </div>
-    <ul class="chart-key"
-        v-if="regions.length > 0">
-      <li v-for="region in regions">
-        {{region.label}}
-        <span class="dot"></span>
-      </li>
-    </ul>
     <div class="chart"
          ref="chart">
       <div>

@@ -704,7 +704,7 @@ section.view {
     padding: 6px 14px 0 3px;
 }
 
-.vs__dropdown-menu, .chart-key {
+.vs__dropdown-menu, .region-key {
 
   li {
     font-weight: 600;
@@ -724,42 +724,42 @@ section.view {
     }
 
     &:nth-child(1) {
-      span {
+      span.dot {
         background: $pink;
       }
     }
 
     &:nth-child(2) {
-      span {
+      span.dot {
         background: $yellow;
       }
     }
 
     &:nth-child(3) {
-      span {
+      span.dot {
         background: $blue-light;
       }
     }
 
     &:nth-child(4) {
-      span {
+      span.dot {
         background: $orange-light;
       }
     }
 
     &:nth-child(5) {
-      span {
+      span.dot {
         background: $purple-bright;
       }
     }
 
     &:nth-child(6) {
-      span {
+      span.dot {
         background: $teal;
       }
     }
     &:nth-child(7) {
-      span {
+      span.dot {
         background: $blue;
       }
     }

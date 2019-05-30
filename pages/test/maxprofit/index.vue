@@ -11,7 +11,7 @@
   <b-row>
     <b-col lg="8">
       <p class="question">
-        Use the sliders to move the <b>Enter</b> and <b>Exit</b> targets on the chart below to capture the maximum profit that could have been achieved during this trading period.
+        Use the sliders to move the <b>Enter</b> and <b>Exit</b> targets on the chart to capture the maximum profit that could have been achieved during this trading period.
       </p>
     </b-col>
   </b-row>
