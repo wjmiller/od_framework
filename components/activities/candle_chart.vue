@@ -10,6 +10,13 @@
       <span>High: {{currentCandle.high}}</span>
       <span>Low: {{currentCandle.low}}</span>
     </div>
+    <ul class="chart-key"
+        v-if="regions.length > 0">
+      <li v-for="region in regions">
+        {{region.label}}
+        <span class="dot"></span>
+      </li>
+    </ul>
     <div class="chart"
          ref="chart">
       <div>
@@ -18,6 +25,18 @@
              ref="chart_candles"
              v-bind:viewBox="candleChart.x + ' 0 ' + candleChart.width + ' ' + `${height + chartPadding}`"
              v-bind:width="candleChart.width">
+          <!-- Region -->
+          <g v-if="regions.length > 0"
+             class="chart-regions">
+            <rect v-for="region in chartRegions"
+                  v-bind:key="region.label"
+                  v-bind:ref="region.label"
+                  v-bind:x="region.x"
+                  v-bind:y="region.y"
+                  v-bind:width="region.width"
+                  v-bind:height="region.height" />
+          </g>
+
           <!-- Candlestick -->
           <g v-for="(candle, index) in chartCandles"
              v-bind:key="`candle-${index}`">
@@ -172,6 +191,12 @@ export default {
         return this.candles
       }
     },
+    regions: {
+      type: Array,
+      default () {
+        return []
+      }
+    },
     height: {
       type: Number,
       default: 260
@@ -312,6 +337,25 @@ export default {
         return memo;
       }, [] )
     },
+    chartRegions() {
+      return this.regions.map( ( region, ix ) => {
+        const regionCandles = [ ...this.chartCandles.slice( region.range[ 0 ], ( region.range[ 1 ] + 1 ) ) ]
+        const y1 = Math.min.apply( Math, regionCandles.map( function ( o ) {
+          return o.line.y1;
+        } ) )
+        const y2 = Math.max.apply( Math, regionCandles.map( function ( o ) {
+          return o.line.y2;
+        } ) )
+
+        return {
+          x: this.priceOffset + ( this.chartPadding / 2 ) + ( this.candleSpacing * region.range[ 0 ] ),
+          y: y1,
+          width: regionCandles.length * this.candleSpacing - ( this.candleSpacing - this.candleWidth ),
+          height: y2 - y1,
+          label: region.label
+        }
+      } )
+    },
     enterLineY() {
       return this.chartOffset + this.height - ( ( this.chartLines[ 0 ] - this.priceRange[ 0 ] ) / ( this.priceRange[ 1 ] - this.priceRange[ 0 ] ) * this.height )
     },
@@ -352,6 +396,7 @@ export default {
         this.candleChart.totalWidth = this.candleChart.width
       }
       this.handleResize()
+
     },
     handleResize() {
       this.candleChart.width = this.$refs.chart.clientWidth - this.priceWidth
@@ -438,10 +483,10 @@ export default {
             display: flex;
             flex-direction: row;
             justify-content: space-between;
-            background: lighten($dark-blue, 7%);
+            background: lighten($dark-blue, 3%);
+            border: 1px solid lighten($dark-blue, 15%);
             font-size: 1rem;
             font-weight: 600;
-            border-radius: 40px;
             padding: 10px 5%;
             text-transform: uppercase;
             width: 100%;
@@ -452,10 +497,67 @@ export default {
             }
         }
 
+        .chart-key {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            list-style-type: none;
+            margin-bottom: 0;
+            padding: 0;
+
+            li {
+                margin-right: 25px;
+
+                span.dot {
+                    margin-left: 3px;
+                    width: 10px;
+                    height: 10px;
+                    top: 2px;
+                }
+            }
+        }
+
         .chart {
             display: flex;
             flex-direction: row;
             justify-content: flex-start;
+
+            .chart-regions {
+
+                rect {
+                    stroke-width: 1;
+
+                    &:nth-child(1) {
+                        fill: rgba(255,19,197, 0.2);
+                        stroke: rgb(255,19,197);
+                    }
+                    &:nth-child(2) {
+                        fill: rgba(255,210,0, 0.2);
+                        stroke: rgb(255,210,0);
+                    }
+                    &:nth-child(3) {
+                        fill: rgba(77,189,255, 0.2);
+                        stroke: rgb(77,189,255);
+                    }
+                    &:nth-child(4) {
+                        fill: rgba(255,107,13, 0.2);
+                        stroke: rgb(255,107,13);
+                    }
+                    &:nth-child(5) {
+                        fill: rgba(176,89,235, 0.2);
+                        stroke: rgb(176,89,235);
+                    }
+                    &:nth-child(6) {
+                        fill: rgba(11,217,145, 0.2);
+                        stroke: rgb(11,217,145);
+                    }
+                    &:nth-child(7) {
+                        fill: rgba(10,141,255, 0.2);
+                        stroke: rgb(10,141,255);
+                    }
+                }
+            }
 
             .vue-slider {
                 margin-top: 25px;
@@ -479,7 +581,9 @@ export default {
 
                 .vue-slider-rail {
                     height: 12px;
-                    background: lighten($dark-blue, 4%);
+                    background: lighten($dark-blue, 3%);
+                    border: 1px solid lighten($dark-blue, 15%);
+                    border-radius: 0;
                 }
                 .vue-slider-process {
                     background: none;
@@ -501,10 +605,12 @@ export default {
         .detail-container {
             width: 100%;
             color: #fff;
+            border: 1px solid lighten($dark-blue, 15%);
 
             .detail-header {
                 padding: 15px 20px;
                 background: lighten($dark-blue, 7%);
+                border-bottom: 1px solid lighten($dark-blue, 15%);
                 font-size: 1.4rem;
                 font-weight: 600;
             }
@@ -592,6 +698,11 @@ export default {
 
 .dark {
 
+    .chart {
+        .chart-regions {
+            }
+    }
+
     .chart-num,
     .chart-tlabel {
         fill: #ddd;
@@ -633,7 +744,8 @@ export default {
         .chart-wrapper {
 
             .chart-info {
-                background: rgba(0,0,0, 0.06);
+                background: #fcfcfc;
+                border: 1px solid #bbbbbb;
                 color: darken($light-text-color, 10%);
             }
 
@@ -647,7 +759,8 @@ export default {
                         }
                     }
                     .vue-slider-rail {
-                        background: rgba(0,0,0,0.08);
+                        background: rgba(0,0,0,0.03);
+                        border: 1px solid #bbbbbb;
                     }
                 }
 
@@ -657,14 +770,16 @@ export default {
         .candle-details {
 
             .detail-container {
+                border: 1px solid #bbbbbb;
 
                 .detail-header {
-                    background: rgba(0,0,0,0.06);
+                    background: rgba(0,0,0,0.03);
+                    border-bottom: 1px solid #bbbbbb;
                     color: $light-header-color;
                 }
 
                 .detail-pane {
-                    background: rgba(0,0,0,0.03);
+                    background: #fcfcfc; //rgba(0,0,0,0.03);
                     color: darken($light-text-color, 10%);
                 }
             }

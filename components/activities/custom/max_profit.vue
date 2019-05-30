@@ -440,12 +440,13 @@ export default {
                 padding: 0 !important;
 
                 .vue-slider-rail {
-                    border-radius: 6px;
-                    background: lighten($dark-blue, 4%);
+                    border-radius: 0;
+                    background: lighten($dark-blue, 3%);
+                    border: 1px solid lighten($dark-blue, 15%);
                 }
 
                 .vue-slider-process {
-                    border-radius: 6px;
+                    border-radius: 0;
                     background: none !important;
                 }
 
@@ -539,7 +540,8 @@ export default {
                         }
                     }
                     .vue-slider-rail {
-                        background: rgba(0,0,0,0.08);
+                        background: rgba(0,0,0,0.03);
+                        border: 1px solid #bbbbbb;
                     }
                 }
             }

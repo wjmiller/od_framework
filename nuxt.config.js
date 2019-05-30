@@ -81,6 +81,10 @@ export default {
     {
       src: '~plugins/vue-spinners',
       ssr: false
+    },
+    {
+      src: '~plugins/vue-select',
+      ssr: false
     }
   ],
 
