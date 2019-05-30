@@ -30,6 +30,7 @@
     </b-col>
   </b-row>
   <region-highlight v-bind:candles="candles"
+                    v-bind:region-types="regionTypes"
                     v-bind:time-label="'Time'"
                     v-bind:time-label-interval="2"
                     v-bind:add-region-button="true">
@@ -52,10 +53,33 @@ export default {
           label: 'RBR'
         },
         {
+          label: 'DBD'
+        },
+        {
+          label: 'DBR'
+        }
+      ],
+      regionTypes: [
+        {
+          label: 'RBR'
+        },
+        {
           label: 'RBD'
         },
         {
           label: 'DBR'
+        },
+        {
+          label: 'DBD'
+        },
+        {
+          label: 'Correction'
+        },
+        {
+          label: 'Impulsion'
+        },
+        {
+          label: 'Gap'
         }
       ],
       candles: [
@@ -75,20 +99,20 @@ export default {
         },
         {
           open: 1,
-          close: 6,
-          high: 8,
+          close: 8,
+          high: 10,
           low: 1,
           label: '10:00'
         },
         {
-          open: 6,
-          close: 12,
-          high: 16,
+          open: 8,
+          close: 9,
+          high: 11,
           low: 4,
           label: '10:15'
         },
         {
-          open: 12,
+          open: 9,
           close: 16,
           high: 19,
           low: 8,
@@ -117,22 +141,22 @@ export default {
         },
         {
           open: 16,
-          close: 11,
+          close: 10,
           high: 16,
-          low: 11,
+          low: 10,
           label: '11:30'
         },
         {
-          open: 11,
-          close: 7,
+          open: 10,
+          close: 11,
           high: 14,
           low: 5,
           label: '11:45'
         },
         {
-          open: 7,
+          open: 11,
           close: 5,
-          high: 9,
+          high: 11,
           low: 1,
           label: '12:00'
         },
@@ -201,34 +225,34 @@ export default {
         },
         {
           open: 23,
-          close: 18,
+          close: 20,
           high: 26,
-          low: 14,
+          low: 17,
           label: '02:30'
         },
         {
-          open: 18,
-          close: 15,
+          open: 20,
+          close: 13,
           high: 23,
-          low: 13,
+          low: 11,
           label: '02:45'
         },
         {
-          open: 15,
+          open: 13,
           close: 14,
           high: 17,
-          low: 13,
+          low: 10,
           label: '03:00'
         },
         {
           open: 14,
-          close: 16,
-          high: 18,
+          close: 20,
+          high: 22,
           low: 12,
           label: '03:15'
         },
         {
-          open: 16,
+          open: 20,
           close: 22,
           high: 24,
           low: 12,

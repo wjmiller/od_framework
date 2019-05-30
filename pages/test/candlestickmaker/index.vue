@@ -28,10 +28,10 @@
     </b-col>
   </b-row>
   <b-row>
-    <b-col cols="9">
-      <div ref="sketchpad"
-           width="600"
-           height="400"></div>
+    <b-col cols="9"
+           class="sketchpad-cont">
+      <div class="sketchpad"
+           ref="sketchpad"></div>
     </b-col>
     <b-col cols="3">
       <b-button-group>
@@ -40,22 +40,38 @@
       </b-button-group>
       <div>
         <label for="range-1"># of Candles</label>
+        <vue-slider v-model.number="candleCount"
+                    v-bind:direction="'ltr'"
+                    v-bind:min="0"
+                    v-bind:max="100"
+                    v-bind:tooltip="'none'"
+                    v-bind:interval="5">
+        </vue-slider>
+        <!--
         <b-form-input id="range-1"
                       v-model.number="candleCount"
                       type="range"
                       min="0"
                       max="100"
-                      step="5"></b-form-input>
+                      step="5"></b-form-input>-->
         <div class="mt-2">Value: {{ candleCount }}</div>
       </div>
       <div>
         <label for="range-1">Random Wick Size</label>
+        <vue-slider v-model.number="wickVariable"
+                    v-bind:direction="'ltr'"
+                    v-bind:min="0"
+                    v-bind:max="10"
+                    v-bind:tooltip="'none'"
+                    v-bind:interval="1">
+        </vue-slider>
+        <!--
         <b-form-input id="range-1"
                       v-model.number="wickVariable"
                       type="range"
                       min="0"
                       max="10"
-                      step="1"></b-form-input>
+                      step="1"></b-form-input>-->
         <div class="mt-2">Value: {{ wickVariable }}</div>
       </div>
       <b-row>
@@ -310,7 +326,13 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+// -----------------------------------------------------
+// Import Variables
+// -----------------------------------------------------
+
+@import '~assets/scss/variables.scss';
+
 .chart-header {
     font-size: 1.8rem;
     text-transform: uppercase;
@@ -329,6 +351,62 @@ export default {
         @media(min-width: 992px) {
             text-align: center;
         }
+    }
+}
+
+.sketchpad-cont {
+    height: 320px;
+
+    @media(min-width: 768px) {
+        height: 320px;
+    }
+
+    .sketchpad {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.vue-slider {
+
+    .vue-slider-dot-handle {
+        width: 40px;
+        height: 40px;
+        position: relative;
+        top: -13px;
+        text-align: center;
+        line-height: 40px;
+        font-size: 36px;
+        transform: rotate(90deg);
+
+        &:before {
+            content: "\e90f";
+            font-family: "custom-icons";
+            color: $dark-blue;
+        }
+    }
+
+    .vue-slider-rail {
+        height: 12px;
+        background: lighten($dark-blue, 3%);
+        border: 1px solid lighten($dark-blue, 15%);
+        border-radius: 0;
+    }
+
+    .vue-slider-process {
+        background: none;
+    }
+}
+
+.dark {
+    .sketchpad {
+        border: 1px solid lighten($dark-blue, 17%);
     }
 }
 </style>

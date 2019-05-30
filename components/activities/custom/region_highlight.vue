@@ -41,7 +41,7 @@
                   v-bind:max="candles.length - 1"
                   v-bind:tooltip="'none'"
                   v-bind:enable-cross="false"
-                  v-bind:min-range="1"
+                  v-bind:min-range="0"
                   v-bind:interval="sliderInterval">
       </vue-slider>
     </div>
@@ -93,30 +93,7 @@ export default {
       regionsArr: [ ...this.regions ],
       addError: false,
       addingRegion: false,
-      regionType: null,
-      regionTypes: [
-        {
-          label: 'RBR'
-        },
-        {
-          label: 'RBD'
-        },
-        {
-          label: 'DBR'
-        },
-        {
-          label: 'DBD'
-        },
-        {
-          label: 'Correction'
-        },
-        {
-          label: 'Impulsion'
-        },
-        {
-          label: 'Gap'
-        }
-      ]
+      regionType: null
     }
   },
   props: {
@@ -171,6 +148,12 @@ export default {
     sliderInterval: {
       type: Number,
       default: 1
+    },
+    regionTypes: {
+      type: Array,
+      default () {
+        return []
+      }
     },
     addRegionButton: {
       type: Boolean,
@@ -344,7 +327,7 @@ export default {
 
         h3,
         span {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             text-transform: uppercase;
         }
 
