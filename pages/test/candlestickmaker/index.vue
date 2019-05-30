@@ -48,10 +48,10 @@
             <label for="range-1">Number of Candles ({{candleCount}})</label>
             <vue-slider v-model.number="candleCount"
                         v-bind:direction="'ltr'"
-                        v-bind:min="0"
+                        v-bind:min="1"
                         v-bind:max="100"
                         v-bind:tooltip="'none'"
-                        v-bind:interval="5">
+                        v-bind:interval="1">
             </vue-slider>
           </div>
           <div>
@@ -76,6 +76,30 @@
               <b-form-input type="number"
                             name="price-range-end"
                             v-model.number="priceRange[1]"></b-form-input>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <div>
+                <label for="label-start-value">Label Start Value</label>
+                <b-form-input
+                              name="label-start-value"
+                              v-model.number="labelStartValue"></b-form-input>
+              </div>
+            </b-col>
+          </b-row>
+          <b-row>
+            <b-col>
+              <div>
+                <label for="labelOption">Candle Label Type ({{candleLabelType}})</label>
+                <vue-slider v-model.number="labelOption"
+                            v-bind:direction="'ltr'"
+                            v-bind:min="0"
+                            v-bind:max="7"
+                            v-bind:tooltip="'none'"
+                            v-bind:interval="1">
+                </vue-slider>
+              </div>
             </b-col>
           </b-row>
         </div>
@@ -114,9 +138,11 @@ export default {
     return {
       candleCount: 30,
       wickVariable: 1,
+      labelOption: 0,
       chartLines: [ 20, 30 ],
       candles: [],
-      priceRange: [ 10, 20 ]
+      priceRange: [ 10, 20 ],
+      labelStartValue: 0
     }
   },
   methods: {
@@ -277,14 +303,38 @@ export default {
           return memo
         }, [] )
 
-        if ( this.candles.length > 0 && candleData.length > 0 ) {
-          this.candles = candleData
+
+
+        if ( candleData.length > 0 ) {
+          this.candles = this.calcLabels(candleData)
         }
       }
 
     },
     clearPad() {
       this.pad.clear()
+    },
+    calcLabels(candleData) {
+      const labelType = this.candleLabelType.split(/(\d+)/)
+      const startValue = this.labelStartValue
+      const mainInterval = labelType[1] ? parseInt(labelType[1], 10) : 1
+      const intervalType = labelType[2] || 'generic'
+      const hours = [10, 11, 12, 1, 2, 3, 4]
+      const hoursLength = hours.length
+
+      const conversions = {
+        generic: val => `${val}`.padStart(2, "0"),
+        m: val => `${hours[Math.floor(val/60) % hoursLength]}`.padStart(2, "0") + `:` + `${val % 60}`.padStart(2, "0"),
+        h: val => `${hours[val % hoursLength]}`.padStart(2, "0") + `:00`,
+        d: val => {
+          const date = new Date(new Date().getFullYear(), 0, val + 1)
+          return `${date.getMonth() + 1}/${date.getDate() + 1}`
+        }
+      }
+
+      candleData.forEach((item, ix) => item.label = conversions[intervalType](intervalType === 'd' ? startValue + ix + (Math.floor(ix/5) * 2) : startValue + (ix * mainInterval)))
+
+      return candleData
     }
   },
   computed: {
@@ -297,6 +347,9 @@ export default {
     },
     candleJSON() {
       return JSON.stringify( this.candles )
+    },
+    candleLabelType() {
+      return ["generic", "1m", "5m", "10m", "15m", "30m", "1h", "1d"][this.labelOption]
     }
   },
   components: {
