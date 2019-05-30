@@ -11,7 +11,7 @@
   <b-row>
     <b-col lg="9">
       <p class="question">
-        This activity provides 3 pre-set region types. The learner will edit each region using the Edit Location sliders.
+        Select a formation type below and adjust its box to contain the matching candle formation in the chart.
       </p>
     </b-col>
   </b-row>
