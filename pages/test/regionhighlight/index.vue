@@ -16,7 +16,9 @@
     </b-col>
   </b-row>
   <region-highlight v-bind:regions="regions1"
+                    v-bind:correct-regions="correctRegions"
                     v-bind:candles="candles"
+                    v-bind:timeline="true"
                     v-bind:time-label="'Time'"
                     v-bind:time-label-interval="2"
                     v-bind:add-region-button="false">
@@ -25,12 +27,14 @@
   <b-row>
     <b-col lg="9">
       <p class="question">
-        This activity has no pre-set region types for the learner to set. The learner will add new regions and then edit the locations of the added regions.
+        This activity has no pre-set region types for the learner. The learner will add new regions and then edit the locations of the added regions.
       </p>
     </b-col>
   </b-row>
   <region-highlight v-bind:candles="candles"
+                    v-bind:correct-regions="correctRegions"
                     v-bind:region-types="regionTypes"
+                    v-bind:timeline="true"
                     v-bind:time-label="'Time'"
                     v-bind:time-label-interval="2"
                     v-bind:add-region-button="true">
@@ -57,6 +61,20 @@ export default {
         },
         {
           label: 'DBR'
+        }
+      ],
+      correctRegions: [
+        {
+          label: 'RBR',
+          range: [ 2, 4 ]
+        },
+        {
+          label: 'DBD',
+          range: [ 8, 10 ]
+        },
+        {
+          label: 'DBR',
+          range: [ 21, 23 ]
         }
       ],
       regionTypes: [

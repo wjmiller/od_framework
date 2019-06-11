@@ -17,7 +17,7 @@
                     v-bind:activated="activated"
                     v-bind:options="options_single"
                     v-bind:multiple-select="false"
-                    v-bind:attempts-allowed="3"
+                    v-bind:attempts-allowed="1"
                     v-bind:feedback="feedback"
                     v-bind:question="question_single"
                     v-on:activity-attempted="logdata">
@@ -36,7 +36,7 @@
                     v-bind:activated="activated"
                     v-bind:options="options_arrows"
                     v-bind:multiple-select="false"
-                    v-bind:attempts-allowed="3"
+                    v-bind:attempts-allowed="1"
                     v-bind:feedback="feedback"
                     options-class="options-arrows"
                     v-bind:question="question_arrows"
@@ -57,7 +57,7 @@
                     v-bind:options="options_multi"
                     v-bind:question="question_multi"
                     v-bind:multiple-select="true"
-                    v-bind:attempts-allowed="3"
+                    v-bind:attempts-allowed="1"
                     v-on:activity-attempted="displayFeedback">
         <template v-slot:question>
           <p>{{ question_multi }}</p>

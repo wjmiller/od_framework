@@ -4,6 +4,7 @@
     <candle-chart v-on:candle-change="setCurrentCandle"
                   v-bind:candles="candles"
                   v-bind:total-candles="totalCandles"
+                  v-bind:timeline="true"
                   v-bind:time-label="timeLabel"
                   v-bind:time-label-interval="timeLabelInterval"
                   v-bind:height="chartHeight"
@@ -405,7 +406,7 @@ export default {
         height: 160px;
 
         @media(min-width: 768px) {
-            height: 232px;
+            height: 200px;
         }
 
         .slider-group {
@@ -428,11 +429,13 @@ export default {
 
             h3 {
                 margin-bottom: 0;
+                display: none;
             }
 
             span {
-                margin-bottom: 35px;
-                font-size: 1.1rem;
+                margin-bottom: 25px;
+                font-size: 1.2rem;
+                font-weight: 600;
             }
 
             .vue-slider {
@@ -454,22 +457,35 @@ export default {
                     width: 100%;
 
                     .vue-slider-dot-handle {
-                        width: 40px;
-                        height: 40px;
+                        width: 80px;
+                        height: 30px;
                         position: relative;
                         top: -14px;
-                        left: -13px;
+                        left: -33px;
                         text-align: center;
-                        line-height: 40px;
+                        line-height: 30px;
                         z-index: 1000;
-                        font-size: 36px;
+                        font-size: 17px;
+                        border-radius: 0;
 
                         &:before {
-                            content: "\e90f";
-                            font-family: "custom-icons";
+                            content: "Enter";
+                            font-weight: 600;
                             color: $dark-blue;
                         }
 
+                    }
+                }
+            }
+
+            &:nth-child(2) {
+                .vue-slider {
+                    .vue-slider-dot {
+                        .vue-slider-dot-handle {
+                            &:before {
+                                content: "Exit";
+                            }
+                        }
                     }
                 }
             }

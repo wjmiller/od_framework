@@ -2,30 +2,68 @@
 <b-row class="region-highlight">
   <b-col lg="12">
 
-    <b-btn class="add-region-btn"
-           v-if="addRegionButton"
-           v-on:click="openAddRegion">
-      <span class="plus"></span> Add Region
-    </b-btn>
+    <div class="region-toolbar">
+      <b-btn class="add-region-btn"
+             v-if="addRegionButton"
+             v-on:click="openAddRegion">
+        <span class="plus"></span> Add Region
+      </b-btn>
+
+      <b-btn class="eval-region-btn"
+             v-on:click="checkRegions">
+        <span></span> Check Regions
+      </b-btn>
+
+      <div class="fb-dropdown"
+           v-if="feedbackPhase > 0"
+           v-bind:class="{'fb-open': feedbackOpen}">
+        <div class="fb-header"
+             v-on:click="toggleFeedbackOpen">
+          Feedback
+        </div>
+        <div class="fb-menu"
+             v-show="feedbackOpen">
+          <div class="fb-group"
+               v-if="feedbackPhase > 0">
+            <span v-if="activityCorrect"
+                  class="correct">Correct</span>
+            <span v-if="!activityCorrect"
+                  class="incorrect">Incorrect</span>
+          </div>
+          <div class="fb-group"
+               v-if="feedbackPhase > 0">
+            <div class="fb-group-header">
+              Hint 1: Total Regions / Total Types
+            </div>
+            <div class="fb-group-body">
+              {{evaluation.typeLength.message}}
+            </div>
+          </div>
+          <div class="fb-group"
+               v-if="feedbackPhase > 1">
+            <div class="fb-group-header">
+              Hint 2: Your Number of Each Region Type
+            </div>
+            <div class="fb-group-body"
+                 v-html="evaluation.regionLengths.message">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <ul class="region-key"
-        v-if="chartRegions.length > 0 || addRegionButton">
+        v-bind:class="{'active' : chartRegions.length > 0 || addRegionButton}">
       <li v-for="r in chartRegions"
           v-on:click="setRegion(r)"
           ref="region-btn">
         {{r.label}}
         <span class="dot"></span>
       </li>
-      <!--
-      <li class="add-region-btn"
-          v-if="addRegionButton"
-          v-on:click="openAddRegion">
-        <span class="plus"></span> Add Region
-      </li>
-    -->
     </ul>
     <candle-chart v-bind:candles="candles"
                   v-bind:regions="chartRegions"
+                  v-bind:timeline="true"
                   v-bind:time-label="timeLabel"
                   v-bind:time-label-interval="timeLabelInterval"
                   v-bind:height="chartHeight"
@@ -34,7 +72,8 @@
                   v-bind:price-width="priceWidth"
                   v-bind:candle-width="candleWidth"
                   v-bind:candle-spacing="candleSpacing"
-                  v-bind:candle-highlight="candleHighlight">
+                  v-bind:candle-highlight="candleHighlight"
+                  v-bind:feedback="feedbackMode">
     </candle-chart>
   </b-col>
   <b-col lg="12">
@@ -49,13 +88,28 @@
                   v-bind:tooltip="'none'"
                   v-bind:enable-cross="false"
                   v-bind:min-range="0"
-                  v-bind:interval="sliderInterval">
+                  v-bind:interval="sliderInterval"
+                  v-bind:disabled="region.solved">
       </vue-slider>
       <b-btn class="remove-region"
              v-if="addRegionButton"
              v-on:click="removeRegion"><span></span> Remove Region</b-btn>
     </div>
   </b-col>
+
+  <div v-if="activityCorrect && correctShow"
+       class="correct-cont">
+    <div class="correct-bg"></div>
+    <div class="correct-body">
+      <div class="correct-message">
+        <span>Congratulations!</span>
+        <span>You found all of the correct formations on the chart!</span>
+      </div>
+      <b-btn class="correct-close"
+             v-on:click="closeCorrect">Close</b-btn>
+    </div>
+  </div>
+
   <div v-if="addingRegion"
        class="add-region-cont">
     <div class="add-region-bg"></div>
@@ -88,10 +142,21 @@
 
 <script>
 import CandleChart from '~/components/activities/candle_chart'
+import {
+  BDropdown
+} from 'bootstrap-vue';
 
 import {
   mapGetters
 } from 'vuex'
+
+Array.prototype.contains = function ( value ) {
+  for ( var i = 0; i < this.length; i++ ) {
+    if ( this[ i ] === value )
+      return true;
+  }
+  return false;
+}
 
 export default {
   components: {
@@ -101,9 +166,24 @@ export default {
     return {
       region: null,
       regionsArr: [ ...this.regions ],
+      activityCorrect: false,
+      correctShow: false,
       addError: false,
       addingRegion: false,
-      regionType: null
+      regionType: null,
+      evaluation: {
+        typeLength: {
+          match: null,
+          message: null
+        },
+        regionLengths: {
+          lengths: [],
+          message: null
+        }
+      },
+      feedbackPhase: 0,
+      feedbackOpen: false,
+      feedbackMode: false
     }
   },
   props: {
@@ -119,9 +199,15 @@ export default {
         return []
       }
     },
+    correctRegions: {
+      type: Array
+    },
     chartHeight: {
       type: Number,
       default: 260
+    },
+    timeline: {
+      type: Boolean
     },
     timeLabel: {
       type: String
@@ -173,27 +259,30 @@ export default {
   methods: {
     setRegion( val ) {
       this.region = this.chartRegions[ val.index ]
-      for ( const ix in this.$refs[ 'region-btn' ] ) {
-        this.$refs[ 'region-btn' ][ ix ].style.background = 'rgba(0,0,0,0)'
+
+      for ( var i = 0; i < this.$refs[ 'region-btn' ].length; i++ ) {
+        this.$refs[ 'region-btn' ][ i ].style.borderColor = this.getUserPrefs.theme_dark ? '#2b314d' : '#CCCCCC'
       }
-      console.log( this.$refs[ 'region-btn' ] )
-      this.$refs[ 'region-btn' ][ val.index ].style.background = this.getUserPrefs.theme_dark ? '#2b314d' : 'rgba(0,0,0,0.15)'
+      this.$refs[ 'region-btn' ][ val.index ].style.borderColor = this.getUserPrefs.theme_dark ? '#DDDDDD' : '#5158c1'
     },
     updateRegion() {
       const newRegions = [ ...this.regionsArr ]
       newRegions[ this.region.index ] = this.region
       this.regionsArr = newRegions
+      this.evaluate()
     },
     addRegion() {
       if ( this.regionType ) {
         this.regionsArr = [ ...this.regionsArr, {
           label: this.regionType.label
         } ]
+
         setTimeout( () => {
           this.setRegion( {
             index: this.regionsArr.length - 1
           } )
-        }, 100 )
+        }, 0 )
+
         this.addingRegion = false
       } else {
         this.addError = true
@@ -214,18 +303,206 @@ export default {
       this.regionsArr.splice( this.region.index, 1 )
       this.region = null
     },
-    checkRegions() {
+    closeCorrect() {
+      this.correctShow = false
+    },
+    checkTypeLength() {
+      const correctArr = this.prepArray( this.correctRegions )
+      this.evaluation.typeLength.message = 'You will find ' + this.correctRegions.length + ' total formations on this chart composed of ' + correctArr.length + ' different types.'
+    },
+    checkRegionLengths() {
+      const correctArr = this.prepArray( this.correctRegions )
+      const userArr = this.prepArray( this.chartRegions )
+      let messageStr = ''
 
+      for ( let i = 0; i < correctArr.length; i++ ) {
+        const ranges = 0
+        const matchingType = userArr.filter( ( o ) => {
+          return o.type === correctArr[ i ].type
+        } )
+
+        if ( matchingType.length > 0 ) ranges = matchingType[ 0 ].ranges.length
+
+        this.evaluation.regionLengths.lengths[ i ] = {
+          type: correctArr[ i ].type,
+          message: correctArr[ i ].type + ': ' + ranges + ' of ' + correctArr[ i ].ranges.length
+        }
+      }
+
+      for ( const r of this.evaluation.regionLengths.lengths ) {
+        messageStr = messageStr + r.message + ' <br/>'
+      }
+
+      messageStr = messageStr + '<br/><em>If you have the correct number of each region type, check your region placements.</em>'
+
+      this.evaluation.regionLengths.message = messageStr
+    },
+    checkSequence() {
+      const arr = [ ...this.correctRegions ]
+      let seqString = ''
+      arr.sort( function ( a, b ) {
+        const num1 = a.range[ 0 ]
+        const num2 = b.range[ 0 ]
+        return ( num1 < num2 ) ? -1 : ( num1 > num2 ) ? 1 : 0;
+      } )
+
+      for ( let i = 0; i < arr.length; i++ ) {
+        i == arr.length - 1 ? seqString = seqString + arr[ i ].label : seqString = seqString + arr[ i ].label + ', '
+      }
+      console.log( seqString )
+    },
+    checkRegion( arr, region ) {
+      // Create array containing objects of region stats measured against each correct region
+      const regionData =
+        arr.map( function ( obj, ix ) {
+          return {
+            ix: ix,
+            type: obj.label === region.label,
+            range: JSON.stringify( obj.range ) === JSON.stringify( region.range )
+          }
+        } )
+
+      // If the region matches a correct region in type and range, store in variable
+      const correct = regionData.filter( ( o ) => {
+        return o.type == true && o.range == true
+      } )
+
+      if ( correct.length > 0 ) {
+        // If the region is correct, set that region in the regionsArr value to correct = true
+        this.regionsArr[ region.index ].correct = true
+      } else {
+        this.regionsArr[ region.index ].correct = false
+        // Get the regions that match type and store them in variable
+        const typeMatch = regionData.filter( ( o ) => {
+          return o.type == true
+        } )
+
+        if ( typeMatch.length > 0 ) {
+          const sums = []
+          for ( let a = 0; a < typeMatch.length; a++ ) {
+            sums.push( this.correctRegions[ typeMatch[ a ].ix ].range[ 0 ] + this.correctRegions[ typeMatch[ a ].ix ].range[ 1 ] )
+          }
+          const closestIx = typeMatch[ sums.indexOf( Math.min( ...sums ) ) ].ix
+          this.regionsArr[ region.index ].typeMatch = true
+          this.regionsArr[ region.index ].rangeMatch = false
+          this.regionsArr[ region.index ].rangeDiff = []
+          this.regionsArr[ region.index ].rangeDiff[ 0 ] = Math.max( this.correctRegions[ closestIx ].range[ 0 ], region.range[ 0 ] ) - Math.min( this.correctRegions[ closestIx ].range[ 0 ], region.range[ 0 ] )
+          this.regionsArr[ region.index ].rangeDiff[ 1 ] = Math.max( this.correctRegions[ closestIx ].range[ 1 ], region.range[ 1 ] ) - Math.min( this.correctRegions[ closestIx ].range[ 1 ], region.range[ 1 ] )
+
+        } else {
+          // Get the regions that match type and store them in variable
+          const rangeMatch = regionData.filter( ( o ) => {
+            return o.range == true
+          } )
+
+          if ( rangeMatch.length > 0 ) {
+            this.regionsArr[ region.index ].typeMatch = false
+            this.regionsArr[ region.index ].rangeMatch = true
+          } else {
+            this.regionsArr[ region.index ].typeMatch = null
+            this.regionsArr[ region.index ].rangeMatch = null
+          }
+        }
+      }
+    },
+    checkRegions() {
+      this.isActivityCorrect()
+
+      if ( !this.activityCorrect ) {
+        this.feedbackPhase++
+
+        if ( this.feedbackPhase < 3 ) {
+          this.feedbackPhase == 1 ? this.checkTypeLength() : this.checkRegionLengths()
+          this.feedbackOpen = true
+        } else if ( this.feedbackPhase == 3 ) {
+          this.evaluate()
+          this.feedbackMode = true
+        }
+      } else {
+        this.correctShow = true
+        this.feedbackMode = true
+      }
+    },
+    isActivityCorrect() {
+
+      const userArr = this.prepArray( this.chartRegions )
+      const correctArr = this.prepArray( this.correctRegions )
+
+      JSON.stringify( userArr ) == JSON.stringify( correctArr ) ? this.activityCorrect = true : this.activityCorrect = false
+    },
+    toggleFeedbackOpen() {
+      this.feedbackOpen = !this.feedbackOpen
+    },
+    evaluate() {
+      // Evaluate each region to see if it is correct or not
+      for ( let i = 0; i < this.chartRegions.length; i++ ) {
+        const match = this.checkRegion( this.correctRegions, this.chartRegions[ i ] )
+      }
+
+      // Reset the region so that the controls can be disabled if needed
+      if ( this.region ) this.setRegion( this.region )
+
+      this.isActivityCorrect()
+      if ( this.activityCorrect && this.feedbackMode ) {
+        this.correctShow = true
+      }
+    },
+    prepArray( arr ) {
+      const types = {}
+      const preppedArray = []
+
+      for ( var i = 0; i < arr.length; i++ ) {
+        const type = arr[ i ].label
+        if ( !types[ type ] ) {
+          types[ type ] = []
+        }
+        if ( !types[ type ].contains( arr[ i ].range ) ) {
+          types[ type ].push( arr[ i ].range )
+        }
+      }
+
+      for ( const type in types ) {
+        types[ type ].sort( function ( a, b ) {
+          const num1 = a[ 0 ]
+          const num2 = b[ 0 ]
+          return ( num1 < num2 ) ? -1 : ( num1 > num2 ) ? 1 : 0;
+        } )
+
+        preppedArray.push( {
+          type: type,
+          ranges: types[ type ]
+        } )
+      }
+
+      preppedArray.sort( function ( a, b ) {
+        const typeA = a.type.toLowerCase();
+        const typeB = b.type.toLowerCase();
+        return ( typeA < typeB ) ? -1 : ( typeA > typeB ) ? 1 : 0;
+      } );
+
+      return preppedArray
     }
   },
   computed: {
     ...mapGetters( [ 'getUserPrefs' ] ),
+    fbMode: {
+      get() {
+        return this.feedbackMode
+      },
+      set( evalValue ) {
+        return evalValue
+      }
+    },
     chartRegions() {
       return this.regionsArr.map( ( item, ix ) => {
         return {
           label: item.label,
           index: ix,
-          range: [ item.range ? item.range[ 0 ] : 0, item.range ? item.range[ 1 ] : 0 ]
+          range: [ item.range ? item.range[ 0 ] : 0, item.range ? item.range[ 1 ] : 0 ],
+          correct: item.hasOwnProperty( 'correct' ) ? item.correct : false,
+          typeMatch: item.hasOwnProperty( 'typeMatch' ) ? item.typeMatch : null,
+          rangeMatch: item.hasOwnProperty( 'rangeMatch' ) ? item.rangeMatch : null,
+          rangeDiff: item.hasOwnProperty( 'rangeDiff' ) ? item.rangeDiff : null
         }
       } )
     }
@@ -252,10 +529,111 @@ export default {
         }
     }
 
-    .add-region-btn {
-        padding: 0.2rem 1.2rem;
+    .region-toolbar {
+        min-height: 42px;
+        margin-bottom: 10px;
+
+        .add-region-btn {
+            margin-right: 8px;
+            vertical-align: top;
+        }
+
+        .eval-region-btn {
+            margin-right: 15px;
+            vertical-align: top;
+        }
+
+        .fb-dropdown {
+            display: inline-block;
+            position: relative;
+            width: 360px;
+
+            .fb-header {
+                position: relative;
+                background: $dark-blue;
+                border: 1px solid lighten($dark-blue, 17%);
+                font-weight: 600;
+                color: #fff;
+                width: 100%;
+                padding: 0.35rem 1rem;
+
+                &:hover {
+                    cursor: pointer;
+                }
+
+                &:after {
+                    content: "";
+                    border-top: 0.4em solid;
+                    border-right: 0.4em solid transparent;
+                    border-bottom: 0;
+                    border-left: 0.4em solid transparent;
+                    position: absolute;
+                    right: 1rem;
+                    top: 1rem;
+                }
+            }
+
+            .fb-menu {
+                width: 100%;
+                background: $dark-blue;
+                border: 1px solid lighten($dark-blue, 17%);
+                border-top: 0;
+                color: #fff;
+                font-weight: 600;
+                padding: 0.9rem 1rem 0.4rem;
+                position: absolute;
+                top: 39px;
+                z-index: 1010;
+
+                .fb-group {
+                    margin-bottom: 15px;
+
+                    .correct,
+                    .incorrect {
+                        color: $red;
+                        font-weight: 600;
+                        font-size: 1.1rem;
+                    }
+
+                    .correct {
+                        color: $green;
+                    }
+
+                    .fb-group-header {
+                        margin-bottom: 5px;
+                    }
+
+                    .fb-group-body {
+                        color: #ccc;
+                        font-weight: 400;
+                    }
+                }
+            }
+
+            &.fb-open {
+                .fb-header {
+                    color: rgba(255,255,255,0.3);
+
+                    &:after {
+                        color: #fff;
+                        border-top: 0;
+                        border-right: 0.4em solid transparent;
+                        border-bottom: 0.4em solid;
+                        border-left: 0.4em solid transparent;
+                    }
+                }
+            }
+        }
+
+        .add-region-btn {
+            display: inline-block;
+        }
+    }
+
+    .add-region-btn,
+    .eval-region-btn {
+        padding: 0.3rem 1.2rem 0.4rem;
         font-size: 1rem;
-        margin-bottom: 25px;
     }
 
     .region-key {
@@ -264,19 +642,25 @@ export default {
         justify-content: flex-start;
         flex-wrap: wrap;
         list-style-type: none;
+        visibility: hidden;
+        min-height: 3rem;
         margin-bottom: 0;
         padding: 0;
 
+        &.active {
+            visibility: visible;
+        }
+
         li {
-            margin-right: 0;
+            margin-right: 10px;
             padding: 0.2rem 0.7rem;
             border-radius: 20px;
-            border: 4px solid rgba(0,0,0,0);
-            margin-bottom: 10px;
+            margin-top: 10px;
+            border: 4px solid lighten($dark-blue, 10%);
 
             &:hover {
                 cursor: pointer;
-                background: lighten($dark-blue, 10%) !important;
+                border: 4px solid #ddd !important;
             }
 
             span.dot {
@@ -285,28 +669,6 @@ export default {
                 height: 10px;
                 top: 2px;
             }
-
-            /*
-
-            &:last-child {
-                margin-left: 20px;
-            }
-
-            &:first-child {
-                margin-left: 0;
-            }
-
-            &.add-region-btn {
-                padding: 0.2rem 0.7rem;
-                font-size: 1rem;
-
-                &:hover {
-                    cursor: pointer;
-                    //background: lighten($purple-med, 4%) !important;
-                }
-            }
-
-            */
         }
     }
 
@@ -320,7 +682,7 @@ export default {
     .add-region-btn {
 
         span {
-            margin-right: 5px;
+            margin-right: 4px;
             position: relative;
             top: 1px;
 
@@ -332,7 +694,18 @@ export default {
 
     }
 
-    .add-region-cont {
+    .eval-region-btn {
+        span {
+            margin-right: 3px;
+            &:before {
+                content: "\e065";
+                font-family: "custom-icons";
+            }
+        }
+    }
+
+    .add-region-cont,
+    .correct-cont {
         position: absolute;
         top: 0;
         left: 0;
@@ -343,7 +716,8 @@ export default {
         flex-direction: column;
         justify-content: flex-start;
 
-        .add-region-bg {
+        .add-region-bg,
+        .correct-bg {
             position: absolute;
             top: 0;
             left: 0;
@@ -354,7 +728,8 @@ export default {
             z-index: 1005;
         }
 
-        .add-region {
+        .add-region,
+        .correct-body {
             width: 90%;
             max-width: 450px;
             background: lighten($dark-blue, 3%);
@@ -365,6 +740,32 @@ export default {
 
             @media(min-width: 768px) {
                 margin-top: 50px;
+            }
+
+            .correct-message {
+                text-align: center;
+                margin-bottom: 26px;
+
+                span {
+                    display: block;
+                }
+
+                span:nth-child(1) {
+                    font-weight: 600;
+                    font-size: 1.4rem;
+                    margin-bottom: 0.9rem;
+                }
+                span:nth-child(2) {
+                    font-weight: 600;
+                    font-size: 1.1rem;
+                    color: #ccc;
+                }
+            }
+
+            .correct-close {
+                display: block;
+                width: 104px;
+                margin: 0 auto;
             }
 
             .add-region-header {
@@ -406,6 +807,10 @@ export default {
 
                 }
             }
+        }
+
+        .correct-body {
+            padding: 1.8rem 1.5rem 1.5rem;
         }
     }
 
@@ -471,8 +876,6 @@ export default {
                         font-size: 26px;
 
                         &:before {
-                            //content: "\e90f";
-                            //font-family: "custom-icons";
                             content: "R";
                             color: $dark-blue;
                             font-weight: 600;
@@ -519,7 +922,7 @@ export default {
 
             &:hover {
                 color: #fff;
-                background: darken($red, 5%); //lighten($dark-body-bg, 8%);
+                background: darken($red, 5%);
                 border: 4px solid darken($red, 5%);
             }
 
@@ -546,8 +949,61 @@ export default {
 
     .region-highlight {
 
-        .add-region-cont {
-            .add-region-bg {
+        .region-toolbar {
+            .fb-dropdown {
+                .fb-header {
+                    background: #fff;
+                    border: 1px solid #bbbbbb;
+                    color: $light-text-color;
+                }
+
+                .fb-menu {
+                    background: #fff;
+                    border: 1px solid #bbbbbb;
+                    color: darken($light-text-color, 10%);
+
+                    .fb-group {
+
+                        .correct {
+                            color: $green-med;
+                        }
+                        .incorrect {
+                            color: darken($red,5%);
+                        }
+
+                        .fb-group-body {
+                            color: darken($light-text-color, 20%);
+                        }
+                    }
+                }
+
+                &.fb-open {
+                    .fb-header {
+                        color: rgba(0,0,0,0.4);
+
+                        &:after {
+                            color: $light-text-color;
+                        }
+                    }
+                }
+            }
+        }
+
+        .region-key {
+            li {
+                border: 4px solid #cccccc;
+
+                &:hover {
+                    cursor: pointer;
+                    border: 4px solid $purple-med !important;
+                }
+            }
+        }
+
+        .add-region-cont,
+        .correct-cont {
+            .add-region-bg,
+            .correct-bg {
                 background: #fff;
                 opacity: 0.6;
             }
@@ -560,7 +1016,8 @@ export default {
                 }
             }
 
-            .add-region {
+            .add-region,
+            .correct-body {
                 background: #fcfcfc;
                 border: 1px solid #bbbbbb;
 
@@ -568,6 +1025,15 @@ export default {
                     background: rgba(0,0,0,0.03);
                     border-bottom: 1px solid #bbbbbb;
                     color: $light-header-color;
+                }
+
+                .correct-message {
+                    span:nth-child(1) {
+                        color: $light-header-color;
+                    }
+                    span:nth-child(2) {
+                        color: lighten($light-text-color, 15%);
+                    }
                 }
 
                 .add-region-body {
@@ -608,18 +1074,32 @@ export default {
             }
 
             .vue-slider {
-                .vue-slider-dot-handle {
-                    background: $light-header-color;
-                    box-shadow: none;
-                    &:before {
-                        color: #fff;
-                    }
-                }
+
                 .vue-slider-rail {
                     background: rgba(0,0,0,0.03);
                     border: 1px solid #bbbbbb;
+                    .vue-slider-dot-handle {
+                        background: $light-header-color;
+                        box-shadow: none;
+                        &:before {
+                            color: #fff;
+                        }
+                    }
                 }
             }
+
+            .remove-region {
+                background: #fff;
+                border-color: #ccc;
+                color: $light-text-color;
+
+                &:hover {
+                    color: #fff;
+                    background: darken($red, 5%);
+                    border-color: darken($red, 5%);
+                }
+            }
+
         }
     }
 

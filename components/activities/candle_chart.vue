@@ -18,12 +18,58 @@
              ref="chart_candles"
              v-bind:viewBox="candleChart.x + ' 0 ' + candleChart.width + ' ' + `${height + chartPadding}`"
              v-bind:width="candleChart.width">
+
           <!-- Region -->
           <g v-if="regions.length > 0"
-             class="chart-regions">
-            <rect v-for="region in chartRegions"
-                  v-bind:key="region.label"
-                  v-bind:ref="region.label"
+             v-for="region in chartRegions"
+             v-bind:key="region.label"
+             class="chart-regions"
+             v-bind:class="{'correct': feedback && region.correct, 'incorrect': feedback && !region.correct}">
+
+            <g v-if="region.dualFeedback && feedback"
+               class="region-fb">
+
+              <text v-bind:x="region.x"
+                    v-bind:y="region.y - 39">
+                <tspan v-show="region.typeMatch"
+                       class="checkmark">&#10003;</tspan>
+                <tspan v-show="!region.typeMatch"
+                       class="wrong">&#10006;</tspan> Type
+              </text>
+
+              <text v-if="region.rangeMatch"
+                    v-bind:x="region.x"
+                    v-bind:y="region.y - 7">
+                <tspan class="checkmark">&#10003;</tspan> Location
+              </text>
+
+              <text v-if="!region.rangeMatch"
+                    v-bind:x="region.x"
+                    v-bind:y="region.y - 23">
+                <tspan class="wrong">&#10006;</tspan> Location
+              </text>
+
+              <text v-bind:x="region.x"
+                    v-bind:y="region.y - 7">
+                <tspan v-show="!region.rangeMatch">L (off {{region.rangeDiff[0]}}), R (off {{region.rangeDiff[1]}})</tspan>
+              </text>
+            </g>
+
+            <g v-if="!region.dualFeedback && feedback"
+               class="region-fb">
+
+              <text v-bind:x="region.x"
+                    v-bind:y="region.y - 7">
+                <tspan v-show="region.correct">
+                  <tspan class="checkmark">&#10003;</tspan> Correct
+                </tspan>
+                <tspan v-show="!region.correct">
+                  <tspan class="wrong">&#10006;</tspan> Incorrect
+                </tspan>
+              </text>
+            </g>
+
+            <rect v-bind:ref="region.label"
                   v-bind:x="region.x"
                   v-bind:y="region.y"
                   v-bind:width="region.width"
@@ -249,6 +295,10 @@ export default {
     candleHighlight: {
       type: Boolean,
       default: true
+    },
+    feedback: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -349,7 +399,12 @@ export default {
           y: y1,
           width: regionCandles.length * this.candleSpacing - ( this.candleSpacing - this.candleWidth ),
           height: y2 - y1,
-          label: region.label
+          label: region.label,
+          correct: region.correct,
+          dualFeedback: !region.correct && ( region.typeMatch || region.rangeMatch ),
+          typeMatch: region.typeMatch,
+          rangeMatch: region.rangeMatch,
+          rangeDiff: region.rangeDiff
         }
       } )
     },
@@ -404,14 +459,12 @@ export default {
         this.candleChart.x = this.candleNum * increment
 
         if ( this.candleHighlight ) {
-          for ( const ix in this.$refs[ 'candlebody' ] ) {
-            this.$refs[ 'candlebody' ][ ix ].style.strokeWidth = 0
+          for ( let i = 0; i < this.$refs[ 'candlebody' ].length; i++ ) {
+            this.$refs[ 'candlebody' ][ i ].style.strokeWidth = 0
           }
           this.$refs[ 'candlebody' ][ this.candleNum ].style.strokeWidth = 4
           this.currentCandle = this.candles[ this.candleNum ]
         }
-
-
       }
     },
     calcPrices( prices ) {
@@ -522,34 +575,69 @@ export default {
 
             .chart-regions {
 
+                .region-fb {
+                    position: relative;
+                    z-index: 1200;
+                }
+
+                tspan.checkmark {
+                    fill: $green;
+                }
+
+                tspan.wrong {
+                    fill: $red;
+                }
+
+                text {
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                    letter-spacing: 0.03rem;
+                    fill: #fff;
+                }
+
                 rect {
                     stroke-width: 1;
+                }
 
-                    &:nth-child(1) {
+                &:nth-child(1) {
+                    rect {
                         fill: rgba(255,19,197, 0.2);
                         stroke: rgb(255,19,197);
                     }
-                    &:nth-child(2) {
+
+                }
+                &:nth-child(2) {
+                    rect {
                         fill: rgba(255,210,0, 0.2);
                         stroke: rgb(255,210,0);
                     }
-                    &:nth-child(3) {
+                }
+                &:nth-child(3) {
+                    rect {
                         fill: rgba(77,189,255, 0.2);
                         stroke: rgb(77,189,255);
                     }
-                    &:nth-child(4) {
+                }
+                &:nth-child(4) {
+                    rect {
                         fill: rgba(255,107,13, 0.2);
                         stroke: rgb(255,107,13);
                     }
-                    &:nth-child(5) {
+                }
+                &:nth-child(5) {
+                    rect {
                         fill: rgba(176,89,235, 0.2);
                         stroke: rgb(176,89,235);
                     }
-                    &:nth-child(6) {
+                }
+                &:nth-child(6) {
+                    rect {
                         fill: rgba(11,217,145, 0.2);
                         stroke: rgb(11,217,145);
                     }
-                    &:nth-child(7) {
+                }
+                &:nth-child(7) {
+                    rect {
                         fill: rgba(10,141,255, 0.2);
                         stroke: rgb(10,141,255);
                     }
@@ -696,7 +784,11 @@ export default {
 .dark {
 
     .chart {
-        .chart-regions {}
+        .chart-regions {
+            text {
+                fill: #fff;
+            }
+        }
     }
 
     .chart-num,
@@ -746,6 +838,22 @@ export default {
             }
 
             .chart {
+
+                .chart-regions {
+
+                    tspan.checkmark {
+                        fill: $green-med;
+                    }
+
+                    tspan.wrong {
+                        fill: darken($red, 5%);
+                    }
+
+                    text {
+                        fill: #111;
+                    }
+                }
+
                 .vue-slider {
                     .vue-slider-dot-handle {
                         background: $light-header-color;

@@ -178,17 +178,6 @@ export default {
                 background: #fff;
                 color: $light-text-color;
                 border-color: $light-gray-med-dark;
-                /*
-                &:first-child {
-                    border-top-left-radius: 4px;
-                    border-bottom-left-radius: 4px;
-                }
-
-                &:last-child {
-                    border-top-right-radius: 4px;
-                    border-bottom-right-radius: 4px;
-                }
-                */
 
                 &.active {
                     opacity: 1;

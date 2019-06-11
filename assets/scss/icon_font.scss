@@ -1,11 +1,11 @@
 
 @font-face {
   font-family: 'custom-icons';
-  src:  url('~assets/fonts/custom.eot?iun5ay');
-  src:  url('~assets/fonts/custom.eot?iun5ay#iefix') format('embedded-opentype'),
-    url('~assets/fonts/custom.ttf?iun5ay') format('truetype'),
-    url('~assets/fonts/custom.woff?iun5ay') format('woff'),
-    url('~assets/fonts/custom.svg?iun5ay#icomoon') format('svg');
+  src:  url('~assets/fonts/custom.eot?y3gt4t');
+  src:  url('~assets/fonts/custom.eot?y3gt4t#iefix') format('embedded-opentype'),
+    url('~assets/fonts/custom.ttf?y3gt4t') format('truetype'),
+    url('~assets/fonts/custom.woff?y3gt4t') format('woff'),
+    url('~assets/fonts/custom.svg?y3gt4t#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -109,6 +109,9 @@
 .icon-play_circle_outline:before {
   content: "\e039";
 }
+.icon-evaluation:before {
+  content: "\e065";
+}
 .icon-replay:before {
   content: "\e042";
 }
@@ -139,11 +142,17 @@
 .icon-gears:before {
   content: "\f085";
 }
+.icon-unlock:before {
+  content: "\f09c";
+}
 .icon-bell:before {
   content: "\f0f3";
 }
 .icon-angle-right:before {
   content: "\f105";
+}
+.icon-unlock-alt:before {
+  content: "\f13e";
 }
 .icon-trash:before {
   content: "\f1f8";
