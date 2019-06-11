@@ -114,8 +114,6 @@
           pattern.feedback.push(`hint${pattern.type}`)
         }
 
-        console.log(correct, color, sentiment, pattern.color, pattern.sentiment, pattern.feedback, this.messages.map(item => item.name))
-
         this.patterns = this.patterns.map(pattern => pattern)
 
       }
