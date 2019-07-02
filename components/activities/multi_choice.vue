@@ -160,6 +160,10 @@ export default {
 
 @import '~assets/scss/variables.scss';
 
+.multi-choice {
+    position: relative;
+}
+
 .multi-choice .multi-choice-option {
     cursor: pointer;
 }

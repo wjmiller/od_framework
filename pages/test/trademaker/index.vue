@@ -5,153 +5,91 @@
       <nuxt-link class="btn btn-secondary"
                  to="/">
         <fa :icon="['fas', 'chevron-left']"
-            aria-label="left arrow" /> Exit Region Highlight</nuxt-link>
+            aria-label="left arrow" /> Exit Trade Maker</nuxt-link>
     </b-col>
   </b-row>
   <b-row>
-    <b-col lg="9">
+    <b-col lg="8">
       <p class="question">
-        To unlock the activity below, click the button. <b-btn v-on:click="unlockActivity"
-               style="display: inline-block; margin-left: 15px;">Unlock Activity</b-btn>
+        Use the sliders to move the <b>Enter</b> and <b>Exit</b> targets on the chart to capture the maximum profit that could have been achieved during this trading period.
       </p>
-
     </b-col>
   </b-row>
-  <region-highlight v-bind:regions="regions1"
-                    v-bind:correct-regions="correctRegions"
-                    v-bind:candles="candles"
-                    v-bind:timeline="true"
-                    v-bind:time-label="'Time'"
-                    v-bind:time-label-interval="2"
-                    v-bind:add-region-button="false"
-                    v-bind:locked="locked">
-  </region-highlight>
+  <trade-maker v-bind:candles1="candlesCombined"
+               v-bind:chart-lines="chartLines1"
+               v-bind:time-label="'Time'"
+               v-bind:time-label-interval="2">
+  </trade-maker>
   <div class="spacer"></div>
   <b-row>
-    <b-col lg="9">
+    <b-col lg="8">
       <p class="question">
-        This activity has no pre-set region types for the learner. The learner will add new regions and then edit the locations of the added regions.
+        This activity allows you to set Enter, Exit, and Stop targets for a trade.
       </p>
     </b-col>
   </b-row>
-  <region-highlight v-bind:candles="candles"
-                    v-bind:correct-regions="correctRegions"
-                    v-bind:region-types="regionTypes"
-                    v-bind:timeline="true"
-                    v-bind:time-label="'Time'"
-                    v-bind:time-label-interval="2"
-                    v-bind:add-region-button="true">
-  </region-highlight>
+  <trade-maker v-bind:progressive="true"
+               v-bind:candles1="candles3"
+               v-bind:candles2="candles4"
+               v-bind:chart-lines="chartLines3"
+               v-bind:time-label="'Time'"
+               v-bind:candle-width="15"
+               v-bind:candle-spacing="30"
+               v-bind:price-range="[10,20]"
+               v-bind:time-label-interval="2"
+               v-bind:add-stop="true">
+  </trade-maker>
   <div class="spacer"></div>
   <b-row>
-    <b-col lg="9">
+    <b-col lg="8">
       <p class="question">
-        Add trend boxes to the last trend at play in the chart.
+        This activity allows you to begin a trading day and move the <b>Exit</b> target as time moves along.
       </p>
     </b-col>
   </b-row>
-  <region-highlight v-bind:candles="candles3"
-                    v-bind:region-types="regionTypes2"
-                    v-bind:region-colors="regionColors2"
-                    v-bind:price-range="[10,20]"
-                    v-bind:timeline="true"
-                    v-bind:time-label="'Time'"
-                    v-bind:candle-width="15"
-                    v-bind:candle-spacing="30"
-                    v-bind:time-label-interval="4"
-                    v-bind:add-region-button="true">
-  </region-highlight>
+  <trade-maker v-bind:progressive="true"
+               v-bind:candles1="candles1"
+               v-bind:candles2="candles2"
+               v-bind:chart-lines="chartLines2"
+               v-bind:time-label="'Time'"
+               v-bind:time-label-interval="2"
+               v-bind:enter-disabled-at="'09:30'">
+  </trade-maker>
   <div class="spacer"></div>
   <b-row>
-    <b-col lg="9">
+    <b-col lg="8">
       <p class="question">
-        Look at the chart and determine what type of trend you see in price. If you need a little help, click <b>Reveal Regions</b>, to view an overlay of trend boxes that help show the direction.
+        This activity allows you to begin a trading day and move the <b>Exit</b> target until 12:30, then it locks.
       </p>
     </b-col>
   </b-row>
-  <region-highlight v-bind:candles="candles2"
-                    v-bind:regions="regions2"
-                    v-bind:force-range="[0,40]"
-                    v-bind:timeline="true"
-                    v-bind:time-label="'Time'"
-                    v-bind:time-label-interval="4"
-                    v-bind:hidden-regions="true">
-  </region-highlight>
-
+  <trade-maker v-bind:progressive="true"
+               v-bind:candles1="candles1"
+               v-bind:candles2="candles2"
+               v-bind:chart-lines="chartLines2"
+               v-bind:time-label="'Time'"
+               v-bind:time-label-interval="2"
+               v-bind:enter-disabled-at="'09:30'"
+               v-bind:exit-disabled-at="'12:30'">
+  </trade-maker>
 </b-container>
 </template>
 
 <script>
-import RegionHighlight from '~/components/activities/custom/region_highlight'
+import TradeMaker from '~/components/activities/custom/trade_maker'
 
 export default {
   components: {
-    RegionHighlight
-  },
-  methods: {
-    unlockActivity() {
-      this.locked = false;
-    }
+    TradeMaker
   },
   data() {
     return {
-      locked: true,
-      regions1: [
-        {
-          label: 'RBR',
-          color: 'pink'
-        },
-        {
-          label: 'DBD',
-          color: 'yellow'
-        },
-        {
-          label: 'DBR',
-          color: 'light-blue'
-        }
+      chartLines1: [ 0, 0 ],
+      chartLines2: [ 1, 0 ],
+      chartLines3: [ 10, 10, 10 ],
+      candles1: [
       ],
-      correctRegions: [
-        {
-          label: 'RBR',
-          range: [ 2, 4 ]
-        },
-        {
-          label: 'DBD',
-          range: [ 8, 10 ]
-        },
-        {
-          label: 'DBR',
-          range: [ 21, 23 ]
-        }
-      ],
-      regionTypes: [
-        'RBR', 'RBD', 'DBR', 'DBD', 'Correction', 'Impulsion', 'Gap'
-      ],
-      regionTypes2: [
-        'Box'
-      ],
-      regionColors2: [
-        'green',
-        'red'
-      ],
-      regions2: [
-        {
-          label: 'Box',
-          color: 'green',
-          range: [ 0, 8 ]
-        },
-        {
-          label: 'Box',
-          color: 'red',
-          range: [ 8, 13 ]
-        },
-        {
-          label: 'Box',
-          color: 'green',
-          range: [ 13, 19 ]
-        }
-      ],
-      candles: [
+      candles2: [
         {
           open: 4,
           close: 2,
@@ -168,20 +106,20 @@ export default {
         },
         {
           open: 1,
-          close: 8,
-          high: 10,
+          close: 6,
+          high: 8,
           low: 1,
           label: '10:00'
         },
         {
-          open: 8,
-          close: 9,
-          high: 11,
+          open: 6,
+          close: 12,
+          high: 16,
           low: 4,
           label: '10:15'
         },
         {
-          open: 9,
+          open: 12,
           close: 16,
           high: 19,
           low: 8,
@@ -210,22 +148,22 @@ export default {
         },
         {
           open: 16,
-          close: 10,
+          close: 11,
           high: 16,
-          low: 10,
+          low: 11,
           label: '11:30'
         },
         {
-          open: 10,
-          close: 11,
+          open: 11,
+          close: 7,
           high: 14,
           low: 5,
           label: '11:45'
         },
         {
-          open: 11,
+          open: 7,
           close: 5,
-          high: 11,
+          high: 9,
           low: 1,
           label: '12:00'
         },
@@ -294,34 +232,34 @@ export default {
         },
         {
           open: 23,
-          close: 20,
+          close: 18,
           high: 26,
-          low: 17,
+          low: 14,
           label: '02:30'
         },
         {
-          open: 20,
-          close: 13,
+          open: 18,
+          close: 15,
           high: 23,
-          low: 11,
+          low: 13,
           label: '02:45'
         },
         {
-          open: 13,
+          open: 15,
           close: 14,
           high: 17,
-          low: 10,
+          low: 13,
           label: '03:00'
         },
         {
           open: 14,
-          close: 20,
-          high: 22,
+          close: 16,
+          high: 18,
           low: 12,
           label: '03:15'
         },
         {
-          open: 20,
+          open: 16,
           close: 22,
           high: 24,
           low: 12,
@@ -340,141 +278,6 @@ export default {
           high: 29,
           low: 22,
           label: '04:00'
-        }
-      ],
-      candles2: [
-        {
-          open: 7,
-          close: 5,
-          high: 9,
-          low: 1,
-          label: '4/12'
-        },
-        {
-          open: 5,
-          close: 7,
-          high: 10,
-          low: 3,
-          label: '4/13'
-        },
-        {
-          open: 7,
-          close: 6,
-          high: 9,
-          low: 4,
-          label: '4/14'
-        },
-        {
-          open: 6,
-          close: 10,
-          high: 13,
-          low: 4,
-          label: '4/15'
-        },
-        {
-          open: 10,
-          close: 15,
-          high: 15,
-          low: 7,
-          label: '4/16'
-        },
-        {
-          open: 15,
-          close: 20,
-          high: 20,
-          low: 14,
-          label: '4/17'
-        },
-        {
-          open: 20,
-          close: 23,
-          high: 26,
-          low: 17,
-          label: '4/18'
-        },
-        {
-          open: 23,
-          close: 25,
-          high: 27,
-          low: 25,
-          label: '4/19'
-        },
-        {
-          open: 25,
-          close: 24,
-          high: 30,
-          low: 22,
-          label: '4/20'
-        },
-        {
-          open: 24,
-          close: 23,
-          high: 27,
-          low: 21,
-          label: '4/21'
-        },
-        {
-          open: 23,
-          close: 18,
-          high: 26,
-          low: 14,
-          label: '4/22'
-        },
-        {
-          open: 18,
-          close: 15,
-          high: 23,
-          low: 13,
-          label: '4/23'
-        },
-        {
-          open: 15,
-          close: 14,
-          high: 17,
-          low: 13,
-          label: '4/24'
-        },
-        {
-          open: 14,
-          close: 16,
-          high: 18,
-          low: 12,
-          label: '4/25'
-        },
-        {
-          open: 16,
-          close: 22,
-          high: 24,
-          low: 14,
-          label: '4/26'
-        },
-        {
-          open: 22,
-          close: 30,
-          high: 31,
-          low: 20,
-          label: '4/27'
-        },
-        {
-          open: 30,
-          close: 26,
-          high: 32,
-          low: 22,
-          label: '4/28'
-        },
-        {
-          open: 26,
-          close: 30,
-          high: 32,
-          low: 21,
-          label: '4/29'
-        },
-        {
-          open: 30,
-          close: 37,
-          high: 38,
-          low: 27,
-          label: '4/30'
         }
       ],
       candles3: [
@@ -680,7 +483,9 @@ export default {
           high: 14.05,
           low: 13.78,
           label: "10:00"
-        },
+        }
+      ],
+      candles4: [
         {
           open: 13.86,
           close: 14.74,
@@ -956,6 +761,11 @@ export default {
         }
       ]
     }
+  },
+  computed: {
+    candlesCombined() {
+      return [ ...this.candles1, ...this.candles2 ]
+    }
   }
 
 }
@@ -989,6 +799,6 @@ export default {
 
 .question {
     font-size: 1.05rem;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 </style>

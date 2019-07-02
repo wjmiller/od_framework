@@ -1,16 +1,25 @@
 <template>
 <b-row class="region-highlight">
+  <activity-lock v-bind:locked="locked"
+                 v-bind:data="lockedData"></activity-lock>
   <b-col lg="12">
 
     <div class="region-toolbar">
-      <b-btn class="add-region-btn"
-             v-if="addRegionButton"
-             v-on:click="openAddRegion">
+      <b-btn v-if="addRegionButton"
+             v-on:click="openAddRegion"
+             class="add-region-btn">
         <span class="plus"></span> Add Region
       </b-btn>
 
-      <b-btn class="eval-region-btn"
-             v-on:click="checkRegions">
+      <b-btn v-if="addRevealButton"
+             v-on:click="showRegions"
+             class="reveal-region-btn">
+        <span></span> Reveal Regions
+      </b-btn>
+
+      <b-btn v-if="correctRegions"
+             v-on:click="checkRegions"
+             class="eval-region-btn">
         <span></span> Check Regions
       </b-btn>
 
@@ -53,12 +62,14 @@
     </div>
 
     <ul class="region-key"
+        v-if="!hiddenActivity"
         v-bind:class="{'active' : chartRegions.length > 0 || addRegionButton}">
       <li v-for="r in chartRegions"
           v-on:click="setRegion(r)"
           ref="region-btn">
         {{r.label}}
-        <span class="dot"></span>
+        <span class="dot"
+              v-bind:class="`${r.color}`"></span>
       </li>
     </ul>
     <candle-chart v-bind:candles="candles"
@@ -73,7 +84,8 @@
                   v-bind:candle-width="candleWidth"
                   v-bind:candle-spacing="candleSpacing"
                   v-bind:candle-highlight="candleHighlight"
-                  v-bind:feedback="feedbackMode">
+                  v-bind:feedback="feedbackMode"
+                  v-bind:hidden-regions="hiddenRegions">
     </candle-chart>
   </b-col>
   <b-col lg="12">
@@ -128,6 +140,19 @@
           </template>
 
         </v-select>
+        <v-select v-model="regionColor"
+                  v-bind:options="regionColors"
+                  v-bind:placeholder="'Choose color'"
+                  v-bind:searchable="false"
+                  v-bind:clearable="false">
+          <template slot="option"
+                    slot-scope="option">
+            {{ option.label }}
+            <span class="dot"
+                  v-bind:class="`${option.label}`"></span>
+          </template>
+
+        </v-select>
         <div class="add-region-btns">
           <b-btn v-on:click="cancelRegion">Cancel</b-btn>
           <b-btn v-on:click="addRegion">Create</b-btn>
@@ -142,6 +167,7 @@
 
 <script>
 import CandleChart from '~/components/activities/candle_chart'
+import ActivityLock from '~/components/utilities/activity_lock'
 import {
   BDropdown
 } from 'bootstrap-vue';
@@ -160,7 +186,8 @@ Array.prototype.contains = function ( value ) {
 
 export default {
   components: {
-    CandleChart
+    CandleChart,
+    ActivityLock
   },
   data() {
     return {
@@ -171,6 +198,7 @@ export default {
       addError: false,
       addingRegion: false,
       regionType: null,
+      regionColor: null,
       evaluation: {
         typeLength: {
           match: null,
@@ -182,11 +210,19 @@ export default {
         }
       },
       feedbackPhase: 0,
+      feedbackMode: false,
       feedbackOpen: false,
-      feedbackMode: false
+      hiddenActivity: this.hiddenRegions
     }
   },
   props: {
+    locked: {
+      type: Boolean,
+      default: false
+    },
+    lockedData: {
+      default: null
+    },
     candles: {
       type: Array,
       default () {
@@ -251,7 +287,19 @@ export default {
         return []
       }
     },
+    regionColors: {
+      type: Array,
+      default () {
+        return [
+          'default', 'pink', 'yellow', 'light-blue', 'orange', 'purple', 'teal', 'blue'
+        ]
+      }
+    },
     addRegionButton: {
+      type: Boolean,
+      default: false
+    },
+    hiddenRegions: {
       type: Boolean,
       default: false
     }
@@ -259,7 +307,6 @@ export default {
   methods: {
     setRegion( val ) {
       this.region = this.chartRegions[ val.index ]
-
       for ( var i = 0; i < this.$refs[ 'region-btn' ].length; i++ ) {
         this.$refs[ 'region-btn' ][ i ].style.borderColor = this.getUserPrefs.theme_dark ? '#2b314d' : '#CCCCCC'
       }
@@ -269,12 +316,13 @@ export default {
       const newRegions = [ ...this.regionsArr ]
       newRegions[ this.region.index ] = this.region
       this.regionsArr = newRegions
-      this.evaluate()
+      if ( this.correctRegions ) this.evaluate()
     },
     addRegion() {
       if ( this.regionType ) {
         this.regionsArr = [ ...this.regionsArr, {
-          label: this.regionType.label
+          label: this.regionType,
+          color: this.regionColor
         } ]
 
         setTimeout( () => {
@@ -294,6 +342,7 @@ export default {
     cancelRegion() {
       this.addError = false
       this.regionType = null
+      this.regionColor = null
       this.addingRegion = false
     },
     cancelError() {
@@ -302,6 +351,9 @@ export default {
     removeRegion() {
       this.regionsArr.splice( this.region.index, 1 )
       this.region = null
+    },
+    showRegions() {
+      this.hiddenRegions = false
     },
     closeCorrect() {
       this.correctShow = false
@@ -349,7 +401,6 @@ export default {
       for ( let i = 0; i < arr.length; i++ ) {
         i == arr.length - 1 ? seqString = seqString + arr[ i ].label : seqString = seqString + arr[ i ].label + ', '
       }
-      console.log( seqString )
     },
     checkRegion( arr, region ) {
       // Create array containing objects of region stats measured against each correct region
@@ -493,11 +544,15 @@ export default {
         return evalValue
       }
     },
+    addRevealButton() {
+      return this.hiddenActivity
+    },
     chartRegions() {
       return this.regionsArr.map( ( item, ix ) => {
         return {
           label: item.label,
           index: ix,
+          color: item.hasOwnProperty( 'color' ) ? item.color : 'pink',
           range: [ item.range ? item.range[ 0 ] : 0, item.range ? item.range[ 1 ] : 0 ],
           correct: item.hasOwnProperty( 'correct' ) ? item.correct : false,
           typeMatch: item.hasOwnProperty( 'typeMatch' ) ? item.typeMatch : null,
@@ -631,7 +686,8 @@ export default {
     }
 
     .add-region-btn,
-    .eval-region-btn {
+    .eval-region-btn,
+    .reveal-region-btn {
         padding: 0.3rem 1.2rem 0.4rem;
         font-size: 1rem;
     }
@@ -699,6 +755,16 @@ export default {
             margin-right: 3px;
             &:before {
                 content: "\e065";
+                font-family: "custom-icons";
+            }
+        }
+    }
+
+    .reveal-region-btn {
+        span {
+            margin-right: 3px;
+            &:before {
+                content: "\e8f4";
                 font-family: "custom-icons";
             }
         }
@@ -786,7 +852,11 @@ export default {
                 font-weight: 600;
 
                 .v-select {
-                    margin-bottom: 25px;
+                    margin-bottom: 15px;
+
+                    &:nth-child(2) {
+                        margin-bottom: 25px;
+                    }
                 }
 
                 .add-region-btns {

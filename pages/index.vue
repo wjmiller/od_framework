@@ -8,10 +8,12 @@
   <nuxt-link to="/test/unfilledslider">Unfilled Slider</nuxt-link>
   <nuxt-link to="/test/unfilledselect">Unfilled Select</nuxt-link>
   <nuxt-link to="/test/candlechart">Candle Chart</nuxt-link>
+  <nuxt-link to="/test/candlelabel">Candle Labeler</nuxt-link>
   <nuxt-link to="/test/candlestickmaker">Candle Generator</nuxt-link>
-  <nuxt-link to="/test/regionhighlight">Region Highlight</nuxt-link>
-  <nuxt-link to="/test/maxprofit">Max Profit</nuxt-link>
-  <nuxt-link to="/test/game">Balance Price Game</nuxt-link>
+  <nuxt-link to="/test/bearish-bullish">Candle Sentiment</nuxt-link>
+  <nuxt-link to="/test/regionhighlight">Region Highlight (Updated - Color Select/Trend Boxes/Hidden Regions)</nuxt-link>
+  <nuxt-link to="/test/trademaker">Trade Maker (Updated - Enter, Exit, and Stop)</nuxt-link>
+  <nuxt-link to="/test/game">Balance Price Game (Updated with Chart Data)</nuxt-link>
   <nuxt-link to="/test/multichoice">Multi Choice</nuxt-link>
   <nuxt-link to="/test/sorting">Candle Sorting</nuxt-link>
   <nuxt-link to="/test/candle">SVG Candle</nuxt-link>

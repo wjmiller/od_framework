@@ -708,61 +708,60 @@ section.view {
 
   li {
     font-weight: 600;
+  }
+}
 
-    span.dot {
-      display: inline-block;
-      width: 16px !important;
-      height: 16px !important;
-      border-radius: 50% !important;
-      margin-left: 0.4rem;
-      position: relative;
-      top: 1px;
+.dot {
+  display: inline-block;
+  width: 16px !important;
+  height: 16px !important;
+  border-radius: 50% !important;
+  margin-left: 0.4rem;
+  position: relative;
+  top: 1px;
 
-      &:before {
-        content: "";
-      }
-    }
+  &:before {
+    content: "";
+  }
 
-    &:nth-child(1) {
-      span.dot {
-        background: $pink;
-      }
-    }
+  &.pink {
+    background: $pink;
+  }
 
-    &:nth-child(2) {
-      span.dot {
-        background: $yellow;
-      }
-    }
+  &.yellow {
+    background: $yellow;
+  }
 
-    &:nth-child(3) {
-      span.dot {
-        background: $blue-light;
-      }
-    }
+  &.light-blue {
+    background: $blue-light;
+  }
 
-    &:nth-child(4) {
-      span.dot {
-        background: $orange-light;
-      }
-    }
+  &.orange {
+    background: $orange-light;
+  }
 
-    &:nth-child(5) {
-      span.dot {
-        background: $purple-bright;
-      }
-    }
+  &.purple {
+    background: $purple-bright;
+  }
 
-    &:nth-child(6) {
-      span.dot {
-        background: $teal;
-      }
-    }
-    &:nth-child(7) {
-      span.dot {
-        background: $blue;
-      }
-    }
+  &.teal {
+    background: $teal;
+  }
+
+  &.blue {
+    background: $blue;
+  }
+
+  &.red {
+    background: $red;
+  }
+
+  &.green {
+    background: $green;
+  }
+
+  &.default {
+    background: #fff;
   }
 }
 
@@ -828,8 +827,32 @@ section.view {
     }
   }
 
+  .dot {
+    &.red {
+      background: darken($red,5%);
+    }
+
+    &.green {
+      background: $green-med;
+    }
+
+    &.default {
+      background: #333;
+    }
+  }
+
   .vs__dropdown-option--highlight {
     background: $light-header-color;
     color: #ffffff !important;
+  }
+}
+
+//------------------------------------------------------
+// Utlities
+//------------------------------------------------------
+
+.clickable {
+  &:hover {
+    cursor: pointer;
   }
 }

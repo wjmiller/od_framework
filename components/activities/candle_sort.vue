@@ -127,6 +127,7 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
+    position: relative;
 
     div {
         &:hover {

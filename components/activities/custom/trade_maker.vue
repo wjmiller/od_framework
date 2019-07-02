@@ -1,5 +1,5 @@
 <template>
-<b-row class="max-profit">
+<b-row class="trade-maker">
   <b-col lg="9">
     <candle-chart v-on:candle-change="setCurrentCandle"
                   v-bind:candles="candles"
@@ -45,15 +45,29 @@
                     v-bind:disabled="exitDisabled || resultsReady">
         </vue-slider>
       </div>
+      <div v-if="addStop"
+           class="slider-group stop">
+        <h3>Stop</h3>
+        <span v-html="tradeTargets[2].toFixed(2)"></span>
+        <vue-slider v-model="tradeTargets[2]"
+                    v-bind:direction="'btt'"
+                    v-bind:min="priceRange[0]"
+                    v-bind:max="priceRange[1]"
+                    v-bind:height="'100%'"
+                    v-bind:tooltip="'none'"
+                    v-bind:interval="sliderInterval"
+                    v-bind:disabled="resultsReady">
+        </vue-slider>
+      </div>
     </div>
     <b-btn class="start-btn"
            v-on:click="resumeTrading"
            v-if="progressive && !resultsReady"
            v-bind:disabled="tradingResumed">{{resumeTradingText}}</b-btn>
     <b-btn class="start-btn"
-           v-on:click="checkProfit"
+           v-on:click="checkTrade"
            v-bind:class="{'btn-success': progressive && resultsReady}"
-           v-if="!progressive || (progressive && resultsReady)">{{checkProfitText}}</b-btn>
+           v-if="!progressive || (progressive && resultsReady)">{{checkTradeText}}</b-btn>
   </b-col>
   <div v-if="submitted"
        class="results-cont">
@@ -62,28 +76,14 @@
             v-if="resultsLoad"></bounce>
     <div class="results"
          v-if="!resultsLoad">
-      <div class="results-header"><span v-if="error">Out of Bounds</span><span v-if="!error">Results</span></div>
+      <div class="results-header"><span>Results</span></div>
       <div class="results-body">
-        <div v-if="error"
-             class="results-error">
-          Please place your Enter and Exit points within the chart's highest and lowest traded price.
-        </div>
-        <div v-if="!error && unfilled"
-             class="results-unfilled">
-          Your sell order was not filled because price did not hit your exit target.
-        </div>
-        <div v-if="!error && !unfilled">
-          <div><span>Your Profit:</span><span>+{{profit}}</span></div>
-          <div><span>Max Profit Potential:</span><span>+{{maxProfit}}</span></div>
-        </div>
-        <div v-if="!error && profit == maxProfit"
+        <div class="results-message">{{resultsMessage}}</div>
+        <div v-if="profit == maxProfit"
              class="match-message">You matched the max profit potential!</div>
       </div>
       <div class="results-footer">
-        <b-btn v-if="error"
-               v-on:click="clearError">Try Again</b-btn>
-        <b-btn v-if="!error"
-               v-on:click="reset">Done</b-btn>
+        <b-btn v-on:click="reset">Done</b-btn>
       </div>
     </div>
   </div>
@@ -101,8 +101,9 @@ export default {
     return {
       origCandles: [ ...this.candles1 ],
       candles: [ ...this.candles1 ],
-      checkProfitText: this.progressive ? 'View Results' : 'Check Profitability',
+      checkTradeText: this.progressive ? 'View Results' : 'Check Profitability',
       tradeTargets: [ ...this.chartLines ],
+      resultsMessage: null,
       resultsLoad: false,
       resultsReady: false,
       tradingResumed: false,
@@ -152,6 +153,10 @@ export default {
       default () {
         return 'none'
       }
+    },
+    addStop: {
+      type: Boolean,
+      default: false
     },
     startBtnLabel: {
       type: String,
@@ -209,17 +214,49 @@ export default {
     }
   },
   methods: {
-    checkProfit() {
+    checkTrade() {
       this.resultsLoad = true
       this.submitted = true
-
-      if ( Math.max( this.tradeTargets[ 0 ], this.tradeTargets[ 1 ] ) > this.priceHigh || Math.min( this.tradeTargets[ 0 ], this.tradeTargets[ 1 ] ) < this.priceLow ) {
-        this.progressive ? this.unfilled = true : this.error = true
-      }
+      this.resultsMessage = this.evalTargets()
 
       setTimeout( () => {
         this.resultsLoad = false
       }, 1500 )
+    },
+    evalTargets() {
+      const entry = this.checkTarget( 0, this.startIndex ) + 1
+      const exit = entry ? this.checkTarget( 1, entry ) + 1 : 0
+      const stop = entry ? this.checkTarget( 2, entry ) + 1 : 0
+      let message = ''
+
+      if ( !entry ) message = 'Price did not hit your target entry.'
+      if ( !exit ) message = 'Price did not hit your target exit.'
+
+      if ( !this.addStop || ( this.addStop && !stop ) ) {
+        if ( !entry || !exit ) {
+          return message
+        } else if ( entry && exit ) {
+          return 'Your trade was successful for a profit of +' + this.profit
+        }
+      } else if ( this.addStop && stop ) {
+        if ( !entry ) return message
+        if ( !exit ) {
+          if ( stop > entry ) {
+            return 'You stopped out for a loss of -' + this.loss
+          }
+        } else {
+          if ( exit < stop && stop > entry ) {
+            return 'Your trade was successful for a profit of +' + this.profit
+          } else if ( exit > stop && stop > entry ) {
+            return 'You stopped out for a loss of -' + this.loss
+          }
+        }
+      }
+    },
+    checkTarget( targetIx, startIx ) {
+      return this.totalCandles.findIndex( ( val, ix ) => {
+        return ix >= startIx && this.tradeTargets[ targetIx ] >= this.totalCandles[ ix ].low && this.tradeTargets[ targetIx ] <= this.totalCandles[ ix ].high
+      } )
     },
     reset() {
       this.submitted = this.unfilled = this.error = this.resultsReady = false
@@ -254,9 +291,16 @@ export default {
     }
   },
   computed: {
+    startIndex() {
+      return this.progressive ? this.candles1.length : 0
+    },
     profit() {
       const profit = Math.max( this.tradeTargets[ 0 ], this.tradeTargets[ 1 ] ) - Math.min( this.tradeTargets[ 0 ], this.tradeTargets[ 1 ] )
       return profit.toFixed( 2 )
+    },
+    loss() {
+      const loss = Math.max( this.tradeTargets[ 0 ], this.tradeTargets[ 2 ] ) - Math.min( this.tradeTargets[ 0 ], this.tradeTargets[ 2 ] )
+      return loss.toFixed( 2 )
     },
     priceHigh() {
       return Math.max.apply( Math, this.candles.map( function ( o ) {
@@ -271,6 +315,9 @@ export default {
     maxProfit() {
       const diff = Math.max( this.priceHigh, this.priceLow ) - Math.min( this.priceHigh, this.priceLow )
       return diff.toFixed( 2 )
+    },
+    isLong() {
+      return this.tradeTargets[ 0 ] <= this.tradeTargets[ 1 ]
     },
     resumeTradingText() {
       return this.tradingResumed ? this.progressBtnLabel : this.startBtnLabel
@@ -299,7 +346,7 @@ export default {
 
 @import '~assets/scss/variables.scss';
 
-.max-profit {
+.trade-maker {
     position: relative;
     padding-bottom: 20px;
 
@@ -376,6 +423,10 @@ export default {
                     }
                 }
 
+                .results-message {
+                    text-align: center;
+                }
+
                 .results-error,
                 .results-unfilled {
                     text-align: center;
@@ -410,7 +461,6 @@ export default {
         }
 
         .slider-group {
-            width: 50%;
             display: flex;
             flex-direction: column;
             margin-top: 0;
@@ -457,11 +507,11 @@ export default {
                     width: 100%;
 
                     .vue-slider-dot-handle {
-                        width: 80px;
+                        width: 54px;
                         height: 30px;
                         position: relative;
                         top: -14px;
-                        left: -33px;
+                        left: -20px;
                         text-align: center;
                         line-height: 30px;
                         z-index: 1000;
@@ -489,6 +539,31 @@ export default {
                     }
                 }
             }
+
+            &.stop {
+                .vue-slider {
+                    .vue-slider-dot {
+                        .vue-slider-dot-handle {
+                            //background: $red;
+
+                            &:before {
+                                content: "Stop";
+                                //color: #fff;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        .slider-group:first-child:nth-last-child(2),
+        .slider-group:first-child:nth-last-child(2) ~ .slider-group {
+            width: 50%;
+        }
+
+        .slider-group:first-child:nth-last-child(3),
+        .slider-group:first-child:nth-last-child(3) ~ .slider-group {
+            width: 33.3333%;
         }
     }
 
@@ -500,7 +575,7 @@ export default {
 
 .light {
 
-    .max-profit {
+    .trade-maker {
 
         .results-cont {
             .results-bg {
@@ -558,6 +633,21 @@ export default {
                     .vue-slider-rail {
                         background: rgba(0,0,0,0.03);
                         border: 1px solid #bbbbbb;
+                    }
+                }
+
+                &.stop {
+                    .vue-slider {
+                        .vue-slider-dot {
+                            .vue-slider-dot-handle {
+                                //background: darken($red, 5%);
+
+                                &:before {
+                                    content: "Stop";
+                                    //color: #fff;
+                                }
+                            }
+                        }
                     }
                 }
             }

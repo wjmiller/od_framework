@@ -9,9 +9,7 @@
     </b-col>
   </b-row>
   <div v-for="(pattern, ix) in patterns">
-    <draw-pattern
-      v-on:candles-updated="evaluateCandles(ix, $event)"
-    >
+    <draw-pattern v-on:candles-updated="evaluateCandles(ix, $event)">
       <template v-slot:instructions>
         <p>{{ pattern.instructions }}</p>
       </template>
@@ -28,99 +26,114 @@
 </template>
 
 <script>
+import DrawPattern from '~/components/activities/draw_pattern'
+import FeedbackDisplay from '~/components/activities/feedback'
 
-  import DrawPattern from '~/components/activities/draw_pattern'
-  import FeedbackDisplay from '~/components/activities/feedback'
-
-  export default {
-    name: 'lesson',
-    components: {
-      DrawPattern,
-      FeedbackDisplay
-    },
-    data() {
-      return {
-        patterns: [
-          {
-            instructions: 'Draw a price line to make a very bearish red candle.',
-            type: 'verybearish',
-            color: 'red',
-            correct: false,
-            feedback: ['standard']
+export default {
+  name: 'lesson',
+  components: {
+    DrawPattern,
+    FeedbackDisplay
+  },
+  data() {
+    return {
+      patterns: [
+        {
+          instructions: 'Draw a price line to make a very bearish red candle.',
+          type: 'verybearish',
+          color: 'red',
+          correct: false,
+          feedback: [ 'standard' ]
           },
-          {
-            instructions: 'Draw a price line to make a very bearish green candle.',
-            type: 'verybearish',
-            color: 'green',
-            correct: false,
-            feedback: ['standard']
+        {
+          instructions: 'Draw a price line to make a very bearish green candle.',
+          type: 'verybearish',
+          color: 'green',
+          correct: false,
+          feedback: [ 'standard' ]
           },
-          {
-            instructions: 'Draw a price line to make a neutral green candle.',
-            type: 'neutral',
-            color: 'green',
-            correct: false,
-            feedback: ['standard']
+        {
+          instructions: 'Draw a price line to make a neutral green candle.',
+          type: 'neutral',
+          color: 'green',
+          correct: false,
+          feedback: [ 'standard' ]
           },
-          {
-            instructions: 'Draw a price line to make a bullish green candle.',
-            type: 'bullish',
-            color: 'green',
-            correct: false,
-            feedback: ['standard']
+        {
+          instructions: 'Draw a price line to make a bullish green candle.',
+          type: 'bullish',
+          color: 'green',
+          correct: false,
+          feedback: [ 'standard' ]
           }
         ],
-        messages: this.buildMessages()
-      }
+      messages: this.buildMessages()
+    }
+  },
+  methods: {
+    buildMessages() {
+      const colors = [ 'red', 'green' ]
+      const types = [ 'very bearish', 'very bullish', 'bearish', 'bullish', 'neutral' ]
+      const percents = [ [ 0, 20 ], [ 80, 100 ], [ 20, 40 ], [ 60, 80 ], [ 40, 60 ] ]
+
+      const messages = types.reduce( ( memo, type, ix ) => {
+        const typeTrim = type.replace( ' ', '' )
+        colors.forEach( color => {
+          memo.push( {
+            name: `${typeTrim}${color}`,
+            text: `You were supposed to draw a price line to make a ${type}, ${color} candle.`
+          } )
+          memo.push( {
+            name: `wrong${typeTrim}${color}`,
+            text: `But you made a ${type}, ${color} candle.`
+          } )
+          memo.push( {
+            name: `right${typeTrim}${color}`,
+            text: `And you made a ${type}, ${color} candle.`
+          } )
+        } )
+        memo.push( {
+          name: `hint${typeTrim}`,
+          text: `Remember that ${type} candles should close between ${percents[ix][0]}% and ${percents[ix][1]}% of the range of the candle.`
+        } )
+        return memo
+      }, [] )
+
+      messages.push( {
+        name: 'standard',
+        text: 'Draw a price line and click Generate to build the candle'
+      } )
+      messages.push( {
+        name: 'correct',
+        text: 'Great!'
+      } )
+
+      return messages
     },
-    methods: {
-      buildMessages() {
-        const colors = ['red', 'green']
-        const types = ['very bearish', 'very bullish', 'bearish', 'bullish', 'neutral']
-        const percents = [[0, 20], [80, 100], [20, 40], [60, 80], [40, 60]]
+    evaluateCandles( ix, val ) {
+      const candle = val[ 0 ]
+      const closePercent = ( candle.close - candle.low ) / ( candle.high - candle.low )
+      const color = candle.open > candle.close ? 'red' : 'green'
+      const very = closePercent > 0.8 || closePercent < 0.2 ? 'very' : ''
+      const sentiment = `${very}${closePercent > 0.6 ? 'bullish' : (closePercent < 0.4 ? 'bearish' : 'neutral')}`
+      const pattern = this.patterns[ ix ]
+      const correct = pattern.color === color && pattern.type === sentiment
 
-        const messages = types.reduce((memo, type, ix) => {
-          const typeTrim = type.replace(' ', '')
-          colors.forEach(color => {
-            memo.push({name: `${typeTrim}${color}`, text: `You were supposed to draw a price line to make a ${type}, ${color} candle.`})
-            memo.push({name: `wrong${typeTrim}${color}`, text: `But you made a ${type}, ${color} candle.`})
-            memo.push({name: `right${typeTrim}${color}`, text: `And you made a ${type}, ${color} candle.`})
-          })
-          memo.push({name: `hint${typeTrim}`, text: `Remember that ${type} candles should close between ${percents[ix][0]}% and ${percents[ix][1]}% of the range of the candle.`})
-            return memo
-        }, [])
+      pattern.feedback = [ `${pattern.type}${pattern.color}`, `${correct ? 'right' : 'wrong'}${sentiment}${color}` ]
 
-        messages.push({name: 'standard', text: 'Draw a price line and click Generate to build the candle'})
-        messages.push({name: 'correct', text: 'Great!'})
-
-        return messages
-      },
-      evaluateCandles(ix, val) {
-        const candle = val[0]
-        const closePercent = (candle.close - candle.low)/(candle.high - candle.low)
-        const color = candle.open > candle.close ? 'red' : 'green'
-        const very  = closePercent > 0.8 || closePercent < 0.2 ? 'very' : ''
-        const sentiment = `${very}${closePercent > 0.6 ? 'bullish' : (closePercent < 0.4 ? 'bearish' : 'neutral')}`
-        const pattern = this.patterns[ix]
-        const correct = pattern.color === color && pattern.type === sentiment
-
-        pattern.feedback = [`${pattern.type}${pattern.color}`, `${correct ? 'right' : 'wrong'}${sentiment}${color}`]
-
-        if (correct) {
-          pattern.correct = true
-          pattern.feedback.push('correct')
-        } else {
-          pattern.correct = false
-          pattern.feedback.push(`hint${pattern.type}`)
-        }
-
-        this.patterns = this.patterns.map(pattern => pattern)
-
+      if ( correct ) {
+        pattern.correct = true
+        pattern.feedback.push( 'correct' )
+      } else {
+        pattern.correct = false
+        pattern.feedback.push( `hint${pattern.type}` )
       }
+
+      this.patterns = this.patterns.map( pattern => pattern )
+
     }
   }
-
-
+}
 </script>
 
 <style lang="scss">

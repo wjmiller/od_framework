@@ -356,6 +356,141 @@ export default {
           low: 8,
           label: '5/13'
         }
+      ],
+      candles2: [
+        {
+          open: 4,
+          close: 2,
+          high: 7,
+          low: 1,
+          label: '4/1'
+        },
+        {
+          open: 2,
+          close: 1,
+          high: 4,
+          low: 1,
+          label: '4/2'
+        },
+        {
+          open: 1,
+          close: 6,
+          high: 8,
+          low: 1,
+          label: '4/3'
+        },
+        {
+          open: 6,
+          close: 12,
+          high: 16,
+          low: 4,
+          label: '4/5'
+        },
+        {
+          open: 12,
+          close: 16,
+          high: 19,
+          low: 8,
+          label: '4/6'
+        },
+        {
+          open: 16,
+          close: 17,
+          high: 23,
+          low: 14,
+          label: '4/7'
+        },
+        {
+          open: 17,
+          close: 15,
+          high: 22,
+          low: 13,
+          label: '4/8'
+        },
+        {
+          open: 15,
+          close: 16,
+          high: 17,
+          low: 12,
+          label: '4/9'
+        },
+        {
+          open: 16,
+          close: 11,
+          high: 16,
+          low: 11,
+          label: '4/10'
+        },
+        {
+          open: 11,
+          close: 7,
+          high: 14,
+          low: 5,
+          label: '4/11'
+        },
+        {
+          open: 7,
+          close: 5,
+          high: 9,
+          low: 1,
+          label: '4/12'
+        },
+        {
+          open: 5,
+          close: 7,
+          high: 10,
+          low: 3,
+          label: '4/13'
+        },
+        {
+          open: 7,
+          close: 6,
+          high: 9,
+          low: 4,
+          label: '4/14'
+        },
+        {
+          open: 6,
+          close: 10,
+          high: 15,
+          low: 4,
+          label: '4/15'
+        },
+        {
+          open: 10,
+          close: 15,
+          high: 18,
+          low: 7,
+          label: '4/16'
+        },
+        {
+          open: 15,
+          close: 20,
+          high: 24,
+          low: 14,
+          label: '4/17'
+        },
+        {
+          open: 20,
+          close: 23,
+          high: 26,
+          low: 17,
+          label: '4/18'
+        },
+        {
+          open: 23,
+          close: 25,
+          high: 27,
+          low: 25,
+          label: '4/19'
+        },
+        {
+          open: 25,
+          close: 24,
+          high: 30,
+          low: 22,
+          label: '4/20'
+        }
       ]
     }
   },

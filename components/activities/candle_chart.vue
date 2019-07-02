@@ -19,12 +19,17 @@
              v-bind:viewBox="candleChart.x + ' 0 ' + candleChart.width + ' ' + `${height + chartPadding}`"
              v-bind:width="candleChart.width">
 
+          <!-- Chart  -->
+          <rect v-bind:width="chartWidth"
+                v-bind:height="`${height + chartPadding}px`"
+                class="chart-canvas"></rect>
+
           <!-- Region -->
-          <g v-if="regions.length > 0"
+          <g v-if="regions.length > 0 && !hiddenRegions"
              v-for="region in chartRegions"
              v-bind:key="region.label"
-             class="chart-regions"
-             v-bind:class="{'correct': feedback && region.correct, 'incorrect': feedback && !region.correct}">
+             class="chart-regions "
+             v-bind:class="`${region.color}`">
 
             <g v-if="region.dualFeedback && feedback"
                class="region-fb">
@@ -78,8 +83,20 @@
 
           <!-- Candlestick -->
           <g v-for="(candle, index) in chartCandles"
-             v-bind:key="`candle-${index}`">
-            <!-- Candle Top Wick -->
+             v-bind:key="`candle-${index}`"
+             v-on:click="changeLabel(index)"
+             v-bind:class="{'clickable': candleLabels}">
+            <g v-if="candleLabels"
+               class="candle-label"
+               v-bind:class="{'label-incorrect': !candleLabels[index].correct && feedback, 'label-correct': candleLabels[index].correct && feedback}">
+              <circle v-bind:cx="candle.line.x1"
+                      v-bind:cy="candle.line.y1 - 30"
+                      v-bind:r="20" />
+              <text v-bind:x="candle.line.x1 - 6"
+                    v-bind:y="candle.line.y1 - 21">{{candleLabels[index].label}}
+              </text>
+            </g>
+            <!-- Candle Wick -->
             <line v-bind:x1="candle.line.x1"
                   v-bind:x2="candle.line.x2"
                   v-bind:y1="candle.line.y1"
@@ -96,50 +113,80 @@
 
           <g v-if="chartLines">
 
-            <!-- Enter Line -->
-            <line x1="0"
-                  v-bind:x2="priceLineWidth"
-                  v-bind:y1="enterLineY"
-                  v-bind:y2="enterLineY"
-                  class="chart-pline" />
+            <g v-if="chartLines.length > 0">
 
-            <g>
-              <!-- Enter Label Box -->
-              <rect width="46"
-                    height="21"
-                    v-bind:x="candleChart.x"
-                    v-bind:y="enterLineY - 20"
-                    class="chart-label-bg"></rect>
+              <!-- Enter Line -->
+              <line x1="0"
+                    v-bind:x2="priceLineWidth"
+                    v-bind:y1="enterLineY"
+                    v-bind:y2="enterLineY"
+                    class="chart-pline" />
 
-              <!-- Enter Label -->
-              <text v-bind:x="candleChart.x + 7"
-                    v-bind:y="enterLineY - 5"
-                    class="chart-label">Enter</text>
+              <g>
+                <!-- Enter Label Box -->
+                <rect width="46"
+                      height="21"
+                      v-bind:x="candleChart.x"
+                      v-bind:y="enterLineY - 20"
+                      class="chart-label-bg"></rect>
+
+                <!-- Enter Label -->
+                <text v-bind:x="candleChart.x + 7"
+                      v-bind:y="enterLineY - 5"
+                      class="chart-label">Enter</text>
+              </g>
+
             </g>
 
-          </g>
+            <g v-if="chartLines.length > 1">
 
-          <g v-if="chartLines">
+              <!-- Exit Line -->
+              <line v-bind:x1="candleChart.x + 55"
+                    v-bind:x2="priceLineWidth"
+                    v-bind:y1="exitLineY"
+                    v-bind:y2="exitLineY"
+                    class="chart-pline" />
 
-            <!-- Exit Line -->
-            <line v-bind:x1="candleChart.x + 55"
-                  v-bind:x2="priceLineWidth"
-                  v-bind:y1="exitLineY"
-                  v-bind:y2="exitLineY"
-                  class="chart-pline" />
+              <g>
+                <!-- Exit Label Box -->
+                <rect width="40"
+                      height="21"
+                      v-bind:x="candleChart.x + 55"
+                      v-bind:y="exitLineY - 20"
+                      class="chart-label-bg"></rect>
 
-            <g>
-              <!-- Exit Label Box -->
-              <rect width="40"
-                    height="21"
-                    v-bind:x="candleChart.x + 55"
-                    v-bind:y="exitLineY - 20"
-                    class="chart-label-bg"></rect>
+                <!-- Exit Label -->
+                <text v-bind:x="candleChart.x + 62"
+                      v-bind:y="exitLineY - 5"
+                      class="chart-label">Exit</text>
+              </g>
 
-              <!-- Exit Label -->
-              <text v-bind:x="candleChart.x + 62"
-                    v-bind:y="exitLineY - 5"
-                    class="chart-label">Exit</text>
+            </g>
+
+            <g v-if="chartLines.length > 2"
+               class="stop">
+
+              <!-- Stop Line -->
+              <line v-bind:x1="candleChart.x + 105"
+                    v-bind:x2="priceLineWidth"
+                    v-bind:y1="stopLineY"
+                    v-bind:y2="stopLineY"
+                    class="chart-pline" />
+
+              <g>
+                <!-- Stop Label Box -->
+                <rect width="40"
+                      height="21"
+                      v-bind:x="candleChart.x + 105"
+                      v-bind:y="stopLineY - 20"
+                      class="chart-label-bg"></rect>
+
+                <!-- Stop Label -->
+                <text v-bind:x="candleChart.x + 112"
+                      v-bind:y="stopLineY - 5"
+                      class="chart-label">Stop</text>
+              </g>
+
             </g>
 
           </g>
@@ -165,13 +212,9 @@
                   class="chart-tline" />
           </g>
 
-          <!-- Chart  -->
-          <rect v-bind:width="chartWidth"
-                v-bind:height="`${height + chartPadding}px`"
-                class="chart-canvas"></rect>
         </svg>
 
-        <vue-slider v-if="candleChart.totalWidth > candleChart.width"
+        <vue-slider v-if="candleHighlight || candleChart.totalWidth > candleChart.width"
                     v-model="candleNum"
                     v-bind:min="0"
                     v-bind:max="candles.length - 1"
@@ -209,6 +252,50 @@
           <span>Low: {{currentCandle.low}}</span>
         </div>
       </div>
+      <div class="detail-orders"
+           v-if="currentCandle.filled">
+        <div class="orders">
+          <div class="orders-buy">
+            <h3>unfilled buy</h3>
+            <span class="unfilled-label">{{currentCandle.unfilled.buy}}</span>
+            <transition-group name="drop-unfilled"
+                              class="unfilled"
+                              tag="ul">
+              <li v-for="order in currentCandle.unfilled.buy"
+                  v-bind:key="'unfilled-buy-' + order"></li>
+            </transition-group>
+            <transition-group name="drop-filled"
+                              class="filled"
+                              tag="ul">
+
+              <li v-for="order in currentCandle.filled.buy"
+                  v-bind:key="'filled-buy-' + order"></li>
+            </transition-group>
+            <h3>filled buy</h3>
+            <span class="filled-label">{{currentCandle.filled.buy}}</span>
+          </div>
+          <div class="orders-sell">
+            <h3>unfilled sell</h3>
+            <span class="unfilled-label">{{currentCandle.unfilled.sell}}</span>
+            <transition-group name="drop-unfilled"
+                              class="unfilled"
+                              tag="ul">
+              <li v-for="order in currentCandle.unfilled.sell"
+                  v-bind:key="'unfilled-sell-' + order"></li>
+            </transition-group>
+            <transition-group name="drop-filled"
+                              class="filled"
+                              tag="ul">
+
+              <li v-for="order in currentCandle.filled.sell"
+                  v-bind:key="'filled-sell-' + order"></li>
+            </transition-group>
+            </ul>
+            <h3>filled sell</h3>
+            <span class="filled-label">{{currentCandle.filled.sell}}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -224,6 +311,12 @@ export default {
         return []
       }
     },
+    candleLabels: {
+      type: Array,
+      default () {
+        return null
+      }
+    },
     totalCandles: {
       type: Array,
       default () {
@@ -235,6 +328,10 @@ export default {
       default () {
         return []
       }
+    },
+    hiddenRegions: {
+      type: Boolean,
+      default: false
     },
     height: {
       type: Number,
@@ -299,6 +396,10 @@ export default {
     feedback: {
       type: Boolean,
       default: false
+    },
+    candleLabels: {
+      type: Array,
+      default: null
     }
   },
   data() {
@@ -395,11 +496,12 @@ export default {
         } ) )
 
         return {
-          x: this.priceOffset + ( this.chartPadding / 2 ) + ( this.candleSpacing * region.range[ 0 ] ),
+          x: region.label == 'Box' ? this.priceOffset + this.candleSpacing * ( region.range[ 0 ] + 1 ) : this.priceOffset + this.candleSpacing * ( region.range[ 0 ] + 1 ) - this.candleWidth / 2,
           y: y1,
-          width: regionCandles.length * this.candleSpacing - ( this.candleSpacing - this.candleWidth ),
+          width: region.label == 'Box' ? regionCandles.length * this.candleSpacing - ( this.candleSpacing ) : regionCandles.length * this.candleSpacing - ( this.candleSpacing - this.candleWidth ),
           height: y2 - y1,
           label: region.label,
+          color: region.color,
           correct: region.correct,
           dualFeedback: !region.correct && ( region.typeMatch || region.rangeMatch ),
           typeMatch: region.typeMatch,
@@ -414,8 +516,12 @@ export default {
     exitLineY() {
       return this.chartOffset + this.height - ( ( this.chartLines[ 1 ] - this.priceRange[ 0 ] ) / ( this.priceRange[ 1 ] - this.priceRange[ 0 ] ) * this.height )
     },
+    stopLineY() {
+      return this.chartOffset + this.height - ( ( this.chartLines[ 2 ] - this.priceRange[ 0 ] ) / ( this.priceRange[ 1 ] - this.priceRange[ 0 ] ) * this.height )
+    },
     priceLineY() {
-      return ( this.chartPadding - 20 ) + this.height - ( ( this.priceRange[ 0 ] ) / ( this.priceRange[ 1 ] - this.priceRange[ 0 ] ) * this.height )
+      return ( this.chartPadding - 20 ) + this.height
+      //return ( this.chartPadding - 20 ) + this.height - ( ( this.priceRange[ 0 ] ) / ( this.priceRange[ 1 ] - this.priceRange[ 0 ] ) * this.height )
     },
     priceTextY() {
       return ( this.chartPadding - 15 ) + this.height - ( ( this.chartLines[ 1 ] - this.priceRange[ 0 ] ) / ( this.priceRange[ 1 ] - this.priceRange[ 0 ] ) * this.height )
@@ -448,7 +554,6 @@ export default {
         this.candleChart.totalWidth = this.candleChart.width
       }
       this.handleResize()
-
     },
     handleResize() {
       this.candleChart.width = this.$refs.chart.clientWidth - this.priceWidth
@@ -457,14 +562,14 @@ export default {
       if ( this.candleChart.totalWidth > this.candleChart.width ) {
         const increment = ( this.candleChart.totalWidth - this.candleChart.width ) / this.candles.length
         this.candleChart.x = this.candleNum * increment
+      }
 
-        if ( this.candleHighlight ) {
-          for ( let i = 0; i < this.$refs[ 'candlebody' ].length; i++ ) {
-            this.$refs[ 'candlebody' ][ i ].style.strokeWidth = 0
-          }
-          this.$refs[ 'candlebody' ][ this.candleNum ].style.strokeWidth = 4
-          this.currentCandle = this.candles[ this.candleNum ]
+      if ( this.candleHighlight ) {
+        for ( let i = 0; i < this.$refs[ 'candlebody' ].length; i++ ) {
+          this.$refs[ 'candlebody' ][ i ].style.strokeWidth = 0
         }
+        this.$refs[ 'candlebody' ][ this.candleNum ].style.strokeWidth = 4
+        this.currentCandle = this.candles[ this.candleNum ]
       }
     },
     calcPrices( prices ) {
@@ -478,6 +583,9 @@ export default {
     displayPrice( val ) {
       return parseFloat( Math.round( val * 100 ) / 100 )
         .toFixed( 2 )
+    },
+    changeLabel( ix ) {
+      this.$emit( 'change-label', ix )
     }
   },
   mounted: function () {
@@ -506,6 +614,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    position: relative;
 
     @media(min-width: 992px) {
         flex-direction: row;
@@ -573,6 +682,16 @@ export default {
             flex-direction: row;
             justify-content: flex-start;
 
+            .candle-label {
+                text {
+                    font-weight: 600;
+                    font-size: 24px;
+                }
+                circle {
+                    stroke-width: 4;
+                }
+            }
+
             .chart-regions {
 
                 .region-fb {
@@ -599,47 +718,68 @@ export default {
                     stroke-width: 1;
                 }
 
-                &:nth-child(1) {
+                &.pink {
                     rect {
                         fill: rgba(255,19,197, 0.2);
                         stroke: rgb(255,19,197);
                     }
 
                 }
-                &:nth-child(2) {
+                &.yellow {
                     rect {
                         fill: rgba(255,210,0, 0.2);
                         stroke: rgb(255,210,0);
                     }
                 }
-                &:nth-child(3) {
+                &.light-blue {
                     rect {
                         fill: rgba(77,189,255, 0.2);
                         stroke: rgb(77,189,255);
                     }
                 }
-                &:nth-child(4) {
+                &.orange {
                     rect {
                         fill: rgba(255,107,13, 0.2);
                         stroke: rgb(255,107,13);
                     }
                 }
-                &:nth-child(5) {
+                &.purple {
                     rect {
                         fill: rgba(176,89,235, 0.2);
                         stroke: rgb(176,89,235);
                     }
                 }
-                &:nth-child(6) {
+                &.teal {
                     rect {
                         fill: rgba(11,217,145, 0.2);
                         stroke: rgb(11,217,145);
                     }
                 }
-                &:nth-child(7) {
+                &.blue {
                     rect {
                         fill: rgba(10,141,255, 0.2);
                         stroke: rgb(10,141,255);
+                    }
+                }
+
+                &.red {
+                    rect {
+                        fill: rgba(241,12,10, 0.2);
+                        stroke: rgb(241,12,10);
+                    }
+                }
+
+                &.green {
+                    rect {
+                        fill: rgba(90,200,72, 0.2);
+                        stroke: rgb(90,200,72);
+                    }
+                }
+
+                &.default {
+                    rect {
+                        fill: rgba(255,255,255, 0.2);
+                        stroke: rgb(255,255,255);
                     }
                 }
             }
@@ -724,6 +864,108 @@ export default {
                     text-transform: uppercase;
                 }
             }
+            .detail-orders {
+                padding-top: 1.5rem;
+                background: lighten($dark-blue, 3%);
+
+                .orders {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: center;
+                    padding-bottom: 1.5rem;
+
+                    h3 {
+                        font-size: 0.95rem;
+                        text-transform: uppercase;
+                        text-align: center;
+                        font-weight: 600;
+                    }
+
+                    .orders-buy,
+                    .orders-sell {
+                        width: 150px;
+                        margin-right: 30px;
+                        position: relative;
+
+                        span {
+                            position: absolute;
+                            border: 5px solid #2B314D;
+                            background: #22263C;
+                            left: 51px;
+                            width: 50px;
+                            height: 36px;
+                            line-height: 9px;
+                            font-size: 20px;
+                            font-weight: 600;
+                            text-align: center;
+                            padding-top: 9px;
+                            border-radius: 25px;
+                            z-index: 1400;
+                            color: #fff;
+                        }
+
+                        span.unfilled-label {
+                            top: 49px;
+                        }
+
+                        span.filled-label {
+                            top: 126px;
+                        }
+
+                        ul {
+                            display: flex;
+                            list-style-type: none;
+                            height: 80px;
+                            padding: 0;
+                            overflow: hidden;
+                            margin-bottom: 0;
+
+                            li {
+                                width: 100%;
+                                height: 1px;
+                                margin-bottom: 0;
+                            }
+                        }
+
+                        ul.unfilled {
+                            flex-direction: column-reverse;
+                            justify-content: flex-start;
+                            border-bottom: 4px solid #fff;
+                        }
+
+                        ul.filled {
+                            margin-top: 0;
+                            flex-direction: column;
+                            justify-content: flex-start;
+                        }
+
+                    }
+
+                    .orders-buy {
+                        ul.filled li,
+                        ul.unfilled li {
+                            background: $green;
+                        }
+
+                        ul.filled li {
+                            opacity: 0.5;
+                        }
+                    }
+
+                    .orders-sell {
+                        margin-right: 0;
+
+                        ul.filled li,
+                        ul.unfilled li {
+                            background: $red;
+                        }
+
+                        ul.filled li {
+                            opacity: 0.5;
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -805,7 +1047,45 @@ export default {
     }
 
     .chart-pline {
-        stroke: rgba(255,227,44, 0.6); //rgba(232,116,248, 0.8); rgba(255,227,44, 0.6);
+        stroke: rgba(255,255,255, 0.6); //rgba(255,227,44, 0.6);
+    }
+
+    .candle-label {
+        text {
+            fill: #fff;
+        }
+
+        circle {
+            fill: lighten($dark-blue, 5%);
+            stroke: lighten($dark-blue, 17%);
+        }
+
+        &.label-correct {
+            circle {
+                stroke: $green;
+            }
+        }
+
+        &.label-incorrect {
+            circle {
+                stroke: $red;
+            }
+        }
+    }
+
+    .stop {
+
+        rect {
+            fill: $red;
+        }
+
+        text {
+            fill: #fff;
+        }
+
+        .chart-pline {
+            stroke: rgba(241,12,10, 0.8);
+        }
     }
 
     .chart-tline {
@@ -839,6 +1119,45 @@ export default {
 
             .chart {
 
+                .stop {
+
+                    rect {
+                        fill: darken($red, 5%);
+                    }
+
+                    text {
+                        fill: #fff;
+                    }
+
+                    .chart-pline {
+                        stroke: darken($red, 5%);
+                    }
+                }
+
+                .candle-label {
+                    text {
+                        fill: $light-text-color;
+                    }
+
+                    circle {
+                        fill: #fff;
+                        stroke: #bbb;
+                    }
+
+                    &.label-correct {
+
+                        circle {
+                            stroke: darken($green, 5%);
+                        }
+                    }
+
+                    &.label-incorrect {
+                        circle {
+                            stroke: darken($red, 5%);
+                        }
+                    }
+                }
+
                 .chart-regions {
 
                     tspan.checkmark {
@@ -851,6 +1170,27 @@ export default {
 
                     text {
                         fill: #111;
+                    }
+
+                    &.red {
+                        rect {
+                            fill: rgba(241,12,10, 0.2);
+                            stroke: rgb(241,12,10);
+                        }
+                    }
+
+                    &.green {
+                        rect {
+                            fill: rgba(67,161,52, 0.2);
+                            stroke: rgb(67,161,52);
+                        }
+                    }
+
+                    &.default {
+                        rect {
+                            fill: rgba(0,0,0, 0.2);
+                            stroke: rgb(0,0,0);
+                        }
                     }
                 }
 

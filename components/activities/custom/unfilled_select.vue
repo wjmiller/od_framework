@@ -159,6 +159,7 @@ export default {
 
 .unfilled-select {
     margin-bottom: 100px;
+    position: relative;
 
     .unfilled-orders {
         display: flex;

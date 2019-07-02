@@ -233,6 +233,7 @@ export default {
 
 .candle-builder {
     margin-bottom: 15px;
+    position: relative;
 
     h3 {
         font-size: 1.05rem;

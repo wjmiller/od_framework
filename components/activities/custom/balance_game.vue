@@ -11,8 +11,17 @@
     </b-row>
     <b-row>
       <b-col class="game-toolbar">
-
-        <div class="game-timer"
+        <div v-if="chartActive"
+             class="chart-header">
+          <div>{{chartHeader}}</div>
+          <div>
+            <b-btn v-if="level + 1 <= maxLevels"
+                   v-on:click="startLevel()"
+                   v-bind:disabled="levelIsActive"> Start Level {{level + 1}}</b-btn>
+          </div>
+        </div>
+        <div v-if="!chartActive"
+             class="game-timer"
              v-bind:class="{'opening': !showTime && !levelOver, 'trading': showTime, 'closing': levelOver}">
           <span v-if="!showTime && !levelOver">opening bell</span>
           <span v-if="showTime">{{hoursLeft}} hrs remaining</span>
@@ -20,7 +29,28 @@
         </div>
       </b-col>
     </b-row>
-    <b-row>
+    <b-row v-if="chartActive"
+           class="chart-row">
+      <b-col cols="12">
+        <candle-chart v-bind:candles="totalData"
+                      v-bind:height="300"
+                      v-bind:force-range="[0,280]"
+                      v-bind:price-display="10"
+                      v-bind:price-width="80"
+                      v-bind:candle-width="20"
+                      v-bind:candle-spacing="35"
+                      v-bind:detail-pane="true"
+                      v-bind:detail-position="'side'"
+                      v-bind:candle-highlight="true"
+                      v-bind:timeline="true"
+                      v-bind:time-label="''"
+                      v-bind:time-label-interval="1">
+        </candle-chart>
+      </b-col>
+    </b-row>
+
+    <b-row v-if="!chartActive"
+           class="game-row">
       <b-col cols="7">
         <div class="orders">
           <div class="orders-buy">
@@ -86,20 +116,31 @@
                  v-bind:disabled="levelIsActive"> Start Level {{level + 1}}</b-btn>
         </div>
       </b-col>
+      <div v-if="loadingChart"
+           class="loader-overlay">
+        <bounce class="od-loader"></bounce>
+      </div>
     </b-row>
   </div>
 </div>
 </template>
 
 <script>
+import CandleChart from '~/components/activities/candle_chart'
+
 export default {
   name: 'custom-balance-game',
+  components: {
+    CandleChart
+  },
   data() {
     return {
       level: 0, //current level
       levelTime: 1, //current time of level
       levelTimeEnd: 60, //time ends at this point for each level, represents how many ticks will
       levelOver: false,
+      loadingChart: false,
+      chartActive: false,
       showTime: false,
       startingPrice: 10000, //default level price
       price: 10000, //current price, set as integer for two decimal places on display
@@ -110,6 +151,7 @@ export default {
       emotionalReaction: 0.8, //ratio that provides opposite orders, for example, if a big increase in price because no one is selling, then sell orders are added: price change * emotionalReaction
       autoPricer: false, //way to turn on the automatic pricer for those who don't want to play the game
       autoPricerSpeed: 4, //clicks to change price per tick
+      totalData: [],
       orders: { //current number of orders
         buy: 0,
         sell: 0
@@ -210,6 +252,7 @@ export default {
     },
     startLevel() {
       this.levelCountdown = 0
+      if ( this.chartActive ) this.chartActive = !this.chartActive
       if ( this.level + 1 <= this.maxLevels ) {
         this.level++
         if ( this.level === 1 ) this.price = this.startingPrice
@@ -224,10 +267,15 @@ export default {
     endLevel() {
       clearInterval( this.$options.timerInterval )
       this.activeLevel.candleData = this.aggregateData( this.segmentTicks( 10 ) )
+      this.totalData = [ ...this.totalData, ...this.activeLevel.candleData ]
       this.activeLevel.active = false
+      this.loadingChart = true
 
-      //eslint-disable-next-line
-      console.log( JSON.stringify( this.currentLevel.candleData ) )
+      setTimeout( () => {
+        this.loadingChart = false
+        this.chartActive = true
+      }, 3000 )
+
     },
     setTick() {
       //calc processed and remaining orders
@@ -304,7 +352,7 @@ export default {
       return segmentedTicks
     },
     aggregateData( multiArr ) {
-      return multiArr.reduce( ( memo, item ) => {
+      return multiArr.reduce( ( memo, item, index ) => {
         const prices = item.map( tick => tick.price )
         const filled = item.map( tick => tick.filled )
         const unfilled = item.map( tick => tick.unfilled )
@@ -321,7 +369,8 @@ export default {
           unfilled: {
             buy: unfilled.reduce( ( memo, unfillObject ) => unfillObject.buy + memo, 0 ),
             sell: unfilled.reduce( ( memo, unfillObject ) => unfillObject.sell + memo, 0 )
-          }
+          },
+          label: index == 0 ? 'Day ' + this.level : ''
         } )
         return memo;
       }, [] )
@@ -378,10 +427,12 @@ export default {
       return this.activeLevel ? true : false
     },
     hoursLeft() {
-      return ( 6.5 - ( ( this.levelTime - 1 ) / 9.2308 ) )
+      return ( 6.5 - ( ( this.levelTime ) * .1083 ) )
         .toFixed( 2 )
     },
-
+    chartHeader() {
+      return this.level + 1 <= this.maxLevels ? "Day " + this.level + " of Trading" : "Final Trading Results"
+    }
   },
   watch: {
     levelTime() {
@@ -432,6 +483,7 @@ export default {
     transform-origin: center center;
     z-index: 1400;
     font-size: 2.9rem;
+    position: relative;
 
     &.level-over {
         .game-toolbar {
@@ -482,7 +534,48 @@ export default {
         display: flex;
         flex-direction: row;
         justify-content: center;
-        margin: 0 0 5rem;
+        margin: 0;
+
+        .chart-header {
+            width: 100%;
+            text-align: center;
+            margin-top: 1.6rem;
+
+            > div:nth-child(1) {
+                display: inline-block;
+                font-size: 2rem;
+                text-transform: uppercase;
+                line-height: 40px;
+                font-weight: 600;
+                width: 70%;
+            }
+
+            > div:nth-child(2) {
+                display: inline-block;
+                width: calc(30% - 30px);
+            }
+
+            .btn {
+                align-self: center;
+                font-size: 1.3rem;
+                border-radius: 2.5rem;
+                padding: 0.6rem 1.6rem;
+                color: #fff;
+                font-weight: 600;
+                @include game-button();
+
+                //margin-right: 2.3rem;
+
+                &:after {
+                    content: "\e037";
+                    font-family: "custom-icons";
+                    margin-left: 0.5rem;
+                    position: relative;
+                    top: 0.07rem;
+                    //font-size: 1.2rem;
+                }
+            }
+        }
 
         .game-timer {
             align-self: center;
@@ -518,6 +611,36 @@ export default {
                 }
             }
         }
+    }
+
+    .game-row {
+        margin-top: 5rem;
+        position: relative;
+
+        .loader-overlay {
+            position: absolute;
+            background: $dark-body-bg;
+            opacity: 0.8;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2000;
+        }
+
+        .od-loader {
+            .spinner {
+                margin: 20px 50px;
+
+                > div {
+                    background-color: #fff;
+                }
+            }
+        }
+    }
+
+    .chart-row {
+        margin-top: 2.2rem;
     }
 
     .orders {
@@ -706,7 +829,11 @@ export default {
         font-size: 2.1rem;
 
         .game-toolbar {
-            margin: 1.5rem 0 7rem;
+            margin: 1.5rem 0 0;
+        }
+
+        .game-row {
+            margin-top: 7rem;
         }
     }
 

@@ -83,6 +83,7 @@ export default {
 
 .unfilled-slider {
     margin-bottom: 100px;
+    position: relative;
 
     .unfilled-orders {
         display: flex;

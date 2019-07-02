@@ -27,21 +27,6 @@
     </b-col>
   </b-row>
 
-  <b-row>
-    <b-col>
-      <h2>Balance Price Game</h2>
-      <p style="font-style: italic;">Step in to the shoes of a price setter and adjust price to balance buy and sell orders on trading day.</p>
-      <img v-on:click="toggleGame"
-           class="game-poster"
-           src="~/assets/images/balance_price.png" />
-      <transition name="fade">
-        <custom-balance-game v-if="gameOpen"
-                             v-bind:open="gameOpen"
-                             v-on:close="toggleGame" />
-      </transition>
-    </b-col>
-  </b-row>
-
   <!-- Lesson Activities -->
   <activity-group v-for="(activity, index) in data.activities"
                   v-bind:key="`act-group-${index}`"
@@ -50,6 +35,9 @@
                   v-bind:theme="theme" />
 
   <b-row>
+    <b-col md="8">
+      <h2 style="margin-bottom: 60px;">Assessment</h2>
+    </b-col>
     <b-col md="8"
            class="questions">
 
@@ -58,7 +46,7 @@
                     v-bind:activated="activated"
                     v-bind:options="options_single"
                     v-bind:multiple-select="false"
-                    v-bind:attempts-allowed="3"
+                    v-bind:attempts-allowed="1"
                     v-bind:feedback="feedback"
                     v-bind:question="question_single"
                     v-on:activity-attempted="logdata">
@@ -77,7 +65,7 @@
                     v-bind:activated="activated"
                     v-bind:options="options_arrows"
                     v-bind:multiple-select="false"
-                    v-bind:attempts-allowed="3"
+                    v-bind:attempts-allowed="1"
                     v-bind:feedback="feedback"
                     options-class="options-arrows"
                     v-bind:question="question_arrows"
@@ -98,7 +86,7 @@
                     v-bind:options="options_multi"
                     v-bind:question="question_multi"
                     v-bind:multiple-select="true"
-                    v-bind:attempts-allowed="3"
+                    v-bind:attempts-allowed="1"
                     v-on:activity-attempted="displayFeedback">
         <template v-slot:question>
           <p>{{ question_multi }}</p>
@@ -130,7 +118,6 @@ import VideoPlayer from '~/components/activities/video_player'
 import AppData from '~/assets/data/app_data.js'
 import MultiChoice from '~/components/activities/multi_choice'
 import FeedbackDisplay from '~/components/activities/feedback'
-import CustomBalanceGame from '~/components/activities/custom/balance_game'
 //import xAPI from '~/plugins/xapi.js'
 
 import {
@@ -255,8 +242,7 @@ export default {
     ActivityGroup,
     VideoPlayer,
     MultiChoice,
-    FeedbackDisplay,
-    CustomBalanceGame
+    FeedbackDisplay
   },
   watch: {
     user( auth ) {
