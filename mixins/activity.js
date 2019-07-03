@@ -17,6 +17,10 @@ export const Activity = {
       default: true,
       type: Boolean
     },
+    locked: {
+      default: false,
+      type: Boolean
+    },
     correctTest: {
       type: [ Function, Array ]
     },
@@ -138,7 +142,8 @@ export const Activity = {
         'activity-correct': this.correct,
         'activity-incorrect': this.incorrect,
         'activity-attempted': this.attempts > 0,
-        'activity-activated': this.activated
+        'activity-activated': this.activated,
+        'activity-locked': this.locked
       }
       styles[ `activity-attempted-${this.attempts}` ] = this.attempts > 0
       return styles

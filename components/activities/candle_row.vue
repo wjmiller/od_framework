@@ -19,7 +19,7 @@
 
 <script>
 import CandleBuilder from './candle_builder.vue'
-import PriceChart from './price_chart.vue'
+import PriceChart from '../subcomponents/price_chart.vue'
 import CandleFeedback from './candle_feedback.vue'
 
 export default {

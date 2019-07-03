@@ -5,11 +5,11 @@
   </div>
   <div v-if="!sortLoad"
        class="candle-sort">
-    <draggable v-model="candles"
+    <draggable v-model="candleData"
                v-on:start="drag=true"
                v-on:end="drag=false"
                v-on:change="clearFeedback">
-      <div v-for="(candle, ix) in candles">
+      <div v-for="(candle, ix) in candleData">
         <candle v-bind:key="'candle-' + ix"
                 v-bind:width="candleWidth"
                 v-bind:height="canvasHeight"
@@ -32,11 +32,15 @@
 
 <script>
 import Candle from '~/components/activities/candle'
+import {
+  Activity
+} from '../../mixins/activity.js'
 
 export default {
   components: {
     Candle
   },
+  mixins: [ Activity ],
   props: {
     candles: {
       type: Array
@@ -67,8 +71,7 @@ export default {
       sortLoad: false,
       orig: null,
       showFeedback: false,
-      attempts: 0,
-      correct: false,
+      candleData: this.candles
     }
   },
   methods: {
@@ -95,9 +98,8 @@ export default {
       return true;
     },
     checkOrder() {
-      this.attempts++
+      this.makeAttempt()
       this.showFeedback = true
-      this.correct = this.arraysEqual( this.candles, this.orig )
     },
     clearFeedback() {
       if ( this.showFeedback == true ) this.showFeedback = false
@@ -105,9 +107,11 @@ export default {
   },
   created() {
     this.sortLoad = true
-    this.orig = [ ...this.candles ]
-    while ( this.arraysEqual( this.candles, this.orig ) ) {
-      this.shuffle( this.candles )
+    this.orig = [ ...this.candleData ]
+    this.addCorrectTest( v => v.arraysEqual( v.candleData, v.orig ) )
+
+    while ( this.arraysEqual( this.candleData, this.orig ) ) {
+      this.shuffle( this.candleData )
     }
     setTimeout( () => {
       this.sortLoad = false

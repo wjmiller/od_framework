@@ -86,15 +86,17 @@
              v-bind:key="`candle-${index}`"
              v-on:click="changeLabel(index)"
              v-bind:class="{'clickable': candleLabels}">
-            <g v-if="candleLabels"
+            <g v-bind:transform="`translate(${candle.line.x1},${candle.line.y1 - 30})`"
+               v-if="candleLabels && candleLabels[index].label"
                class="candle-label"
                v-bind:class="{'label-incorrect': !candleLabels[index].correct && feedback, 'label-correct': candleLabels[index].correct && feedback}">
-              <circle v-bind:cx="candle.line.x1"
-                      v-bind:cy="candle.line.y1 - 30"
-                      v-bind:r="20" />
-              <text v-bind:x="candle.line.x1 - 6"
-                    v-bind:y="candle.line.y1 - 21">{{candleLabels[index].label}}
-              </text>
+              <circle cx="0"
+                      cy="0"
+                      v-bind:r="20"></circle>
+              <text x="0"
+                    y="3"
+                    alignment-baseline="middle"
+                    text-anchor="middle">{{candleLabels[index].label}}</text>
             </g>
             <!-- Candle Wick -->
             <line v-bind:x1="candle.line.x1"

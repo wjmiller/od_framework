@@ -59,7 +59,7 @@
 import {
   Activity
 } from '../../mixins/activity.js'
-import FeedbackDisplay from './feedback'
+import FeedbackDisplay from '../subcomponents/feedback'
 
 export default {
   name: 'multi-choice',

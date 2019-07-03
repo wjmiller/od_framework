@@ -86,7 +86,7 @@
 
 <script>
 import MultiChoice from '~/components/activities/multi_choice'
-import FeedbackDisplay from '~/components/activities/feedback'
+import FeedbackDisplay from '~/components/subcomponents/feedback'
 
 export default {
   name: 'lesson',

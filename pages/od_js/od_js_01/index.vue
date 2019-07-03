@@ -117,7 +117,7 @@ import ActivityGroup from '~/components/activities/activity_group'
 import VideoPlayer from '~/components/activities/video_player'
 import AppData from '~/assets/data/app_data.js'
 import MultiChoice from '~/components/activities/multi_choice'
-import FeedbackDisplay from '~/components/activities/feedback'
+import FeedbackDisplay from '~/components/subcomponents/feedback'
 //import xAPI from '~/plugins/xapi.js'
 
 import {

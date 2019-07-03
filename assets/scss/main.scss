@@ -520,7 +520,7 @@ section.view {
   .list-group-item {
     background-color: $dark-body-bg;
     color: #fff;
-    border-color: $dark-gray;
+    border-bottom: 1px solid $dark-gray;
 
     .icon-play {
       color: $dark-gray-light;
@@ -536,7 +536,7 @@ section.view {
   .list-group-item {
     background-color: #fff;
     color: $light-text-color;
-    border-color: $dark-gray-light;
+    border-bottom: 1px solid $dark-gray-light;
 
     .icon-play {
       color: $light-gray;

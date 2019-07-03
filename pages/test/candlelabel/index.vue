@@ -19,6 +19,34 @@
                 v-bind:correct-labels="correctLabels"
                 v-bind:price-range="[0,32]">
   </candle-label>
+  <div class="spacer"></div>
+  <b-row>
+    <b-col lg="8">
+      <p class="question">
+        Click on each gap candle until it has the correct label (Chart candles not accurate). I = Inside, O = Outside
+      </p>
+    </b-col>
+  </b-row>
+  <candle-label v-bind:candles="candles"
+                v-bind:correct-labels="correctLabels2"
+                v-bind:label-types="['I', 'O']"
+                v-bind:label-indexes="labelIndexes"
+                v-bind:price-range="[0,32]">
+  </candle-label>
+  <div class="spacer"></div>
+  <b-row>
+    <b-col lg="8">
+      <p class="question">
+        Click on each gap candle until it has the correct label (Chart candles not accurate). P = Professional, N = Novice
+      </p>
+    </b-col>
+  </b-row>
+  <candle-label v-bind:candles="candles"
+                v-bind:correct-labels="correctLabels3"
+                v-bind:label-types="['P', 'N']"
+                v-bind:label-indexes="labelIndexes"
+                v-bind:price-range="[0,32]">
+  </candle-label>
 </b-container>
 </template>
 
@@ -126,7 +154,14 @@ export default {
       ],
       correctLabels: [
         'B', 'B', 'L', 'L', 'L', 'B', 'B', 'B', 'L', 'L', 'B', 'B', 'B'
-      ]
+      ],
+      correctLabels2: [
+        null, null, 'I', null, null, null, null, 'O', null, null, 'I', null, null
+      ],
+      correctLabels3: [
+        null, null, 'P', null, null, null, null, 'N', null, null, 'P', null, null
+      ],
+      labelIndexes: [ 2, 7, 10 ]
     }
   }
 }

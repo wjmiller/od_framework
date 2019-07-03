@@ -2,14 +2,16 @@
 <b-row class="candle-label">
   <b-col lg="12">
     <div class="label-toolbar">
-      <b-btn v-on:click="evalLabels"
-             class="eval-labels-btn">
+      <b-btn v-on:click="makeAttempt"
+             class="eval-labels-btn"
+             v-bind:disabled="correct">
         <span></span> Check Labels
       </b-btn>
     </div>
     <candle-chart v-on:change-label="changeLabel"
                   v-bind:candles="candles"
                   v-bind:candle-labels="labels"
+                  v-bind:label-indexes="labelIndexes"
                   v-bind:feedback="showFeedback"
                   v-bind:label-types="labelTypes"
                   v-bind:timeline="true"
@@ -29,18 +31,30 @@
 
 <script>
 import CandleChart from '~/components/activities/candle_chart'
+import {
+  Activity
+} from '../../../mixins/activity.js'
 
 export default {
   components: {
     CandleChart
   },
+  mixins: [ Activity ],
   data() {
     return {
       labels: this.candles.map( ( item, ix ) => {
-        return {
-          label: '?',
-          correct: false
+        if ( this.labelIndexes ) {
+          return {
+            label: this.labelIndexes.includes( ix ) ? '?' : null,
+            correct: false
+          }
+        } else {
+          return {
+            label: '?',
+            correct: false
+          }
         }
+
       } ),
       showFeedback: false,
       currentCandle: this.candles[ 0 ]
@@ -57,6 +71,12 @@ export default {
       type: Array,
       default () {
         return [ 'B', 'L' ]
+      }
+    },
+    labelIndexes: {
+      type: Array,
+      default () {
+        return null
       }
     },
     correctLabels: {
@@ -109,19 +129,37 @@ export default {
         correct: this.labels[ ix ].correct
       } )
     },
-    evalLabels() {
-      for ( let ix in this.correctLabels ) {
-        const correct = this.correctLabels[ ix ] == this.labels[ ix ].label
-        correct ? this.$set( this.labels, ix, {
-          label: this.labels[ ix ].label,
-          correct: true
-        } ) : this.$set( this.labels, ix, {
-          label: this.labels[ ix ].label,
-          correct: false
-        } )
+    evalLabels( v ) {
+      if ( v.labelIndexes ) {
+        for ( let ix of v.labelIndexes ) {
+          v.checkCorrect( ix )
+        }
+      } else {
+        for ( let ix in v.correctLabels ) {
+          v.checkCorrect( ix )
+        }
       }
-      this.showFeedback = true
+      v.showFeedback = true
+
+      const labels = this.labels.map( item => {
+        return item.label
+      } )
+
+      return JSON.stringify( labels ) === JSON.stringify( this.correctLabels )
+    },
+    checkCorrect( ix ) {
+      const correct = this.correctLabels[ ix ] == this.labels[ ix ].label
+      correct ? this.$set( this.labels, ix, {
+        label: this.labels[ ix ].label,
+        correct: true
+      } ) : this.$set( this.labels, ix, {
+        label: this.labels[ ix ].label,
+        correct: false
+      } )
     }
+  },
+  created() {
+    this.addCorrectTest( this.evalLabels )
   }
 }
 </script>

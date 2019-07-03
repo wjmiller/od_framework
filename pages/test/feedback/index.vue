@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import FeedbackDisplay from '~/components/activities/feedback'
+import FeedbackDisplay from '~/components/subcomponents/feedback'
 
 export default {
   name: 'lesson',

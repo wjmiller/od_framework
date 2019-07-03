@@ -27,7 +27,7 @@
 
 <script>
 import DrawPattern from '~/components/activities/draw_pattern'
-import FeedbackDisplay from '~/components/activities/feedback'
+import FeedbackDisplay from '~/components/subcomponents/feedback'
 
 export default {
   name: 'lesson',
