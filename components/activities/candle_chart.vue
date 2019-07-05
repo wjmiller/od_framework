@@ -1105,11 +1105,12 @@ export default {
 }
 
 .light {
-    h3 {
-        color: $light-text-color;
-    }
 
     .candle-chart {
+
+        h3 {
+            color: $light-text-color;
+        }
 
         .chart-wrapper {
 

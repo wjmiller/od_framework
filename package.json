@@ -28,6 +28,7 @@
 		"responsive-sketchpad": "^0.2.1",
 		"sass-loader": "^7.1.0",
 		"string-similarity": "^3.0.0",
+		"v-viewer": "^1.4.1",
 		"vue-awesome-countdown": "^1.0.12",
 		"vue-select": "^3.1.0",
 		"vue-slider-component": "^3.0.31",

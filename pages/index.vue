@@ -2,6 +2,7 @@
 <div class="container">
   <h1>Courses:</h1>
   <nuxt-link to="/intro_core_strategy">Intro to Core Strategy</nuxt-link>
+  <nuxt-link to="/template">Course Template</nuxt-link>
 
   <h1>Tests:</h1>
   <nuxt-link to="/test/candlebuilder">Candle Builder</nuxt-link>

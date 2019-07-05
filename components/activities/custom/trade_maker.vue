@@ -26,7 +26,7 @@
                     v-bind:direction="'btt'"
                     v-bind:min="priceRange[0]"
                     v-bind:max="priceRange[1]"
-                    v-bind:height="'100%'"
+                    v-bind:height="'160px'"
                     v-bind:tooltip="'none'"
                     v-bind:interval="sliderInterval"
                     v-bind:disabled="enterDisabled || resultsReady">
@@ -39,7 +39,7 @@
                     v-bind:direction="'btt'"
                     v-bind:min="priceRange[0]"
                     v-bind:max="priceRange[1]"
-                    v-bind:height="'100%'"
+                    v-bind:height="'160px'"
                     v-bind:tooltip="'none'"
                     v-bind:interval="sliderInterval"
                     v-bind:disabled="exitDisabled || resultsReady">
@@ -53,10 +53,10 @@
                     v-bind:direction="'btt'"
                     v-bind:min="priceRange[0]"
                     v-bind:max="priceRange[1]"
-                    v-bind:height="'100%'"
+                    v-bind:height="'160px'"
                     v-bind:tooltip="'none'"
                     v-bind:interval="sliderInterval"
-                    v-bind:disabled="resultsReady">
+                    v-bind:disabled="stopDisabled || resultsReady">
         </vue-slider>
       </div>
     </div>
@@ -149,6 +149,12 @@ export default {
       }
     },
     exitDisabledAt: {
+      type: String,
+      default () {
+        return 'none'
+      }
+    },
+    stopDisabledAt: {
       type: String,
       default () {
         return 'none'
@@ -333,6 +339,10 @@ export default {
     exitDisabled() {
       if ( this.exitDisabledAt === 'none' ) return false
       else return this.totalCandles.findIndex( o => o.label === this.exitDisabledAt ) <= this.currentCandle ? true : false
+    },
+    stopDisabled() {
+      if ( this.stopDisabledAt === 'none' ) return false
+      else return this.totalCandles.findIndex( o => o.label === this.stopDisabledAt ) <= this.currentCandle ? true : false
     }
   }
 
@@ -496,6 +506,11 @@ export default {
                     border-radius: 0;
                     background: lighten($dark-blue, 3%);
                     border: 1px solid lighten($dark-blue, 15%);
+                    height: 120px;
+
+                    @media(min-width: 768px) {
+                        height: 160px;
+                    }
                 }
 
                 .vue-slider-process {

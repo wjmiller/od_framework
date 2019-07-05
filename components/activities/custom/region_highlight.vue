@@ -1,8 +1,8 @@
 <template>
-<b-row class="region-highlight">
+<div class="region-highlight">
   <activity-lock v-bind:locked="locked"
                  v-bind:data="lockedData"></activity-lock>
-  <b-col lg="12">
+  <div>
 
     <div class="region-toolbar">
       <b-btn v-if="addRegionButton"
@@ -87,8 +87,8 @@
                   v-bind:feedback="feedbackMode"
                   v-bind:hidden-regions="hiddenRegions">
     </candle-chart>
-  </b-col>
-  <b-col lg="12">
+  </div>
+  <div>
     <div class="slider-cont"
          v-if="region">
       <h3>{{region.label}} Controls</h3>
@@ -107,7 +107,7 @@
              v-if="addRegionButton"
              v-on:click="removeRegion"><span></span> Remove Region</b-btn>
     </div>
-  </b-col>
+  </div>
 
   <div v-if="activityCorrect && correctShow"
        class="correct-cont">
@@ -162,7 +162,7 @@
       </div>
     </div>
   </div>
-</b-row>
+</div>
 </template>
 
 <script>

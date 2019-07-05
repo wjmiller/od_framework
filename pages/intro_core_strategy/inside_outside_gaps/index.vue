@@ -8,7 +8,10 @@
             aria-label="left arrow" /> Exit Lesson</nuxt-link>
     </b-col>
   </b-row>
-  <b-row class="intro-container">
+  <section>
+
+  </section class="intro-section">
+  <b-row>
     <b-col md="6"
            lg="7">
       <div class="lesson-info">
@@ -82,59 +85,4 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-// -----------------------------------------------------
-// Import Variables
-// -----------------------------------------------------
-
-@import '~assets/scss/variables.scss';
-
-// -----------------------------------------------------
-// Lesson Information
-// -----------------------------------------------------
-
-.lesson-info {
-    margin-bottom: 2.5rem;
-    .course-title {
-        font-size: 1.2rem;
-        margin: 2.5rem 0 0.5rem;
-    }
-
-    .lesson-title {
-        margin: 0;
-        font-size: 2.4rem;
-    }
-
-    .lesson-description {
-        font-size: 1.02rem;
-        font-style: italic;
-        margin: 0.7rem 0 1rem;
-    }
-
-    .progress {
-        display: inline-block;
-        width: 5.6rem;
-        height: 0.7rem;
-        border-radius: 0.35rem;
-    }
-
-    .badge {
-        display: inline-block;
-        margin-right: 0.6rem;
-    }
-
-    // Dark/Light Theme Styles -------------------------
-
-    .dark {
-        .course-title {
-            color: $dark-gray-light;
-        }
-    }
-
-    .light {
-        .course-title {
-            color: $light-text-color;
-        }
-    }
-}
-</style>
+<style lang="scss"></style>

@@ -29,8 +29,8 @@ export default {
     position: absolute;
     top: 0;
     bottom: 0;
-    right: 0;
-    left: 0;
+    right: -6px;
+    left: -6px;
     display: flex;
     flex-direction: row;
     justify-content: center;

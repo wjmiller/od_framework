@@ -1,32 +1,30 @@
 <template>
-<b-row class="candle-label">
-  <b-col lg="12">
-    <div class="label-toolbar">
-      <b-btn v-on:click="makeAttempt"
-             class="eval-labels-btn"
-             v-bind:disabled="correct">
-        <span></span> Check Labels
-      </b-btn>
-    </div>
-    <candle-chart v-on:change-label="changeLabel"
-                  v-bind:candles="candles"
-                  v-bind:candle-labels="labels"
-                  v-bind:label-indexes="labelIndexes"
-                  v-bind:feedback="showFeedback"
-                  v-bind:label-types="labelTypes"
-                  v-bind:timeline="true"
-                  v-bind:time-label="timeLabel"
-                  v-bind:time-label-interval="timeLabelInterval"
-                  v-bind:height="chartHeight"
-                  v-bind:force-range="priceRange"
-                  v-bind:price-display="priceDisplay"
-                  v-bind:price-width="priceWidth"
-                  v-bind:candle-width="candleWidth"
-                  v-bind:candle-spacing="candleSpacing"
-                  v-bind:candle-highlight="false">
-    </candle-chart>
-  </b-col>
-</b-row>
+<div class="candle-label">
+  <div class="label-toolbar">
+    <b-btn v-on:click="makeAttempt"
+           class="eval-labels-btn"
+           v-bind:disabled="correct">
+      <span></span> Check Labels
+    </b-btn>
+  </div>
+  <candle-chart v-on:change-label="changeLabel"
+                v-bind:candles="candles"
+                v-bind:candle-labels="labels"
+                v-bind:label-indexes="labelIndexes"
+                v-bind:feedback="showFeedback"
+                v-bind:label-types="labelTypes"
+                v-bind:timeline="true"
+                v-bind:time-label="timeLabel"
+                v-bind:time-label-interval="timeLabelInterval"
+                v-bind:height="chartHeight"
+                v-bind:force-range="priceRange"
+                v-bind:price-display="priceDisplay"
+                v-bind:price-width="priceWidth"
+                v-bind:candle-width="candleWidth"
+                v-bind:candle-spacing="candleSpacing"
+                v-bind:candle-highlight="false">
+  </candle-chart>
+</div>
 </template>
 
 <script>

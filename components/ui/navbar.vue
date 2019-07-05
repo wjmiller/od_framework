@@ -7,9 +7,7 @@
     </b-nav-item>
     <b-nav-item-dropdown right>
       <template slot="button-content">
-        <img class="user"
-             alt="user image"
-             v-bind:src="profileImg" /></template>
+        <i class="settings-btn" /></i></template>
       <div class="font-container">
         <b-btn variant="link"
                v-on:click="increaseFont('1rem')"
@@ -31,8 +29,6 @@
                             aria-label="theme toggle"
                             buttons></b-form-radio-group>
       </b-form-group>
-      <b-dropdown-item href="#"
-                       v-on:click="logout">Log Out</b-dropdown-item>
     </b-nav-item-dropdown>
   </b-navbar-nav>
 </b-navbar>
@@ -111,17 +107,37 @@ export default {
 // Navbar Items
 // -----------------------------------------------------
 
-.notes-btn {
+.notes-btn,
+.settings-btn {
     display: inline-block;
     font-size: 2rem;
     margin: 6px 10px 0 0;
 }
 
-.user {
-    width: 2.6rem;
-    height: 2.6rem;
-    border-radius: 50%;
-    margin-right: 0.29rem;
+.settings-btn {
+    color: #fff;
+    font-size: 1.74rem;
+    margin: 6px 0 0;
+
+    &:before {
+        content: "\e994";
+        font-family: "custom-icons";
+        font-style: normal;
+        position: relative;
+        top: 3px;
+
+    }
+
+    &:hover {
+        color: rgba(255, 255, 255, 0.6);
+    }
+}
+
+.dropdown-toggle {
+    &:after {
+        color: #fff;
+        display: none;
+    }
 }
 
 .dropdown-menu {
@@ -247,6 +263,15 @@ export default {
                 color: lighten($light-gray-med-dark, 20%);
             }
         }
+
+        &:focus,
+        &:hover {
+            color: lighten($light-gray-med-dark, 20%);
+        }
+    }
+
+    .settings-btn {
+        color: $light-gray-med-dark;
 
         &:focus,
         &:hover {

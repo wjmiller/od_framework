@@ -1,11 +1,11 @@
 
 @font-face {
   font-family: 'custom-icons';
-  src:  url('~assets/fonts/custom.eot?9zsrne');
-  src:  url('~assets/fonts/custom.eot?9zsrne#iefix') format('embedded-opentype'),
-    url('~assets/fonts/custom.ttf?9zsrne') format('truetype'),
-    url('~assets/fonts/custom.woff?9zsrne') format('woff'),
-    url('~assets/fonts/custom.svg?9zsrne#icomoon') format('svg');
+  src:  url('~assets/fonts/custom.eot?t3ylwf');
+  src:  url('~assets/fonts/custom.eot?t3ylwf#iefix') format('embedded-opentype'),
+    url('~assets/fonts/custom.ttf?t3ylwf') format('truetype'),
+    url('~assets/fonts/custom.woff?t3ylwf') format('woff'),
+    url('~assets/fonts/custom.svg?t3ylwf#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -37,6 +37,9 @@
 .icon-edit:before {
   content: "\e903";
 }
+.icon-settings1:before {
+  content: "\e910";
+}
 .icon-rotate:before {
   content: "\e900";
 }
@@ -60,6 +63,15 @@
 }
 .icon-clock:before {
   content: "\e90e";
+}
+.icon-cog:before {
+  content: "\e994";
+}
+.icon-link:before {
+  content: "\e9cb";
+}
+.icon-new-tab:before {
+  content: "\ea7e";
 }
 .icon-arrow-bold-down:before {
   content: "\e904";
@@ -118,11 +130,11 @@
 .icon-replay:before {
   content: "\e042";
 }
-.icon-settings:before {
-  content: "\e8b8";
-}
 .icon-wb_sunny:before {
   content: "\e430";
+}
+.icon-download:before {
+  content: "\f019";
 }
 .icon-refresh:before {
   content: "\f021";
@@ -148,6 +160,9 @@
 .icon-unlock:before {
   content: "\f09c";
 }
+.icon-cloud-download:before {
+  content: "\f0ed";
+}
 .icon-bell:before {
   content: "\f0f3";
 }
@@ -156,6 +171,9 @@
 }
 .icon-unlock-alt:before {
   content: "\f13e";
+}
+.icon-external-link-square:before {
+  content: "\f14c";
 }
 .icon-trash:before {
   content: "\f1f8";
